@@ -70,7 +70,7 @@ inline double Smooth::G() const
 
 inline double Smooth::epsd(const T2s &Eps) const
 {
-  auto Epsd = Eps - trace(Eps)/ND * xt::eye(ndim);
+  auto Epsd = Eps - trace(Eps)/ND * fast_eye(ndim);
 
   return std::sqrt(.5*ddot(Epsd,Epsd));
 }
@@ -144,11 +144,11 @@ inline T2s Smooth::Sig(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
   auto epsm = trace(Eps)/ND;
-  auto Epsd = Eps - epsm * xt::eye(ndim);
+  auto Epsd = Eps - epsm * fast_eye(ndim);
   auto epsd = std::sqrt(.5*ddot(Epsd,Epsd));
 
   // no deviatoric strain -> only hydrostatic stress
-  if ( epsd <= 0. ) return m_K * epsm * xt::eye(ndim);
+  if ( epsd <= 0. ) return m_K * epsm * fast_eye(ndim);
 
   // read current yield strains
   auto i       = find(epsd);
@@ -156,7 +156,7 @@ inline T2s Smooth::Sig(const T2s &Eps) const
   auto deps_y  = ( m_epsy[i+1] - m_epsy[i] ) / 2.;
 
   // return stress tensor
-  return m_K*epsm*xt::eye(ndim) + (m_G/epsd)*(deps_y/M_PI)*sin(M_PI/deps_y*(epsd-eps_min))*Epsd;
+  return m_K*epsm*fast_eye(ndim) + (m_G/epsd)*(deps_y/M_PI)*sin(M_PI/deps_y*(epsd-eps_min))*Epsd;
 }
 
 // -------------------------------------------- energy ---------------------------------------------
@@ -165,7 +165,7 @@ inline double Smooth::energy(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
   auto epsm = trace(Eps)/ND;
-  auto Epsd = Eps - epsm * xt::eye(ndim);
+  auto Epsd = Eps - epsm * fast_eye(ndim);
   auto epsd = std::sqrt(.5*ddot(Epsd,Epsd));
 
   // hydrostatic part of the energy

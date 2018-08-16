@@ -70,7 +70,7 @@ inline double Cusp::G() const
 
 inline double Cusp::epsd(const T2s &Eps) const
 {
-  auto Epsd = Eps - trace(Eps)/ND * xt::eye(ndim);
+  auto Epsd = Eps - trace(Eps)/ND * fast_eye(ndim);
 
   return std::sqrt(.5*ddot(Epsd,Epsd));
 }
@@ -144,18 +144,18 @@ inline T2s Cusp::Sig(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
   auto epsm = trace(Eps)/ND;
-  auto Epsd = Eps - epsm * xt::eye(ndim);
+  auto Epsd = Eps - epsm * fast_eye(ndim);
   auto epsd = std::sqrt(.5*ddot(Epsd,Epsd));
 
   // no deviatoric strain -> only hydrostatic stress
-  if ( epsd <= 0. ) return m_K * epsm * xt::eye(ndim);
+  if ( epsd <= 0. ) return m_K * epsm * fast_eye(ndim);
 
   // read current yield strains
   auto i       = find(epsd);
   auto eps_min = ( m_epsy[i+1] + m_epsy[i] ) / 2.;
 
   // return stress tensor
-  return m_K * epsm * xt::eye(ndim) + m_G * (1.-eps_min/epsd) * Epsd;
+  return m_K * epsm * fast_eye(ndim) + m_G * (1.-eps_min/epsd) * Epsd;
 }
 
 // -------------------------------------------- energy ---------------------------------------------
@@ -164,7 +164,7 @@ inline double Cusp::energy(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
   auto epsm = trace(Eps)/ND;
-  auto Epsd = Eps - epsm * xt::eye(ndim);
+  auto Epsd = Eps - epsm * fast_eye(ndim);
   auto epsd = std::sqrt(.5*ddot(Epsd,Epsd));
 
   // hydrostatic part of the energy

@@ -343,9 +343,9 @@ inline void Matrix::Sig(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4
         // - compute
          switch ( m_type(e,k) )
         {
-          case Type::Elastic: Sig = m_Elastic[m_index(e,k)].Sig(Eps); break;
-          case Type::Cusp   : Sig = m_Cusp   [m_index(e,k)].Sig(Eps); break;
-          case Type::Smooth : Sig = m_Smooth [m_index(e,k)].Sig(Eps); break;
+          case Type::Elastic: xt::noalias(Sig) = m_Elastic[m_index(e,k)].Sig(Eps); break;
+          case Type::Cusp   : xt::noalias(Sig) = m_Cusp   [m_index(e,k)].Sig(Eps); break;
+          case Type::Smooth : xt::noalias(Sig) = m_Smooth [m_index(e,k)].Sig(Eps); break;
           default: std::runtime_error("Unknown material");
         }
       }
