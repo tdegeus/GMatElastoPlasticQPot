@@ -380,9 +380,9 @@ inline void Matrix::energy(const xt::xtensor<double,4> &a_Eps, xt::xtensor<doubl
         // - compute
          switch ( m_type(e,k) )
         {
-          case Type::Elastic: energy = m_Elastic[m_index(e,k)].energy(Eps); break;
-          case Type::Cusp   : energy = m_Cusp   [m_index(e,k)].energy(Eps); break;
-          case Type::Smooth : energy = m_Smooth [m_index(e,k)].energy(Eps); break;
+          case Type::Elastic: xt::noalias(energy) = m_Elastic[m_index(e,k)].energy(Eps); break;
+          case Type::Cusp   : xt::noalias(energy) = m_Cusp   [m_index(e,k)].energy(Eps); break;
+          case Type::Smooth : xt::noalias(energy) = m_Smooth [m_index(e,k)].energy(Eps); break;
           default: std::runtime_error("Unknown material");
         }
       }
