@@ -16,32 +16,30 @@
 namespace xElastoPlasticQPot {
 namespace Cartesian2d {
 
-// --------------------------------------------- alias ---------------------------------------------
+// ---------------------------------------- tensor algebra -----------------------------------------
 
 using T2s = xt::xtensor_fixed<double, xt::xshape<2,2>>;
-
-// ---------------------------------------- tensor algebra -----------------------------------------
 
 template<class T> inline double trace(const T &A);
 template<class T> inline double ddot (const T &A, const T &B);
 
-inline T2s I();
+inline T2s eye();
 
-// -------------------------- equivalent stress/strain (Cartesian2d.cpp) ---------------------------
+// -------------------------- equivalent stress/strain (Cartesian2d.hpp) ---------------------------
 
-// mean
+// hydrostatic stress/strain
 inline double sigm(const T2s &Sig);
 inline double epsm(const T2s &Eps);
 
-// equivalent deviator
+// equivalent deviatoric stress/stress
 inline double sigd(const T2s &Sig);
 inline double epsd(const T2s &Eps);
 
-// deviator
+// stress/strain deviator
 inline T2s Sigd(const T2s &Sig);
 inline T2s Epsd(const T2s &Eps);
 
-// ----------------------- equivalent stress/strain (Cartesian2d_Matrix.cpp) -----------------------
+// ----------------------- equivalent stress/strain (Cartesian2d_Matrix.hpp) -----------------------
 
 // no allocation
 inline void sigm(const xt::xtensor<double,4> &a_Sig, xt::xtensor<double,2> &a_sigm);
@@ -65,16 +63,10 @@ inline double epsm_max(const xt::xtensor<double,4> &a_Eps);
 inline double sigd_max(const xt::xtensor<double,4> &a_Sig);
 inline double epsd_max(const xt::xtensor<double,4> &a_Eps);
 
-// ---------------------- material point - elastic (Cartesian2d_Elastic.cpp) -----------------------
+// ---------------------- material point - elastic (Cartesian2d_Elastic.hpp) -----------------------
 
 class Elastic
 {
-private:
-
-  // parameters
-  double m_K; // bulk  modulus
-  double m_G; // shear modulus
-
 public:
 
   // constructor
@@ -104,24 +96,22 @@ public:
   // equivalent plastic strain
   double epsp(const T2s &Eps) const;
   double epsp(double epsd) const;
+
+private:
+
+  double m_K; // bulk  modulus
+  double m_G; // shear modulus
 };
 
-// -------------------- material point - cusp potential (Cartesian2d_Cusp.cpp) ---------------------
+// -------------------- material point - cusp potential (Cartesian2d_Cusp.hpp) ---------------------
 
 class Cusp
 {
-private:
-
-  // parameters
-  double              m_K;    // bulk  modulus
-  double              m_G;    // shear modulus
-  std::vector<double> m_epsy; // yield strains
-
 public:
 
   // constructor
   Cusp() = default;
-  Cusp(double K, double G, const std::vector<double> &epsy={}, bool init_elastic=true);
+  Cusp(double K, double G, const xt::xtensor<double,1> &epsy, bool init_elastic=true);
 
   // stress
   T2s Sig(const T2s &Eps) const;
@@ -146,24 +136,23 @@ public:
   // equivalent plastic strain
   double epsp(const T2s &Eps) const;
   double epsp(double epsd) const;
+
+private:
+
+  double                m_K;    // bulk  modulus
+  double                m_G;    // shear modulus
+  xt::xtensor<double,1> m_epsy; // yield strains
 };
 
-// ------------------ material point - smooth potential (Cartesian2d_Smooth.cpp) -------------------
+// ------------------ material point - smooth potential (Cartesian2d_Smooth.hpp) -------------------
 
 class Smooth
 {
-private:
-
-  // parameters
-  double              m_K;    // bulk  modulus
-  double              m_G;    // shear modulus
-  std::vector<double> m_epsy; // yield strains
-
 public:
 
   // constructor
   Smooth() = default;
-  Smooth(double K, double G, const std::vector<double> &epsy={}, bool init_elastic=true);
+  Smooth(double K, double G, const xt::xtensor<double,1> &epsy, bool init_elastic=true);
 
   // stress
   T2s Sig(const T2s &Eps) const;
@@ -188,6 +177,12 @@ public:
   // equivalent plastic strain
   double epsp(const T2s &Eps) const;
   double epsp(double epsd) const;
+
+private:
+
+  double                m_K;    // bulk  modulus
+  double                m_G;    // shear modulus
+  xt::xtensor<double,1> m_epsy; // yield strains
 };
 
 // ----------------------- enumerator to switch between material definitions -----------------------
@@ -203,33 +198,22 @@ struct Type {
   };
 };
 
-// ------------- matrix of material points of different types (Cartesian2d_Matrix.cpp) -------------
+// ------------- matrix of material points of different types (Cartesian2d_Matrix.hpp) -------------
 
 class Matrix
 {
-private:
-
-  // material vectors
-  std::vector<Elastic> m_Elastic;
-  std::vector<Cusp>    m_Cusp;
-  std::vector<Smooth>  m_Smooth;
-
-  // identifiers for each matrix entry
-  xt::xtensor<size_t,2> m_type;  // type (e.g. "Type::Elastic")
-  xt::xtensor<size_t,2> m_index; // index from the relevant material vector (e.g. "m_Elastic")
-
 public:
 
   // constructor
   Matrix() = default;
-  Matrix(const std::vector<size_t> &shape);
+  Matrix(size_t nelem, size_t nip);
 
   // return shape
-  std::vector<size_t> shape() const;
-  size_t shape(size_t i) const;
+  size_t nelem() const { return m_nelem; };
+  size_t nip()   const { return m_nip;   };
 
   // return type
-  xt::xtensor<size_t,2> type() const;
+  xt::xtensor<size_t,2> type() const { return m_type; };
 
   // return plastic yes/no
   xt::xtensor<size_t,2> isPlastic() const;
@@ -247,10 +231,10 @@ public:
     double K, double G);
   // -
   void setCusp(const xt::xtensor<size_t,2> &I,
-    double K, double G, const std::vector<double> &epsy, bool init_elastic=true);
+    double K, double G, const xt::xtensor<double,1> &epsy, bool init_elastic=true);
   // -
   void setSmooth(const xt::xtensor<size_t,2> &I,
-    double K, double G, const std::vector<double> &epsy, bool init_elastic=true);
+    double K, double G, const xt::xtensor<double,1> &epsy, bool init_elastic=true);
 
   // set material definition for a batch of points
   // -
@@ -278,6 +262,22 @@ public:
   xt::xtensor<size_t,2> find  (const xt::xtensor<double,4> &a_Eps) const;
   xt::xtensor<double,2> epsy  (const xt::xtensor<size_t,2> &a_idx) const;
   xt::xtensor<double,2> epsp  (const xt::xtensor<double,4> &a_Eps) const;
+
+private:
+
+  // material vectors
+  std::vector<Elastic> m_Elastic;
+  std::vector<Cusp>    m_Cusp;
+  std::vector<Smooth>  m_Smooth;
+
+  // identifiers for each matrix entry
+  xt::xtensor<size_t,2> m_type;  // type (e.g. "Type::Elastic")
+  xt::xtensor<size_t,2> m_index; // index from the relevant material vector (e.g. "m_Elastic")
+
+  // shape
+  size_t m_nelem;
+  size_t m_nip;
+  static const size_t m_ndim=2;
 
 };
 

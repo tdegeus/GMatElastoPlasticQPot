@@ -8,6 +8,9 @@ option(WARNINGS "Show build warnings" ON)
 # basic compiler options
 # ----------------------
 
+# set optimization level
+set(CMAKE_BUILD_TYPE Release)
+
 # set C++ standard
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -21,7 +24,7 @@ if(WARNINGS)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
     endif()
   else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -Wno-unknown-pragmas")
   endif()
 endif()
 

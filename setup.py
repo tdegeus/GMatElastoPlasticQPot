@@ -9,7 +9,7 @@ import setuptools
 import pybind11
 import pyxtensor
 
-header = open('include/ElastoPlasticQPot/ElastoPlasticQPot.h','r').read()
+header = open('include/xElastoPlasticQPot/ElastoPlasticQPot.h','r').read()
 world  = re.split(r'(.*)(\#define ELASTOPLASTICQPOT_WORLD_VERSION\ )([0-9]+)(.*)',header)[3]
 major  = re.split(r'(.*)(\#define ELASTOPLASTICQPOT_MAJOR_VERSION\ )([0-9]+)(.*)',header)[3]
 minor  = re.split(r'(.*)(\#define ELASTOPLASTICQPOT_MINOR_VERSION\ )([0-9]+)(.*)',header)[3]
@@ -19,7 +19,7 @@ __version__ = '.'.join([world,major,minor])
 ext_modules = [
   Extension(
     'ElastoPlasticQPot',
-    ['include/ElastoPlasticQPot/python.cpp'],
+    ['include/xElastoPlasticQPot/python.cpp'],
     include_dirs=[
       pybind11.get_include(False),
       pybind11.get_include(True ),

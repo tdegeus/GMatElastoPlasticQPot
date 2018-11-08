@@ -116,45 +116,47 @@ SECTION( "Smooth" )
 SECTION( "Matrix" )
 {
   // parameters
-  double K = 12.3;
-  double G = 45.6;
+  double K     = 12.3;
+  double G     = 45.6;
+  size_t nelem = 3;
+  size_t nip   = 2;
 
   // allocate matrix
-  GM::Matrix mat({3,2});
+  GM::Matrix mat({nelem,nip});
 
   // row 0: elastic
   {
-    xt::xtensor<size_t,2> I = xt::zeros<size_t>(mat.shape());
+    xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem,nip});
 
-    for ( size_t k = 0 ; k < mat.shape(1) ; ++k ) I(0,k) = 1;
+    for ( size_t q = 0 ; q < nip ; ++q ) I(0,q) = 1;
 
     mat.setElastic(I,K,G);
   }
 
   // row 1: cups
   {
-    xt::xtensor<size_t,2> I = xt::zeros<size_t>(mat.shape());
+    xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem,nip});
 
-    std::vector<double> epsy = {0.01, 0.03, 0.10};
+    xt::xtensor<double,1> epsy = {0.01, 0.03, 0.10};
 
-    for ( size_t k = 0 ; k < mat.shape(1) ; ++k ) I(1,k) = 1;
+    for ( size_t q = 0 ; q < nip ; ++q ) I(1,q) = 1;
 
     mat.setCusp(I,K,G,epsy);
   }
 
   // row 2: smooth
   {
-    xt::xtensor<size_t,2> I = xt::zeros<size_t>(mat.shape());
+    xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem,nip});
 
-    std::vector<double> epsy = {0.01, 0.03, 0.10};
+    xt::xtensor<double,1> epsy = {0.01, 0.03, 0.10};
 
-    for ( size_t k = 0 ; k < mat.shape(1) ; ++k ) I(2,k) = 1;
+    for ( size_t q = 0 ; q < nip ; ++q ) I(2,q) = 1;
 
     mat.setCusp(I,K,G,epsy);
   }
 
   // allocate tensors
-  GM::T2s Eps, Sig;
+  GM::T2s Eps;
 
   // simple shear + volumetric deformation
   // - parameters
@@ -167,9 +169,9 @@ SECTION( "Matrix" )
   xt::xtensor<double,4> sig;
   xt::xtensor<double,2> epsp;
   // - set strain
-  for ( size_t e = 0 ; e < 3 ; ++e ) {
-    for ( size_t k = 0 ; k < 2 ; ++k ) {
-      auto eps_i = xt::view(eps, e, k, xt::all(), xt::all());
+  for ( size_t e = 0 ; e < nelem ; ++e ) {
+    for ( size_t q = 0 ; q < nip ; ++q ) {
+      auto eps_i = xt::view(eps, e, q);
       eps_i = Eps;
     }
   }

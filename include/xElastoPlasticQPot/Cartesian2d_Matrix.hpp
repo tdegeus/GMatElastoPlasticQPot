@@ -16,58 +16,34 @@
 namespace xElastoPlasticQPot {
 namespace Cartesian2d {
 
-// ------------------------------------------ constructor ------------------------------------------
+// -------------------------------------------------------------------------------------------------
 
-inline Matrix::Matrix(const std::vector<size_t> &shape)
+inline Matrix::Matrix(size_t nelem, size_t nip) : m_nelem(nelem), m_nip(nip)
 {
-  // resize type and index look-up
-  m_type .resize(shape);
-  m_index.resize(shape);
-
-  // initialize everything to unassigned
-  m_type = Type::Unset * xt::ones<size_t>(shape);
+  m_type  = Type::Unset * xt::ones <size_t>({m_nelem, m_nip});
+  m_index =               xt::empty<size_t>({m_nelem, m_nip});
 }
 
-// --------------------------------------------- shape ---------------------------------------------
-
-inline std::vector<size_t> Matrix::shape() const
-{
-  return std::vector<size_t>(m_type.shape().begin(), m_type.shape().end());
-}
-
-// --------------------------------------------- shape ---------------------------------------------
-
-inline size_t Matrix::shape(size_t i) const
-{
-  return m_type.shape()[i];
-}
-
-// --------------------------------------------- type ----------------------------------------------
-
-inline xt::xtensor<size_t,2> Matrix::type() const
-{
-  return m_type;
-}
-
-// ------------------------------------------ parameters -------------------------------------------
+// -------------------------------------------------------------------------------------------------
 
 inline xt::xtensor<double,2> Matrix::K() const
 {
-  xt::xtensor<double,2> a_K = xt::empty<double>(m_type.shape());
+  xt::xtensor<double,2> a_K = xt::empty<double>({m_nelem, m_nip});
 
-  // start threads (all allocated variables inside this block are local to each thread)
   #pragma omp parallel
   {
-    // loop over all points
     #pragma omp for
-    for ( size_t i = 0 ; i < m_type.size() ; ++i )
+    for ( size_t e = 0 ; e < m_nelem ; ++e )
     {
-      switch ( m_type[i] )
+      for ( size_t q = 0 ; q < m_nip ; ++q )
       {
-        case Type::Elastic: a_K[i] = m_Elastic[m_index[i]].K(); break;
-        case Type::Cusp   : a_K[i] = m_Cusp   [m_index[i]].K(); break;
-        case Type::Smooth : a_K[i] = m_Smooth [m_index[i]].K(); break;
-        default: std::runtime_error("Unknown material");
+        switch ( m_type(e,q) )
+        {
+          case Type::Elastic: a_K(e,q) = m_Elastic[m_index(e,q)].K(); break;
+          case Type::Cusp   : a_K(e,q) = m_Cusp   [m_index(e,q)].K(); break;
+          case Type::Smooth : a_K(e,q) = m_Smooth [m_index(e,q)].K(); break;
+          default: std::runtime_error("Unknown material");
+        }
       }
     }
   }
@@ -75,25 +51,26 @@ inline xt::xtensor<double,2> Matrix::K() const
   return a_K;
 }
 
-// ------------------------------------------ parameters -------------------------------------------
+// -------------------------------------------------------------------------------------------------
 
 inline xt::xtensor<double,2> Matrix::G() const
 {
-  xt::xtensor<double,2> a_G = xt::empty<double>(m_type.shape());
+  xt::xtensor<double,2> a_G = xt::empty<double>({m_nelem, m_nip});
 
-  // start threads (all allocated variables inside this block are local to each thread)
   #pragma omp parallel
   {
-    // loop over all points
     #pragma omp for
-    for ( size_t i = 0 ; i < m_type.size() ; ++i )
+    for ( size_t e = 0 ; e < m_nelem ; ++e )
     {
-      switch ( m_type[i] )
+      for ( size_t q = 0 ; q < m_nip ; ++q )
       {
-        case Type::Elastic: a_G[i] = m_Elastic[m_index[i]].G(); break;
-        case Type::Cusp   : a_G[i] = m_Cusp   [m_index[i]].G(); break;
-        case Type::Smooth : a_G[i] = m_Smooth [m_index[i]].G(); break;
-        default: std::runtime_error("Unknown material");
+        switch ( m_type(e,q) )
+        {
+          case Type::Elastic: a_G(e,q) = m_Elastic[m_index(e,q)].G(); break;
+          case Type::Cusp   : a_G(e,q) = m_Cusp   [m_index(e,q)].G(); break;
+          case Type::Smooth : a_G(e,q) = m_Smooth [m_index(e,q)].G(); break;
+          default: std::runtime_error("Unknown material");
+        }
       }
     }
   }
@@ -101,251 +78,258 @@ inline xt::xtensor<double,2> Matrix::G() const
   return a_G;
 }
 
-// ---------------------------------------- type is plastic ----------------------------------------
+// -------------------------------------------------------------------------------------------------
 
 inline xt::xtensor<size_t,2> Matrix::isPlastic() const
 {
-  xt::xtensor<size_t,2> out = xt::zeros<size_t>(m_type.shape());
+  xt::xtensor<size_t,2> out = xt::zeros<size_t>({m_nelem, m_nip});
 
-  for ( size_t i = 0 ; i < m_type.size() ; ++i )
-    if ( m_type[i] != Type::Unset and m_type[i] != Type::Elastic )
-      out[i] = 1;
+  for ( size_t e = 0 ; e < m_nelem ; ++e )
+    for ( size_t q = 0 ; q < m_nip ; ++q )
+      if ( m_type(e,q) != Type::Unset and m_type(e,q) != Type::Elastic )
+        out(e,q) = 1;
 
   return out;
 }
 
-// --------------------------- check that a type has been set everywhere ---------------------------
+// -------------------------------------------------------------------------------------------------
 
 inline void Matrix::check() const
 {
-  for ( size_t e = 0 ; e < m_type.shape()[0] ; ++e )
-      for ( size_t k = 0 ; k < m_type.shape()[1] ; ++k )
-        if ( m_type(e,k) == Type::Unset )
-          throw std::runtime_error("No type set for: "+std::to_string(e)+", "+std::to_string(k));
+  for ( size_t e = 0 ; e < m_nelem ; ++e )
+    for ( size_t q = 0 ; q < m_nip ; ++q )
+      if ( m_type(e,q) == Type::Unset )
+        throw std::runtime_error("No type set for: "+std::to_string(e)+", "+std::to_string(q));
 }
 
-// ---------------------------------- set Elastic material points ----------------------------------
+// -------------------------------------------------------------------------------------------------
 
 inline void Matrix::setElastic(const xt::xtensor<size_t,2> &I, double K, double G)
 {
-  // check input
   #ifndef NDEBUG
-    // - shape
+
     assert( I.shape() == m_type.shape() );
-    // - empty material definitions
-    for ( size_t i = 0 ; i < m_type.size() ; ++i )
-      if ( I[i] )
-        assert( m_type[i] == Type::Unset );
+
+    for ( size_t e = 0 ; e < m_nelem ; ++e )
+      for ( size_t q = 0 ; q < m_nip ; ++q )
+        if ( I(e,q) )
+          assert( m_type(e,q) == Type::Unset );
+
   #endif
 
-  // set type and position in material vector
-  for ( size_t i = 0 ; i < m_type.size() ; ++i ) {
-    if ( I[i] ) {
-      m_type [i] = Type::Elastic;
-      m_index[i] = m_Elastic.size();
+  for ( size_t e = 0 ; e < m_nelem ; ++e )
+  {
+    for ( size_t q = 0 ; q < m_nip ; ++q )
+    {
+      if ( I(e,q) )
+      {
+        m_type (e,q) = Type::Elastic;
+        m_index(e,q) = m_Elastic.size();
+      }
     }
   }
-  // store material definition
+
   m_Elastic.push_back(Elastic(K, G));
 }
 
-// ----------------------------------- set Cusp material points ------------------------------------
+// -------------------------------------------------------------------------------------------------
 
 inline void Matrix::setCusp(const xt::xtensor<size_t,2> &I,
-  double K, double G, const std::vector<double> &epsy, bool init_elastic)
+  double K, double G, const xt::xtensor<double,1> &epsy, bool init_elastic)
 {
-  // check input
   #ifndef NDEBUG
-    // - shape
+
     assert( I.shape() == m_type.shape() );
-    // - empty material definitions
-    for ( size_t i = 0 ; i < m_type.size() ; ++i )
-      if ( I[i] )
-        assert( m_type[i] == Type::Unset );
+
+    for ( size_t e = 0 ; e < m_nelem ; ++e )
+      for ( size_t q = 0 ; q < m_nip ; ++q )
+        if ( I(e,q) )
+          assert( m_type(e,q) == Type::Unset );
+
   #endif
 
-  // set type and position in material vector
-  for ( size_t i = 0 ; i < m_type.size() ; ++i ) {
-    if ( I[i] ) {
-      m_type [i] = Type::Cusp;
-      m_index[i] = m_Cusp.size();
+  for ( size_t e = 0 ; e < m_nelem ; ++e )
+  {
+    for ( size_t q = 0 ; q < m_nip ; ++q )
+    {
+      if ( I(e,q) ) {
+        m_type (e,q) = Type::Cusp;
+        m_index(e,q) = m_Cusp.size();
+      }
     }
   }
-  // store material definition
+
   m_Cusp.push_back(Cusp(K, G, epsy, init_elastic));
 }
 
-// ---------------------------------- set Smooth material points -----------------------------------
+// -------------------------------------------------------------------------------------------------
 
 inline void Matrix::setSmooth(const xt::xtensor<size_t,2> &I,
-  double K, double G, const std::vector<double> &epsy, bool init_elastic)
+  double K, double G, const xt::xtensor<double,1> &epsy, bool init_elastic)
 {
-  // check input
   #ifndef NDEBUG
-    // - shape
+
     assert( I.shape() == m_type.shape() );
-    // - empty material definitions
-    for ( size_t i = 0 ; i < m_type.size() ; ++i )
-      if ( I[i] )
-        assert( m_type[i] == Type::Unset );
+
+    for ( size_t e = 0 ; e < m_nelem ; ++e )
+      for ( size_t q = 0 ; q < m_nip ; ++q )
+        if ( I(e,q) )
+          assert( m_type(e,q) == Type::Unset );
+
   #endif
 
-  // set type and position in material vector
-  for ( size_t i = 0 ; i < m_type.size() ; ++i ) {
-    if ( I[i] ) {
-      m_type [i] = Type::Smooth;
-      m_index[i] = m_Smooth.size();
+  for ( size_t e = 0 ; e < m_nelem ; ++e )
+  {
+    for ( size_t q = 0 ; q < m_nip ; ++q )
+    {
+      if ( I(e,q) ) {
+        m_type (e,q) = Type::Smooth;
+        m_index(e,q) = m_Smooth.size();
+      }
     }
   }
-  // store material definition
+
   m_Smooth.push_back(Smooth(K, G, epsy, init_elastic));
 }
 
-// ---------------------------------- set Elastic material points ----------------------------------
+// -------------------------------------------------------------------------------------------------
 
 inline void Matrix::setElastic(const xt::xtensor<size_t,2> &I, const xt::xtensor<size_t,2> &idx,
   const xt::xtensor<double,1> &K, const xt::xtensor<double,1> &G)
 {
-  // check input
   #ifndef NDEBUG
-    // - shape
+
     assert( I.shape() == m_type.shape() );
-    assert( I.shape() == idx   .shape() );
-    // - empty material definitions
-    for ( size_t i = 0 ; i < m_type.size() ; ++i )
-      if ( I[i] )
-        assert( m_type[i] == Type::Unset );
-    // - extent
+    assert( I.shape() == m_type.shape() );
+
+    for ( size_t e = 0 ; e < m_nelem ; ++e )
+      for ( size_t q = 0 ; q < m_nip ; ++q )
+        if ( I(e,q) )
+          assert( m_type(e,q) == Type::Unset );
+
     assert( xt::amax(idx)[0] == K.size()-1 );
-    // - consistency
+
     assert( K.size() == G.size() );
+
   #endif
 
-  // start index
-  size_t N = m_Elastic.size();
-
-  // store material definition
-  for ( size_t i = 0 ; i < K.size() ; ++i )
-    m_Elastic.push_back(Elastic(K(i), G(i)));
-
-  // set type and position in material vector
-  for ( size_t i = 0 ; i < m_type.size() ; ++i ) {
-    if ( I[i] ) {
-      m_type [i] = Type::Elastic;
-      m_index[i] = idx[i] + N;
+  for ( size_t e = 0 ; e < m_nelem ; ++e )
+  {
+    for ( size_t q = 0 ; q < m_nip ; ++q )
+    {
+      if ( I(e,q) ) {
+        m_type (e,q) = Type::Elastic;
+        m_index(e,q) = m_Elastic.size() + idx(e,q);
+      }
     }
   }
+
+  for ( size_t i = 0 ; i < K.size() ; ++i )
+    m_Elastic.push_back(Elastic(K(i), G(i)));
 }
 
-// ----------------------------------- set Cusp material points ------------------------------------
+// -------------------------------------------------------------------------------------------------
 
 inline void Matrix::setCusp(const xt::xtensor<size_t,2> &I, const xt::xtensor<size_t,2> &idx,
   const xt::xtensor<double,1> &K, const xt::xtensor<double,1> &G,
   const xt::xtensor<double,2> &epsy, bool init_elastic)
 {
-  // check input
   #ifndef NDEBUG
-    // - shape
+
     assert( I.shape() == m_type.shape() );
-    assert( I.shape() == idx   .shape() );
-    // - empty material definitions
-    for ( size_t i = 0 ; i < m_type.size() ; ++i )
-      if ( I[i] )
-        assert( m_type[i] == Type::Unset );
-    // - extent
+    assert( I.shape() == m_type.shape() );
+
+    for ( size_t e = 0 ; e < m_nelem ; ++e )
+      for ( size_t q = 0 ; q < m_nip ; ++q )
+        if ( I(e,q) )
+          assert( m_type(e,q) == Type::Unset );
+
     assert( xt::amax(idx)[0] == K.size()-1 );
-    // - consistency
+
     assert( K.size() == G.size()        );
     assert( K.size() == epsy.shape()[0] );
+
   #endif
 
-  // start index
-  size_t N = m_Cusp.size();
-
-  // store material definition
-  for ( size_t i = 0 ; i < K.size() ; ++i ) {
-    std::vector<double> y(epsy.begin()+i*epsy.shape()[1], epsy.begin()+(i+1)*epsy.shape()[1]);
-    m_Cusp.push_back(Cusp(K(i), G(i), y, init_elastic));
-  }
-
-  // set type and position in material vector
-  for ( size_t i = 0 ; i < m_type.size() ; ++i ) {
-    if ( I[i] ) {
-      m_type [i] = Type::Cusp;
-      m_index[i] = idx[i] + N;
+  for ( size_t e = 0 ; e < m_nelem ; ++e )
+  {
+    for ( size_t q = 0 ; q < m_nip ; ++q )
+    {
+      if ( I(e,q) ) {
+        m_type (e,q) = Type::Cusp;
+        m_index(e,q) = m_Cusp.size() + idx(e,q);
+      }
     }
   }
+
+  for ( size_t i = 0 ; i < K.size() ; ++i )
+    m_Cusp.push_back(Cusp(K(i), G(i), xt::view(epsy,i,xt::all()), init_elastic));
 }
 
-// ----------------------------------- set Smooth material points ------------------------------------
+// -------------------------------------------------------------------------------------------------
 
 inline void Matrix::setSmooth(const xt::xtensor<size_t,2> &I, const xt::xtensor<size_t,2> &idx,
   const xt::xtensor<double,1> &K, const xt::xtensor<double,1> &G,
   const xt::xtensor<double,2> &epsy, bool init_elastic)
 {
-  // check input
   #ifndef NDEBUG
-    // - shape
+
     assert( I.shape() == m_type.shape() );
-    assert( I.shape() == idx   .shape() );
-    // - empty material definitions
-    for ( size_t i = 0 ; i < m_type.size() ; ++i )
-      if ( I[i] )
-        assert( m_type[i] == Type::Unset );
-    // - extent
+    assert( I.shape() == m_type.shape() );
+
+    for ( size_t e = 0 ; e < m_nelem ; ++e )
+      for ( size_t q = 0 ; q < m_nip ; ++q )
+        if ( I(e,q) )
+          assert( m_type(e,q) == Type::Unset );
+
     assert( xt::amax(idx)[0] == K.size()-1 );
-    // - consistency
+
     assert( K.size() == G.size()        );
     assert( K.size() == epsy.shape()[0] );
+
   #endif
 
-  // start index
-  size_t N = m_Smooth.size();
-
-  // store material definition
-  for ( size_t i = 0 ; i < K.size() ; ++i ) {
-    std::vector<double> y(epsy.begin()+i*epsy.shape()[1], epsy.begin()+(i+1)*epsy.shape()[1]);
-    m_Smooth.push_back(Smooth(K(i), G(i), y, init_elastic));
-  }
-
-  // set type and position in material vector
-  for ( size_t i = 0 ; i < m_type.size() ; ++i ) {
-    if ( I[i] ) {
-      m_type [i] = Type::Smooth;
-      m_index[i] = idx[i] + N;
+  for ( size_t e = 0 ; e < m_nelem ; ++e )
+  {
+    for ( size_t q = 0 ; q < m_nip ; ++q )
+    {
+      if ( I(e,q) ) {
+        m_type (e,q) = Type::Smooth;
+        m_index(e,q) = m_Smooth.size() + idx(e,q);
+      }
     }
   }
+
+  for ( size_t i = 0 ; i < K.size() ; ++i )
+    m_Smooth.push_back(Smooth(K(i), G(i), xt::view(epsy,i,xt::all()), init_elastic));
 }
 
-// -------------------------------- compute stress for all entries ---------------------------------
+// -------------------------------------------------------------------------------------------------
 
 inline void Matrix::Sig(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4> &a_Sig) const
 {
-  // check input
-  assert( a_Eps.shape()[0] == m_type.shape()[0] );
-  assert( a_Eps.shape()[1] == m_type.shape()[1] );
-  assert( a_Eps.shape()[2] == 2                 );
-  assert( a_Eps.shape()[3] == 2                 );
-  assert( a_Eps.shape()    == a_Sig.shape()     );
+  assert( a_Eps.shape().size() == 4             );
+  assert( a_Eps.shape()[0]     == m_nelem       );
+  assert( a_Eps.shape()[1]     == m_nip         );
+  assert( a_Eps.shape()[2]     == m_ndim        );
+  assert( a_Eps.shape()[3]     == m_ndim        );
+  assert( a_Eps.shape()        == a_Sig.shape() );
 
-  // start threads (all allocated variables inside this block are local to each thread)
   #pragma omp parallel
   {
-    // loop over all points
     #pragma omp for
-    for ( size_t e = 0 ; e < m_type.shape()[0] ; ++e )
+    for ( size_t e = 0 ; e < m_nelem ; ++e )
     {
-      for ( size_t k = 0 ; k < m_type.shape()[1] ; ++k )
+      for ( size_t q = 0 ; q < m_nip ; ++q )
       {
-        // - alias
-        auto Eps = xt::view(a_Eps, e, k);
-        auto Sig = xt::view(a_Sig, e, k);
-        // - compute
-        switch ( m_type(e,k) )
+        auto Eps = xt::adapt(&a_Eps(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
+        auto Sig = xt::view(a_Sig,e,q);
+
+        switch ( m_type(e,q) )
         {
-          case Type::Elastic: Sig = m_Elastic[m_index(e,k)].Sig(Eps); break;
-          case Type::Cusp   : Sig = m_Cusp   [m_index(e,k)].Sig(Eps); break;
-          case Type::Smooth : Sig = m_Smooth [m_index(e,k)].Sig(Eps); break;
+          case Type::Elastic: Sig = m_Elastic[m_index(e,q)].Sig(Eps); break;
+          case Type::Cusp   : Sig = m_Cusp   [m_index(e,q)].Sig(Eps); break;
+          case Type::Smooth : Sig = m_Smooth [m_index(e,q)].Sig(Eps); break;
           default: std::runtime_error("Unknown material");
         }
       }
@@ -353,35 +337,31 @@ inline void Matrix::Sig(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4
   }
 }
 
-
-// -------------------------------- compute energy for all entries ---------------------------------
+// -------------------------------------------------------------------------------------------------
 
 inline void Matrix::energy(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_energy) const
 {
-  // check input
-  assert( a_Eps.shape()[0] == m_type.shape()[0] );
-  assert( a_Eps.shape()[1] == m_type.shape()[1] );
-  assert( a_Eps.shape()[2] == 2                 );
-  assert( a_Eps.shape()[3] == 2                 );
-  assert( a_energy.shape() == m_type.shape()    );
+  assert( a_Eps.shape().size() == 4              );
+  assert( a_Eps.shape()[0]     == m_nelem        );
+  assert( a_Eps.shape()[1]     == m_nip          );
+  assert( a_Eps.shape()[2]     == m_ndim         );
+  assert( a_Eps.shape()[3]     == m_ndim         );
+  assert( a_energy.shape()     == m_type.shape() );
 
-  // start threads (all allocated variables inside this block are local to each thread)
   #pragma omp parallel
   {
-    // loop over all points
     #pragma omp for
-    for ( size_t e = 0 ; e < m_type.shape()[0] ; ++e )
+    for ( size_t e = 0 ; e < m_nelem ; ++e )
     {
-      for ( size_t k = 0 ; k < m_type.shape()[1] ; ++k )
+      for ( size_t q = 0 ; q < m_nip ; ++q )
       {
-        // - alias
-        auto Eps = xt::view(a_Eps, e, k, xt::all(), xt::all());
-        // - compute
-        switch ( m_type(e,k) )
+        auto Eps = xt::adapt(&a_Eps(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
+
+        switch ( m_type(e,q) )
         {
-          case Type::Elastic: a_energy(e,k) = m_Elastic[m_index(e,k)].energy(Eps); break;
-          case Type::Cusp   : a_energy(e,k) = m_Cusp   [m_index(e,k)].energy(Eps); break;
-          case Type::Smooth : a_energy(e,k) = m_Smooth [m_index(e,k)].energy(Eps); break;
+          case Type::Elastic: a_energy(e,q) = m_Elastic[m_index(e,q)].energy(Eps); break;
+          case Type::Cusp   : a_energy(e,q) = m_Cusp   [m_index(e,q)].energy(Eps); break;
+          case Type::Smooth : a_energy(e,q) = m_Smooth [m_index(e,q)].energy(Eps); break;
           default: std::runtime_error("Unknown material");
         }
       }
@@ -389,34 +369,31 @@ inline void Matrix::energy(const xt::xtensor<double,4> &a_Eps, xt::xtensor<doubl
   }
 }
 
-// ------------------------- find the current yield strain for all entries -------------------------
+// -------------------------------------------------------------------------------------------------
 
 inline void Matrix::find(const xt::xtensor<double,4> &a_Eps, xt::xtensor<size_t,2> &a_idx) const
 {
-  // check input
-  assert( a_Eps.shape()[0] == m_type.shape()[0] );
-  assert( a_Eps.shape()[1] == m_type.shape()[1] );
-  assert( a_Eps.shape()[2] == 2                 );
-  assert( a_Eps.shape()[3] == 2                 );
-  assert( a_idx.shape()    == m_type.shape()    );
+  assert( a_Eps.shape().size() == 4              );
+  assert( a_Eps.shape()[0]     == m_nelem        );
+  assert( a_Eps.shape()[1]     == m_nip          );
+  assert( a_Eps.shape()[2]     == m_ndim         );
+  assert( a_Eps.shape()[3]     == m_ndim         );
+  assert( a_idx.shape()        == m_type.shape() );
 
-  // start threads (all allocated variables inside this block are local to each thread)
   #pragma omp parallel
   {
-    // loop over all points
     #pragma omp for
-    for ( size_t e = 0 ; e < m_type.shape()[0] ; ++e )
+    for ( size_t e = 0 ; e < m_nelem ; ++e )
     {
-      for ( size_t k = 0 ; k < m_type.shape()[1] ; ++k )
+      for ( size_t q = 0 ; q < m_nip ; ++q )
       {
-        // - alias
-        auto Eps = xt::view(a_Eps, e, k, xt::all(), xt::all());
-        // - compute
-        switch ( m_type(e,k) )
+        auto Eps = xt::adapt(&a_Eps(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
+
+        switch ( m_type(e,q) )
         {
-          case Type::Elastic: a_idx(e,k) = m_Elastic[m_index(e,k)].find(Eps); break;
-          case Type::Cusp   : a_idx(e,k) = m_Cusp   [m_index(e,k)].find(Eps); break;
-          case Type::Smooth : a_idx(e,k) = m_Smooth [m_index(e,k)].find(Eps); break;
+          case Type::Elastic: a_idx(e,q) = m_Elastic[m_index(e,q)].find(Eps); break;
+          case Type::Cusp   : a_idx(e,q) = m_Cusp   [m_index(e,q)].find(Eps); break;
+          case Type::Smooth : a_idx(e,q) = m_Smooth [m_index(e,q)].find(Eps); break;
           default: std::runtime_error("Unknown material");
         }
       }
@@ -424,28 +401,25 @@ inline void Matrix::find(const xt::xtensor<double,4> &a_Eps, xt::xtensor<size_t,
   }
 }
 
-// ----------------------------- get the yield strain for all entries ------------------------------
+// -------------------------------------------------------------------------------------------------
 
 inline void Matrix::epsy(const xt::xtensor<size_t,2> &a_idx, xt::xtensor<double,2> &a_epsy) const
 {
-  // check input
   assert( a_idx.shape()  == m_type.shape() );
   assert( a_epsy.shape() == m_type.shape() );
 
-  // start threads (all allocated variables inside this block are local to each thread)
   #pragma omp parallel
   {
-    // loop over all points
     #pragma omp for
-    for ( size_t e = 0 ; e < m_type.shape()[0] ; ++e )
+    for ( size_t e = 0 ; e < m_nelem ; ++e )
     {
-      for ( size_t k = 0 ; k < m_type.shape()[1] ; ++k )
+      for ( size_t q = 0 ; q < m_nip ; ++q )
       {
-        switch ( m_type(e,k) )
+        switch ( m_type(e,q) )
         {
-          case Type::Elastic: a_epsy(e,k) = m_Elastic[m_index(e,k)].epsy(a_idx(e,k)); break;
-          case Type::Cusp   : a_epsy(e,k) = m_Cusp   [m_index(e,k)].epsy(a_idx(e,k)); break;
-          case Type::Smooth : a_epsy(e,k) = m_Smooth [m_index(e,k)].epsy(a_idx(e,k)); break;
+          case Type::Elastic: a_epsy(e,q) = m_Elastic[m_index(e,q)].epsy(a_idx(e,q)); break;
+          case Type::Cusp   : a_epsy(e,q) = m_Cusp   [m_index(e,q)].epsy(a_idx(e,q)); break;
+          case Type::Smooth : a_epsy(e,q) = m_Smooth [m_index(e,q)].epsy(a_idx(e,q)); break;
           default: std::runtime_error("Unknown material");
         }
       }
@@ -453,34 +427,31 @@ inline void Matrix::epsy(const xt::xtensor<size_t,2> &a_idx, xt::xtensor<double,
   }
 }
 
-// ----------------------- get the equivalent plastic strain for all entries -----------------------
+// -------------------------------------------------------------------------------------------------
 
 inline void Matrix::epsp(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_epsp) const
 {
-  // check input
-  assert( a_Eps.shape()[0] == m_type.shape()[0] );
-  assert( a_Eps.shape()[1] == m_type.shape()[1] );
-  assert( a_Eps.shape()[2] == 2                 );
-  assert( a_Eps.shape()[3] == 2                 );
-  assert( a_epsp.shape()   == m_type.shape()    );
+  assert( a_Eps.shape().size() == 4              );
+  assert( a_Eps.shape()[0]     == m_nelem        );
+  assert( a_Eps.shape()[1]     == m_nip          );
+  assert( a_Eps.shape()[2]     == m_ndim         );
+  assert( a_Eps.shape()[3]     == m_ndim         );
+  assert( a_epsp.shape()       == m_type.shape() );
 
-  // start threads (all allocated variables inside this block are local to each thread)
   #pragma omp parallel
   {
-    // loop over all points
     #pragma omp for
-    for ( size_t e = 0 ; e < m_type.shape()[0] ; ++e )
+    for ( size_t e = 0 ; e < m_nelem ; ++e )
     {
-      for ( size_t k = 0 ; k < m_type.shape()[1] ; ++k )
+      for ( size_t q = 0 ; q < m_nip ; ++q )
       {
-        // - alias
-        auto Eps = xt::view(a_Eps, e, k, xt::all(), xt::all());
-        // - compute
-        switch ( m_type(e,k) )
+        auto Eps = xt::adapt(&a_Eps(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
+
+        switch ( m_type(e,q) )
         {
-          case Type::Elastic: a_epsp(e,k) = m_Elastic[m_index(e,k)].epsp(Eps); break;
-          case Type::Cusp   : a_epsp(e,k) = m_Cusp   [m_index(e,k)].epsp(Eps); break;
-          case Type::Smooth : a_epsp(e,k) = m_Smooth [m_index(e,k)].epsp(Eps); break;
+          case Type::Elastic: a_epsp(e,q) = m_Elastic[m_index(e,q)].epsp(Eps); break;
+          case Type::Cusp   : a_epsp(e,q) = m_Cusp   [m_index(e,q)].epsp(Eps); break;
+          case Type::Smooth : a_epsp(e,q) = m_Smooth [m_index(e,q)].epsp(Eps); break;
           default: std::runtime_error("Unknown material");
         }
       }
@@ -488,7 +459,7 @@ inline void Matrix::epsp(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,
   }
 }
 
-// -------------------------------- compute stress for all entries ---------------------------------
+// -------------------------------------------------------------------------------------------------
 
 inline xt::xtensor<double,4> Matrix::Sig(const xt::xtensor<double,4> &a_Eps) const
 {
@@ -499,45 +470,44 @@ inline xt::xtensor<double,4> Matrix::Sig(const xt::xtensor<double,4> &a_Eps) con
   return a_Sig;
 }
 
-
-// -------------------------------- compute energy for all entries ---------------------------------
+// -------------------------------------------------------------------------------------------------
 
 inline xt::xtensor<double,2> Matrix::energy(const xt::xtensor<double,4> &a_Eps) const
 {
-  xt::xtensor<double,2> a_energy = xt::empty<double>(m_type.shape());
+  xt::xtensor<double,2> a_energy = xt::empty<double>({m_nelem, m_nip});
 
   this->energy(a_Eps, a_energy);
 
   return a_energy;
 }
 
-// ------------------------- find the current yield strain for all entries -------------------------
+// -------------------------------------------------------------------------------------------------
 
 inline xt::xtensor<size_t,2> Matrix::find(const xt::xtensor<double,4> &a_Eps) const
 {
-  xt::xtensor<size_t,2> a_idx = xt::empty<size_t>(m_type.shape());
+  xt::xtensor<size_t,2> a_idx = xt::empty<size_t>({m_nelem, m_nip});
 
   this->find(a_Eps, a_idx);
 
   return a_idx;
 }
 
-// ----------------------------- get the yield strain for all entries ------------------------------
+// -------------------------------------------------------------------------------------------------
 
 inline xt::xtensor<double,2> Matrix::epsy(const xt::xtensor<size_t,2> &a_idx) const
 {
-  xt::xtensor<double,2> a_epsy = xt::empty<double>(m_type.shape());
+  xt::xtensor<double,2> a_epsy = xt::empty<double>({m_nelem, m_nip});
 
   this->epsy(a_idx, a_epsy);
 
   return a_epsy;
 }
 
-// ----------------------- get the equivalent plastic strain for all entries -----------------------
+// -------------------------------------------------------------------------------------------------
 
 inline xt::xtensor<double,2> Matrix::epsp(const xt::xtensor<double,4> &a_Eps) const
 {
-  xt::xtensor<double,2> a_epsp = xt::empty<double>(m_type.shape());
+  xt::xtensor<double,2> a_epsp = xt::empty<double>({m_nelem, m_nip});
 
   this->epsp(a_Eps, a_epsp);
 

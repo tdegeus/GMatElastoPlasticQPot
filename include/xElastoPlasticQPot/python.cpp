@@ -29,7 +29,7 @@ m.doc() = "Elasto-plastic material models";
 py::module sm = m.def_submodule("Cartesian2d", "2d Cartesian coordinates");
 
 // abbreviate name-space
-namespace SM = ElastoPlasticQPot::Cartesian2d;
+namespace SM = xElastoPlasticQPot::Cartesian2d;
 
 // abbreviate types(s)
 typedef SM::T2s T2s;
@@ -79,7 +79,7 @@ py::class_<SM::Elastic>(sm, "Elastic")
 py::class_<SM::Cusp>(sm, "Cusp")
   // constructor
   .def(
-    py::init<double,double,const std::vector<double>&, bool>(),
+    py::init<double,double,const xt::xtensor<double,1>&, bool>(),
     "Cusp material",
     py::arg("K"),
     py::arg("G"),
@@ -103,7 +103,7 @@ py::class_<SM::Cusp>(sm, "Cusp")
 py::class_<SM::Smooth>(sm, "Smooth")
   // constructor
   .def(
-    py::init<double,double,const std::vector<double>&, bool>(),
+    py::init<double,double,const xt::xtensor<double,1>&, bool>(),
     "Smooth material",
     py::arg("K"),
     py::arg("G"),
@@ -140,20 +140,21 @@ py::enum_<SM::Type::Value>(smm, "Type")
 py::class_<SM::Matrix>(sm, "Matrix")
   // constructor
   .def(
-    py::init<const std::vector<size_t>&>(),
+    py::init<size_t, size_t>(),
     "Matrix of materials",
-    py::arg("shape")
+    py::arg("nelem"),
+    py::arg("nip")
   )
   // methods
+  .def("type"      , &SM::Matrix::type )
+  .def("nelem"     , &SM::Matrix::nelem)
+  .def("nip"       , &SM::Matrix::nip  )
   .def("setElastic", py::overload_cast<const xt::xtensor<size_t,2> &,                                double,                        double                                                            >(&SM::Matrix::setElastic),py::arg("I"),               py::arg("K"),py::arg("G"))
-  .def("setCusp"   , py::overload_cast<const xt::xtensor<size_t,2> &,                                double,                        double,                        const std::vector<double>   &, bool>(&SM::Matrix::setCusp   ),py::arg("I"),               py::arg("K"),py::arg("G"),py::arg("epsy"),py::arg("init_elastic")=true)
-  .def("setSmooth" , py::overload_cast<const xt::xtensor<size_t,2> &,                                double,                        double,                        const std::vector<double>   &, bool>(&SM::Matrix::setSmooth ),py::arg("I"),               py::arg("K"),py::arg("G"),py::arg("epsy"),py::arg("init_elastic")=true)
+  .def("setCusp"   , py::overload_cast<const xt::xtensor<size_t,2> &,                                double,                        double,                        const xt::xtensor<double,1> &, bool>(&SM::Matrix::setCusp   ),py::arg("I"),               py::arg("K"),py::arg("G"),py::arg("epsy"),py::arg("init_elastic")=true)
+  .def("setSmooth" , py::overload_cast<const xt::xtensor<size_t,2> &,                                double,                        double,                        const xt::xtensor<double,1> &, bool>(&SM::Matrix::setSmooth ),py::arg("I"),               py::arg("K"),py::arg("G"),py::arg("epsy"),py::arg("init_elastic")=true)
   .def("setElastic", py::overload_cast<const xt::xtensor<size_t,2> &, const xt::xtensor<size_t,2> &, const xt::xtensor<double,1> &, const xt::xtensor<double,1> &                                     >(&SM::Matrix::setElastic),py::arg("I"),py::arg("idx"),py::arg("K"),py::arg("G"))
   .def("setCusp"   , py::overload_cast<const xt::xtensor<size_t,2> &, const xt::xtensor<size_t,2> &, const xt::xtensor<double,1> &, const xt::xtensor<double,1> &, const xt::xtensor<double,2> &, bool>(&SM::Matrix::setCusp   ),py::arg("I"),py::arg("idx"),py::arg("K"),py::arg("G"),py::arg("epsy"),py::arg("init_elastic")=true)
   .def("setSmooth" , py::overload_cast<const xt::xtensor<size_t,2> &, const xt::xtensor<size_t,2> &, const xt::xtensor<double,1> &, const xt::xtensor<double,1> &, const xt::xtensor<double,2> &, bool>(&SM::Matrix::setSmooth ),py::arg("I"),py::arg("idx"),py::arg("K"),py::arg("G"),py::arg("epsy"),py::arg("init_elastic")=true)
-  .def("shape"     , py::overload_cast<size_t>(&SM::Matrix::shape, py::const_))
-  .def("shape"     , py::overload_cast<>      (&SM::Matrix::shape, py::const_))
-  .def("type"      ,                           &SM::Matrix::type)
   .def("Sig"       , py::overload_cast<const xt::xtensor<double,4> &>(&SM::Matrix::Sig   , py::const_), py::arg("a_Eps"))
   .def("energy"    , py::overload_cast<const xt::xtensor<double,4> &>(&SM::Matrix::energy, py::const_), py::arg("a_Eps"))
   .def("find"      , py::overload_cast<const xt::xtensor<double,4> &>(&SM::Matrix::find  , py::const_), py::arg("a_Eps"))
