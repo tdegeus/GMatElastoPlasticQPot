@@ -155,11 +155,10 @@ inline void Epsd(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4> &a_Ep
     {
       for ( size_t q = 0 ; q < a_Eps.shape()[1] ; ++q )
       {
-        auto Eps = xt::adapt(&a_Eps(e,q,0,0), xt::xshape<2,2>());
+        auto Eps  = xt::adapt(&a_Eps (e,q,0,0), xt::xshape<2,2>());
+        auto Epsd = xt::adapt(&a_Epsd(e,q,0,0), xt::xshape<2,2>());
 
-        auto Epsd = xt::view(a_Epsd, e, q, xt::all(), xt::all());
-
-        Epsd = Eps - trace(Eps)/2. * I;
+        xt::noalias(Epsd) = Eps - trace(Eps)/2. * I;
       }
     }
   }
@@ -234,11 +233,10 @@ inline void Sigd(const xt::xtensor<double,4> &a_Sig, xt::xtensor<double,4> &a_Si
     {
       for ( size_t q = 0 ; q < a_Sig.shape()[1] ; ++q )
       {
-        auto Sig = xt::adapt(&a_Sig(e,q,0,0), xt::xshape<2,2>());
+        auto Sig  = xt::adapt(&a_Sig (e,q,0,0), xt::xshape<2,2>());
+        auto Sigd = xt::adapt(&a_Sigd(e,q,0,0), xt::xshape<2,2>());
 
-        auto Sigd = xt::view(a_Sigd, e, q, xt::all(), xt::all());
-
-        Sigd = Sig - trace(Sig)/2. * I;
+        xt::noalias(Sigd) = Sig - trace(Sig)/2. * I;
       }
     }
   }

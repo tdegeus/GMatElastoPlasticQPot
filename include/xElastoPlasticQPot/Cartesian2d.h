@@ -16,16 +16,19 @@
 namespace xElastoPlasticQPot {
 namespace Cartesian2d {
 
-// ---------------------------------------- tensor algebra -----------------------------------------
+// -------------------------------------------------------------------------------------------------
 
 using T2s = xt::xtensor_fixed<double, xt::xshape<2,2>>;
 
-template<class T> inline double trace(const T &A);
-template<class T> inline double ddot (const T &A, const T &B);
+template <class T>
+inline double trace(const T &A);
+
+template <class T>
+inline double ddot (const T &A, const T &B);
 
 inline T2s eye();
 
-// -------------------------- equivalent stress/strain (Cartesian2d.hpp) ---------------------------
+// -------------------------------------------------------------------------------------------------
 
 // hydrostatic stress/strain
 inline double sigm(const T2s &Sig);
@@ -39,7 +42,7 @@ inline double epsd(const T2s &Eps);
 inline T2s Sigd(const T2s &Sig);
 inline T2s Epsd(const T2s &Eps);
 
-// ----------------------- equivalent stress/strain (Cartesian2d_Matrix.hpp) -----------------------
+// -------------------------------------------------------------------------------------------------
 
 // no allocation
 inline void sigm(const xt::xtensor<double,4> &a_Sig, xt::xtensor<double,2> &a_sigm);
@@ -63,7 +66,7 @@ inline double epsm_max(const xt::xtensor<double,4> &a_Eps);
 inline double sigd_max(const xt::xtensor<double,4> &a_Sig);
 inline double epsd_max(const xt::xtensor<double,4> &a_Eps);
 
-// ---------------------- material point - elastic (Cartesian2d_Elastic.hpp) -----------------------
+// -------------------------------------------------------------------------------------------------
 
 class Elastic
 {
@@ -103,7 +106,7 @@ private:
   double m_G; // shear modulus
 };
 
-// -------------------- material point - cusp potential (Cartesian2d_Cusp.hpp) ---------------------
+// -------------------------------------------------------------------------------------------------
 
 class Cusp
 {
@@ -144,7 +147,7 @@ private:
   xt::xtensor<double,1> m_epsy; // yield strains
 };
 
-// ------------------ material point - smooth potential (Cartesian2d_Smooth.hpp) -------------------
+// -------------------------------------------------------------------------------------------------
 
 class Smooth
 {
@@ -185,7 +188,7 @@ private:
   xt::xtensor<double,1> m_epsy; // yield strains
 };
 
-// ----------------------- enumerator to switch between material definitions -----------------------
+// -------------------------------------------------------------------------------------------------
 
 struct Type {
   enum Value {
@@ -198,7 +201,7 @@ struct Type {
   };
 };
 
-// ------------- matrix of material points of different types (Cartesian2d_Matrix.hpp) -------------
+// -------------------------------------------------------------------------------------------------
 
 class Matrix
 {

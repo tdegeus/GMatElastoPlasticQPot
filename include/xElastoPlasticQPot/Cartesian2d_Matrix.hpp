@@ -323,13 +323,13 @@ inline void Matrix::Sig(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4
       for ( size_t q = 0 ; q < m_nip ; ++q )
       {
         auto Eps = xt::adapt(&a_Eps(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
-        auto Sig = xt::view(a_Sig,e,q);
+        auto Sig = xt::adapt(&a_Sig(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
 
         switch ( m_type(e,q) )
         {
-          case Type::Elastic: Sig = m_Elastic[m_index(e,q)].Sig(Eps); break;
-          case Type::Cusp   : Sig = m_Cusp   [m_index(e,q)].Sig(Eps); break;
-          case Type::Smooth : Sig = m_Smooth [m_index(e,q)].Sig(Eps); break;
+          case Type::Elastic: xt::noalias(Sig) = m_Elastic[m_index(e,q)].Sig(Eps); break;
+          case Type::Cusp   : xt::noalias(Sig) = m_Cusp   [m_index(e,q)].Sig(Eps); break;
+          case Type::Smooth : xt::noalias(Sig) = m_Smooth [m_index(e,q)].Sig(Eps); break;
           default: std::runtime_error("Unknown material");
         }
       }
