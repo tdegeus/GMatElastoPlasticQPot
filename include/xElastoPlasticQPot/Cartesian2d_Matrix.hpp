@@ -4,8 +4,8 @@
 
 ================================================================================================= */
 
-#ifndef XELASTOPLASTICQPOT_CARTESIAN2D_MATRIX_CPP
-#define XELASTOPLASTICQPOT_CARTESIAN2D_MATRIX_CPP
+#ifndef XELASTOPLASTICQPOT_CARTESIAN2D_MATRIX_HPP
+#define XELASTOPLASTICQPOT_CARTESIAN2D_MATRIX_HPP
 
 // -------------------------------------------------------------------------------------------------
 

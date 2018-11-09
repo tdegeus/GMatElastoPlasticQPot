@@ -4,8 +4,8 @@
 
 ================================================================================================= */
 
-#ifndef XELASTOPLASTICQPOT_CARTESIAN2D_ELASTIC_CPP
-#define XELASTOPLASTICQPOT_CARTESIAN2D_ELASTIC_CPP
+#ifndef XELASTOPLASTICQPOT_CARTESIAN2D_ELASTIC_HPP
+#define XELASTOPLASTICQPOT_CARTESIAN2D_ELASTIC_HPP
 
 // -------------------------------------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ inline Elastic::Elastic(double K, double G) : m_K(K), m_G(G)
 
 inline double Elastic::epsd(const T2s &Eps) const
 {
-  auto Epsd = Eps - trace(Eps)/2. * eye();
+  auto Epsd = Eps - 0.5 * trace(Eps) * eye();
 
   return std::sqrt(.5*ddot(Epsd,Epsd));
 }
@@ -72,7 +72,7 @@ inline T2s Elastic::Sig(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
   T2s  I    = eye();
-  auto epsm = trace(Eps)/2.;
+  auto epsm = 0.5 * trace(Eps);
   auto Epsd = Eps - epsm * I;
 
   // return stress tensor
@@ -85,7 +85,7 @@ inline double Elastic::energy(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
   T2s  I    = eye();
-  auto epsm = trace(Eps)/2.;
+  auto epsm = 0.5 * trace(Eps);
   auto Epsd = Eps - epsm * I;
   auto epsd = std::sqrt(.5*ddot(Epsd,Epsd));
 

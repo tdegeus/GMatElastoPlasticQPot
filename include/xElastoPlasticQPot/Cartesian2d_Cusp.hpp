@@ -4,8 +4,8 @@
 
 ================================================================================================= */
 
-#ifndef XELASTOPLASTICQPOT_CARTESIAN2D_CUSP_CPP
-#define XELASTOPLASTICQPOT_CARTESIAN2D_CUSP_CPP
+#ifndef XELASTOPLASTICQPOT_CARTESIAN2D_CUSP_HPP
+#define XELASTOPLASTICQPOT_CARTESIAN2D_CUSP_HPP
 
 // -------------------------------------------------------------------------------------------------
 
@@ -38,7 +38,7 @@ inline Cusp::Cusp(double K, double G, const xt::xtensor<double,1> &epsy, bool in
 
 inline double Cusp::epsd(const T2s &Eps) const
 {
-  auto Epsd = Eps - trace(Eps)/2. * eye();
+  auto Epsd = Eps - 0.5 * trace(Eps) * eye();
 
   return std::sqrt(.5*ddot(Epsd,Epsd));
 }
@@ -89,7 +89,7 @@ inline T2s Cusp::Sig(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
   T2s    I    = eye();
-  double epsm = trace(Eps)/2.;
+  double epsm = 0.5 * trace(Eps);
   auto   Epsd = Eps - epsm * I;
   double epsd = std::sqrt(.5*ddot(Epsd,Epsd));
 
@@ -110,7 +110,7 @@ inline double Cusp::energy(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
   T2s    I    = eye();
-  double epsm = trace(Eps)/2.;
+  double epsm = 0.5 * trace(Eps);
   auto   Epsd = Eps - epsm * I;
   double epsd = std::sqrt(.5*ddot(Epsd,Epsd));
 

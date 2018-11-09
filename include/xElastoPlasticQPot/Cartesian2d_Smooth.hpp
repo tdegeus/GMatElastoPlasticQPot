@@ -4,8 +4,8 @@
 
 ================================================================================================= */
 
-#ifndef XELASTOPLASTICQPOT_CARTESIAN2D_SMOOTH_CPP
-#define XELASTOPLASTICQPOT_CARTESIAN2D_SMOOTH_CPP
+#ifndef XELASTOPLASTICQPOT_CARTESIAN2D_SMOOTH_HPP
+#define XELASTOPLASTICQPOT_CARTESIAN2D_SMOOTH_HPP
 
 // -------------------------------------------------------------------------------------------------
 
@@ -38,7 +38,7 @@ inline Smooth::Smooth(double K, double G, const xt::xtensor<double,1> &epsy, boo
 
 inline double Smooth::epsd(const T2s &Eps) const
 {
-  auto Epsd = Eps - trace(Eps)/2. * eye();
+  auto Epsd = Eps - 0.5 * trace(Eps) * eye();
 
   return std::sqrt(.5*ddot(Epsd,Epsd));
 }
@@ -89,7 +89,7 @@ inline T2s Smooth::Sig(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
   T2s    I    = eye();
-  double epsm = trace(Eps)/2.;
+  double epsm = 0.5 * trace(Eps);
   auto   Epsd = Eps - epsm * I;
   double epsd = std::sqrt(.5*ddot(Epsd,Epsd));
 
@@ -111,7 +111,7 @@ inline double Smooth::energy(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
   T2s    I    = eye();
-  double epsm = trace(Eps)/2.;
+  double epsm = 0.5 * trace(Eps);
   auto   Epsd = Eps - epsm * I;
   double epsd = std::sqrt(.5*ddot(Epsd,Epsd));
 
