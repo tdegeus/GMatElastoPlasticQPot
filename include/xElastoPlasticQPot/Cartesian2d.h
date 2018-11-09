@@ -11,7 +11,7 @@
 
 #include "ElastoPlasticQPot.h"
 
-// ================================ ElastoPlasticQPot::Cartesian2d =================================
+// =================================================================================================
 
 namespace xElastoPlasticQPot {
 namespace Cartesian2d {
@@ -20,11 +20,8 @@ namespace Cartesian2d {
 
 using T2s = xt::xtensor_fixed<double, xt::xshape<2,2>>;
 
-template <class T>
-inline double trace(const T &A);
-
-template <class T>
-inline double ddot (const T &A, const T &B);
+template<class T> inline double trace(const T &A);
+template<class T> inline double ddot (const T &A, const T &B);
 
 inline T2s eye();
 
@@ -80,8 +77,8 @@ public:
   T2s Sig(const T2s &Eps) const;
 
   // parameters
-  double K() const;
-  double G() const;
+  double K() const { return m_K; };
+  double G() const { return m_G; };
 
   // energy
   double energy(const T2s &Eps) const;
@@ -120,8 +117,8 @@ public:
   T2s Sig(const T2s &Eps) const;
 
   // parameters
-  double K() const;
-  double G() const;
+  double K() const { return m_K; };
+  double G() const { return m_G; };
 
   // energy
   double energy(const T2s &Eps) const;
@@ -161,8 +158,8 @@ public:
   T2s Sig(const T2s &Eps) const;
 
   // parameters
-  double K() const;
-  double G() const;
+  double K() const { return m_K; };
+  double G() const { return m_G; };
 
   // energy
   double energy(const T2s &Eps) const;
@@ -286,7 +283,7 @@ private:
 
 // -------------------------------------------------------------------------------------------------
 
-}}
+}} // namespace ...
 
 // -------------------------------------------------------------------------------------------------
 

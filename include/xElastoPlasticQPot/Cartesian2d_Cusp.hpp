@@ -18,13 +18,10 @@ namespace Cartesian2d {
 
 // -------------------------------------------------------------------------------------------------
 
-inline Cusp::Cusp(double K, double G, const xt::xtensor<double,1> &epsy, bool init_elastic)
+inline Cusp::Cusp(double K, double G, const xt::xtensor<double,1> &epsy, bool init_elastic) :
+  m_K(K), m_G(G)
 {
-  // copy input - elastic moduli
-  m_K = K;
-  m_G = G;
-
-  // copy input - sorted yield strains
+  // copy sorted yield strains
   m_epsy = xt::sort(epsy);
 
   // extra yield strain, to force an initial elastic response
@@ -35,20 +32,6 @@ inline Cusp::Cusp(double K, double G, const xt::xtensor<double,1> &epsy, bool in
   // check the number of yield strains
   if ( m_epsy.size() < 2 )
     throw std::runtime_error("Specify at least two yield strains 'epsy'");
-}
-
-// -------------------------------------------------------------------------------------------------
-
-inline double Cusp::K() const
-{
-  return m_K;
-}
-
-// -------------------------------------------------------------------------------------------------
-
-inline double Cusp::G() const
-{
-  return m_G;
 }
 
 // -------------------------------------------------------------------------------------------------

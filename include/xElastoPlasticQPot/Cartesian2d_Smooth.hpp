@@ -18,50 +18,20 @@ namespace Cartesian2d {
 
 // -------------------------------------------------------------------------------------------------
 
-inline Smooth::Smooth(double K, double G, const xt::xtensor<double,1> &epsy, bool init_elastic)
+inline Smooth::Smooth(double K, double G, const xt::xtensor<double,1> &epsy, bool init_elastic) :
+  m_K(K), m_G(G)
 {
-  // copy input - elastic moduli
-  m_K = K;
-  m_G = G;
+  // copy sorted yield strains
+  m_epsy = xt::sort(epsy);
 
-  // copy input - sorted yield strains
-  xt::xtensor<double,1> epsy_sorted = xt::sort(epsy);
-
-  // check to add item to have an initial elastic response
+  // extra yield strain, to force an initial elastic response
   if ( init_elastic )
-    if ( epsy_sorted(0) == -epsy_sorted(1) )
-      init_elastic = false;
-
-  // copy input
-  // - counters
-  size_t N = epsy_sorted.size();
-  size_t i = 0;
-  // - add yield strain to have an initial elastic response
-  if ( init_elastic ) ++N;
-  // - allocate
-  m_epsy = xt::empty<double>({N});
-  // - add yield strain to have an initial elastic response
-  if ( init_elastic ) { m_epsy(i) = -epsy_sorted(0); ++i; }
-  // - copy the rest
-  for ( auto &j : epsy_sorted ) { m_epsy(i) = j; ++i; }
+    if ( m_epsy(0) != -m_epsy(1) )
+      m_epsy = xt::concatenate(xt::xtuple(xt::xtensor<double,1>({-m_epsy(0)}), m_epsy));
 
   // check the number of yield strains
   if ( m_epsy.size() < 2 )
     throw std::runtime_error("Specify at least two yield strains 'epsy'");
-}
-
-// -------------------------------------------------------------------------------------------------
-
-inline double Smooth::K() const
-{
-  return m_K;
-}
-
-// -------------------------------------------------------------------------------------------------
-
-inline double Smooth::G() const
-{
-  return m_G;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -107,35 +77,10 @@ inline size_t Smooth::find(const T2s &Eps) const
 
 inline size_t Smooth::find(double epsd) const
 {
-  // get size
-  size_t n = m_epsy.size()-1;
-
-  // check extremes
-  if ( epsd < m_epsy(0) or epsd >= m_epsy(n) )
+  if ( epsd <= m_epsy(0) or epsd >= m_epsy(m_epsy.size()-1) )
     throw std::runtime_error("Insufficient 'epsy'");
 
-  // set initial search bounds and index
-  size_t z = 1;     // lower-bound
-  size_t l = 0;     // left-bound
-  size_t r = n;     // right-bound
-  size_t i = r / 2; // average
-
-  // loop until found
-  while ( true )
-  {
-    // check if found, unroll once to speed-up
-    if ( epsd >= m_epsy(i-1) and epsd < m_epsy(i  ) ) return i-1;
-    if ( epsd >= m_epsy(i  ) and epsd < m_epsy(i+1) ) return i;
-    if ( epsd >= m_epsy(i+1) and epsd < m_epsy(i+2) ) return i+1;
-
-    // correct the left- and right-bound
-    if ( epsd >= m_epsy(i) ) l = i;
-    else                     r = i;
-
-    // set new search index
-    i = ( r + l ) / 2;
-    i = std::max(i,z);
-  }
+  return std::lower_bound(m_epsy.begin(), m_epsy.end(), epsd) - m_epsy.begin() - 1;
 }
 
 // -------------------------------------------------------------------------------------------------
