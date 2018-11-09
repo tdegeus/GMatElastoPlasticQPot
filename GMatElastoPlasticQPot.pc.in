@@ -4,6 +4,6 @@ exec_prefix=${prefix}
 Name: GMatElastoPlasticQPot
 Description: Elasto-plastic model using multiple quadratic potentials
 Requires:
-Version: @GMATELASTOPLASTICQPOT_VERSION_NUMBER@
+Version: @GMATELASTOPLASTICQPOT_VERSION@
 Libs:
 Cflags: -I${prefix}/@GMATELASTOPLASTICQPOT_INCLUDE_DIR@

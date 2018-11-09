@@ -1,6 +1,6 @@
 /* =================================================================================================
 
-(c - MIT) T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me | github.com/tdegeus/GMatElastoPlasticQPot
+(c - MIT) T.W.J. de Geus (Tom) | www.geus.me | github.com/tdegeus/GMatElastoPlasticQPot
 
 ================================================================================================= */
 
@@ -44,37 +44,37 @@ inline T2s eye()
 
 inline double epsm(const T2s &Eps)
 {
-  return trace(Eps)/2.;
+  return 0.5 * trace(Eps);
 }
 
 // -------------------------------------------------------------------------------------------------
 
 inline double epsd(const T2s &Eps)
 {
-  T2s Epsd = Eps - trace(Eps)/2. * eye();
+  T2s Epsd = Eps - 0.5 * trace(Eps) * eye();
 
-  return std::sqrt(.5*ddot(Epsd,Epsd));
+  return std::sqrt(0.5*ddot(Epsd,Epsd));
 }
 
 // -------------------------------------------------------------------------------------------------
 
 inline T2s Epsd(const T2s &Eps)
 {
-  return Eps - trace(Eps)/2. * eye();
+  return Eps - 0.5 * trace(Eps) * eye();
 }
 
 // -------------------------------------------------------------------------------------------------
 
 inline double sigm(const T2s &Sig)
 {
-  return trace(Sig)/2.;
+  return 0.5 * trace(Sig);
 }
 
 // -------------------------------------------------------------------------------------------------
 
 inline double sigd(const T2s &Sig)
 {
-  T2s Sigd = Sig - trace(Sig)/2. * eye();
+  T2s Sigd = Sig - 0.5 * trace(Sig) * eye();
 
   return std::sqrt(2.*ddot(Sigd,Sigd));
 }
@@ -83,7 +83,7 @@ inline double sigd(const T2s &Sig)
 
 inline T2s Sigd(const T2s &Sig)
 {
-  return Sig - trace(Sig)/2. * eye();
+  return Sig - 0.5 * trace(Sig) * eye();
 }
 
 // ========================= TENSOR DECOMPOSITION - MATRIX - NO ALLOCATION =========================
@@ -104,7 +104,7 @@ inline void epsm(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_ep
       {
         auto Eps = xt::adapt(&a_Eps(e,q,0,0), xt::xshape<2,2>());
 
-        a_epsm(e,q) = trace(Eps)/2.;
+        a_epsm(e,q) = 0.5 * trace(Eps);
       }
     }
   }
@@ -142,9 +142,9 @@ inline void epsd(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_ep
 
 inline void Epsd(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4> &a_Epsd)
 {
+  assert( a_Eps.shape()    == a_Epsd.shape() );
   assert( a_Eps.shape()[2] == 2 );
   assert( a_Eps.shape()[3] == 2 );
-  assert( a_Eps.shape() == a_Epsd.shape() );
 
   #pragma omp parallel
   {
@@ -220,9 +220,9 @@ inline void sigd(const xt::xtensor<double,4> &a_Sig, xt::xtensor<double,2> &a_si
 
 inline void Sigd(const xt::xtensor<double,4> &a_Sig, xt::xtensor<double,4> &a_Sigd)
 {
+  assert( a_Sig.shape()    == a_Sigd.shape() );
   assert( a_Sig.shape()[2] == 2 );
   assert( a_Sig.shape()[3] == 2 );
-  assert( a_Sig.shape() == a_Sigd.shape() );
 
   #pragma omp parallel
   {
@@ -323,7 +323,7 @@ inline double epsm_max(const xt::xtensor<double,4> &a_Eps)
   {
     auto Eps = xt::adapt(&a_Eps(0,0,0,0), xt::xshape<2,2>());
 
-    out = trace(Eps)/2.;
+    out = 0.5 * trace(Eps);
   }
 
   // loop over all points
@@ -333,7 +333,7 @@ inline double epsm_max(const xt::xtensor<double,4> &a_Eps)
     {
       auto Eps = xt::adapt(&a_Eps(e,q,0,0), xt::xshape<2,2>());
 
-      out = std::max(out, trace(Eps)/2.);
+      out = std::max(out, 0.5*trace(Eps));
     }
   }
 
@@ -354,7 +354,7 @@ inline double sigm_max(const xt::xtensor<double,4> &a_Sig)
   {
     auto Sig = xt::adapt(&a_Sig(0,0,0,0), xt::xshape<2,2>());
 
-    out = trace(Sig)/2.;
+    out = 0.5 * trace(Sig);
   }
 
   // loop over all points
@@ -364,7 +364,7 @@ inline double sigm_max(const xt::xtensor<double,4> &a_Sig)
     {
       auto Sig = xt::adapt(&a_Sig(e,q,0,0), xt::xshape<2,2>());
 
-      out = std::max(out, trace(Sig)/2.);
+      out = std::max(out, 0.5*trace(Sig));
     }
   }
 
@@ -388,7 +388,7 @@ inline double epsd_max(const xt::xtensor<double,4> &a_Eps)
   {
     auto Eps = xt::adapt(&a_Eps(0,0,0,0), xt::xshape<2,2>());
 
-    auto Epsd = Eps - trace(Eps)/2. * I;
+    auto Epsd = Eps - 0.5 * trace(Eps) * I;
 
     out = std::sqrt(.5*ddot(Epsd,Epsd));
   }
@@ -400,7 +400,7 @@ inline double epsd_max(const xt::xtensor<double,4> &a_Eps)
     {
       auto Eps = xt::adapt(&a_Eps(e,q,0,0), xt::xshape<2,2>());
 
-      auto Epsd = Eps - trace(Eps)/2. * I;
+      auto Epsd = Eps - 0.5*trace(Eps) * I;
 
       out = std::max(out, std::sqrt(.5*ddot(Epsd,Epsd)));
     }
@@ -426,7 +426,7 @@ inline double sigd_max(const xt::xtensor<double,4> &a_Sig)
   {
     auto Sig = xt::adapt(&a_Sig(0,0,0,0), xt::xshape<2,2>());
 
-    auto Sigd = Sig - trace(Sig)/2. * I;
+    auto Sigd = Sig - 0.5 * trace(Sig) * I;
 
     out = std::sqrt(2.*ddot(Sigd,Sigd));
   }
@@ -438,7 +438,7 @@ inline double sigd_max(const xt::xtensor<double,4> &a_Sig)
     {
       auto Sig = xt::adapt(&a_Sig(e,q,0,0), xt::xshape<2,2>());
 
-      auto Sigd = Sig - trace(Sig)/2. * I;
+      auto Sigd = Sig - 0.5*trace(Sig) * I;
 
       out = std::max(out, std::sqrt(2.*ddot(Sigd,Sigd)));
     }

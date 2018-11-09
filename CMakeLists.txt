@@ -1,9 +1,8 @@
-#==================================================================================================#
-#                                                                                                  #
-# (c - MIT) T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me |                                     #
-#           github.com/tdegeus/GMatElastoPlasticQPot                                                   #
-#                                                                                                  #
-#==================================================================================================#
+#===================================================================================================
+#
+# (c - MIT) T.W.J. de Geus (Tom) | www.geus.me | github.com/tdegeus/GMatElastoPlasticQPot                                                   #
+#
+#===================================================================================================
 
 # initialization
 # --------------
@@ -50,7 +49,7 @@ set(minor_version "${CMAKE_MATCH_1}")
 set(GMATELASTOPLASTICQPOT_VERSION ${world_version}.${major_version}.${minor_version})
 
 # print information to screen
-message(STATUS "Building ${PROJECT_NAME} v${GOOSEFEM_VERSION}")
+message(STATUS "Building ${PROJECT_NAME} v${GMATELASTOPLASTICQPOT_VERSION}")
 
 # paths
 # -----

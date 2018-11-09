@@ -1,6 +1,6 @@
 /* =================================================================================================
 
-(c - MIT) T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me | github.com/tdegeus/GMatElastoPlasticQPot
+(c - MIT) T.W.J. de Geus (Tom) | www.geus.me | github.com/tdegeus/GMatElastoPlasticQPot
 
 ================================================================================================= */
 
@@ -14,13 +14,13 @@
 // abbreviate name-space
 namespace py = pybind11;
 
-// ======================================= GMatElastoPlasticQPot =======================================
+// ===================================== GMatElastoPlasticQPot =====================================
 
 PYBIND11_MODULE(GMatElastoPlasticQPot, m) {
 
 m.doc() = "Elasto-plastic material models";
 
-// ================================ GMatElastoPlasticQPot::Cartesian2d =================================
+// ============================== GMatElastoPlasticQPot::Cartesian2d ===============================
 
 {
 
