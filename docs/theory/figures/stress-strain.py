@@ -1,8 +1,7 @@
 
-import GooseTensor       as gt
-import ElastoPlasticQPot as gm
-import numpy             as np
-import matplotlib.pyplot as plt
+import GMatElastoPlasticQPot as gm
+import numpy                 as np
+import matplotlib.pyplot     as plt
 
 plt.style.use(['goose','goose-latex','goose-tick-lower'])
 

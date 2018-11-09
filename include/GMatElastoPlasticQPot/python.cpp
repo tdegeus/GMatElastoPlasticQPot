@@ -1,26 +1,26 @@
 /* =================================================================================================
 
-(c - MIT) T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me | github.com/tdegeus/ElastoPlasticQPot
+(c - MIT) T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me | github.com/tdegeus/GMatElastoPlasticQPot
 
 ================================================================================================= */
 
 #include <pybind11/pybind11.h>
 #include <pyxtensor/pyxtensor.hpp>
 
-#include "ElastoPlasticQPot.h"
+#include "GMatElastoPlasticQPot.h"
 
 // =================================================================================================
 
 // abbreviate name-space
 namespace py = pybind11;
 
-// ======================================= ElastoPlasticQPot =======================================
+// ======================================= GMatElastoPlasticQPot =======================================
 
-PYBIND11_MODULE(ElastoPlasticQPot, m) {
+PYBIND11_MODULE(GMatElastoPlasticQPot, m) {
 
 m.doc() = "Elasto-plastic material models";
 
-// ================================ ElastoPlasticQPot::Cartesian2d =================================
+// ================================ GMatElastoPlasticQPot::Cartesian2d =================================
 
 {
 
@@ -28,7 +28,7 @@ m.doc() = "Elasto-plastic material models";
 py::module sm = m.def_submodule("Cartesian2d", "2d Cartesian coordinates");
 
 // abbreviate name-space
-namespace SM = xElastoPlasticQPot::Cartesian2d;
+namespace SM = GMatElastoPlasticQPot::Cartesian2d;
 
 // abbreviate types(s)
 typedef SM::T2s T2s;
@@ -71,7 +71,7 @@ py::class_<SM::Elastic>(sm, "Elastic")
   .def("find"  , py::overload_cast<double     >(&SM::Elastic::find, py::const_), py::arg("epsd"))
   // print to screen
   .def("__repr__", [](const SM::Elastic &){
-    return "<ElastoPlasticQPot.Cartesian2d.Elastic>"; });
+    return "<GMatElastoPlasticQPot.Cartesian2d.Elastic>"; });
 
 // -------------------------------------------------------------------------------------------------
 
@@ -95,7 +95,7 @@ py::class_<SM::Cusp>(sm, "Cusp")
   .def("find"  , py::overload_cast<double     >(&SM::Cusp::find, py::const_), py::arg("epsd"))
   // print to screen
   .def("__repr__", [](const SM::Cusp &){
-    return "<ElastoPlasticQPot.Cartesian2d.Cusp>"; });
+    return "<GMatElastoPlasticQPot.Cartesian2d.Cusp>"; });
 
 // -------------------------------------------------------------------------------------------------
 
@@ -119,7 +119,7 @@ py::class_<SM::Smooth>(sm, "Smooth")
   .def("find"  , py::overload_cast<double     >(&SM::Smooth::find, py::const_), py::arg("epsd"))
   // print to screen
   .def("__repr__", [](const SM::Smooth &){
-    return "<ElastoPlasticQPot.Cartesian2d.Smooth>"; });
+    return "<GMatElastoPlasticQPot.Cartesian2d.Smooth>"; });
 
 // -------------------------------------------------------------------------------------------------
 
@@ -161,7 +161,7 @@ py::class_<SM::Matrix>(sm, "Matrix")
   .def("epsp"      , py::overload_cast<const xt::xtensor<double,4> &>(&SM::Matrix::epsp  , py::const_), py::arg("a_Eps"))
   // print to screen
   .def("__repr__", [](const SM::Matrix &){
-    return "<ElastoPlasticQPot.Cartesian2d.Matrix>"; });
+    return "<GMatElastoPlasticQPot.Cartesian2d.Matrix>"; });
 
 // -------------------------------------------------------------------------------------------------
 

@@ -3,13 +3,13 @@
 
 #define EQ(a,b) REQUIRE_THAT( (a), Catch::WithinAbs((b), 1.e-12) );
 
-#include "../include/xElastoPlasticQPot/ElastoPlasticQPot.h"
+#include "../include/GMatElastoPlasticQPot/GMatElastoPlasticQPot.h"
 
-namespace GM = xElastoPlasticQPot::Cartesian2d;
+namespace GM = GMatElastoPlasticQPot::Cartesian2d;
 
 // =================================================================================================
 
-TEST_CASE("ElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
+TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
 {
 
 // =================================================================================================

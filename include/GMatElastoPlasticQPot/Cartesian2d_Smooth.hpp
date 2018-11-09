@@ -1,24 +1,24 @@
 /* =================================================================================================
 
-(c - MIT) T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me | github.com/tdegeus/ElastoPlasticQPot
+(c - MIT) T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me | github.com/tdegeus/GMatElastoPlasticQPot
 
 ================================================================================================= */
 
-#ifndef XELASTOPLASTICQPOT_CARTESIAN2D_CUSP_HPP
-#define XELASTOPLASTICQPOT_CARTESIAN2D_CUSP_HPP
+#ifndef GMATELASTOPLASTICQPOT_CARTESIAN2D_SMOOTH_HPP
+#define GMATELASTOPLASTICQPOT_CARTESIAN2D_SMOOTH_HPP
 
 // -------------------------------------------------------------------------------------------------
 
-#include "ElastoPlasticQPot.h"
+#include "GMatElastoPlasticQPot.h"
 
 // =================================================================================================
 
-namespace xElastoPlasticQPot {
+namespace GMatElastoPlasticQPot {
 namespace Cartesian2d {
 
 // -------------------------------------------------------------------------------------------------
 
-inline Cusp::Cusp(double K, double G, const xt::xtensor<double,1> &epsy, bool init_elastic) :
+inline Smooth::Smooth(double K, double G, const xt::xtensor<double,1> &epsy, bool init_elastic) :
   m_K(K), m_G(G)
 {
   // copy sorted yield strains
@@ -36,7 +36,7 @@ inline Cusp::Cusp(double K, double G, const xt::xtensor<double,1> &epsy, bool in
 
 // -------------------------------------------------------------------------------------------------
 
-inline double Cusp::epsd(const T2s &Eps) const
+inline double Smooth::epsd(const T2s &Eps) const
 {
   auto Epsd = Eps - 0.5 * trace(Eps) * eye();
 
@@ -45,14 +45,14 @@ inline double Cusp::epsd(const T2s &Eps) const
 
 // -------------------------------------------------------------------------------------------------
 
-inline double Cusp::epsp(const T2s &Eps) const
+inline double Smooth::epsp(const T2s &Eps) const
 {
   return epsp(epsd(Eps));
 }
 
 // -------------------------------------------------------------------------------------------------
 
-inline double Cusp::epsp(double epsd) const
+inline double Smooth::epsp(double epsd) const
 {
   size_t i = find(epsd);
 
@@ -61,21 +61,21 @@ inline double Cusp::epsp(double epsd) const
 
 // -------------------------------------------------------------------------------------------------
 
-inline double Cusp::epsy(size_t i) const
+inline double Smooth::epsy(size_t i) const
 {
   return m_epsy(i);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-inline size_t Cusp::find(const T2s &Eps) const
+inline size_t Smooth::find(const T2s &Eps) const
 {
   return find(epsd(Eps));
 }
 
 // -------------------------------------------------------------------------------------------------
 
-inline size_t Cusp::find(double epsd) const
+inline size_t Smooth::find(double epsd) const
 {
   if ( epsd <= m_epsy(0) or epsd >= m_epsy(m_epsy.size()-1) )
     throw std::runtime_error("Insufficient 'epsy'");
@@ -85,7 +85,7 @@ inline size_t Cusp::find(double epsd) const
 
 // -------------------------------------------------------------------------------------------------
 
-inline T2s Cusp::Sig(const T2s &Eps) const
+inline T2s Smooth::Sig(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
   T2s    I    = eye();
@@ -99,14 +99,15 @@ inline T2s Cusp::Sig(const T2s &Eps) const
   // read current yield strains
   size_t i       = find(epsd);
   double eps_min = ( m_epsy(i+1) + m_epsy(i) ) / 2.;
+  double deps_y  = ( m_epsy(i+1) - m_epsy(i) ) / 2.;
 
   // return stress tensor
-  return m_K * epsm * I + m_G * (1.-eps_min/epsd) * Epsd;
+  return m_K*epsm*I + (m_G/epsd)*(deps_y/M_PI)*sin(M_PI/deps_y*(epsd-eps_min))*Epsd;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-inline double Cusp::energy(const T2s &Eps) const
+inline double Smooth::energy(const T2s &Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
   T2s    I    = eye();
@@ -123,7 +124,7 @@ inline double Cusp::energy(const T2s &Eps) const
   double deps_y  = ( m_epsy(i+1) - m_epsy(i) ) / 2.;
 
   // deviatoric part of the energy
-  double V = m_G * ( std::pow(epsd-eps_min,2.) - std::pow(deps_y,2.) );
+  double V = -2.*m_G * std::pow(deps_y/M_PI,2.) * ( 1. + cos( M_PI/deps_y * (epsd-eps_min) ) );
 
   // return total energy
   return U + V;

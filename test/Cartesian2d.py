@@ -1,5 +1,5 @@
 
-import ElastoPlasticQPot.Cartesian2d as GMat
+import GMatElastoPlasticQPot.Cartesian2d as GMat
 import numpy as np
 
 # ==================================================================================================

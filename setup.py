@@ -9,17 +9,17 @@ import setuptools
 import pybind11
 import pyxtensor
 
-header = open('include/xElastoPlasticQPot/ElastoPlasticQPot.h','r').read()
-world  = re.split(r'(.*)(\#define ELASTOPLASTICQPOT_WORLD_VERSION\ )([0-9]+)(.*)',header)[3]
-major  = re.split(r'(.*)(\#define ELASTOPLASTICQPOT_MAJOR_VERSION\ )([0-9]+)(.*)',header)[3]
-minor  = re.split(r'(.*)(\#define ELASTOPLASTICQPOT_MINOR_VERSION\ )([0-9]+)(.*)',header)[3]
+header = open('include/GMatElastoPlasticQPot/GMatElastoPlasticQPot.h','r').read()
+world  = re.split(r'(.*)(\#define GMATELASTOPLASTICQPOT_WORLD_VERSION\ )([0-9]+)(.*)',header)[3]
+major  = re.split(r'(.*)(\#define GMATELASTOPLASTICQPOT_MAJOR_VERSION\ )([0-9]+)(.*)',header)[3]
+minor  = re.split(r'(.*)(\#define GMATELASTOPLASTICQPOT_MINOR_VERSION\ )([0-9]+)(.*)',header)[3]
 
 __version__ = '.'.join([world,major,minor])
 
 ext_modules = [
   Extension(
-    'ElastoPlasticQPot',
-    ['include/xElastoPlasticQPot/python.cpp'],
+    'GMatElastoPlasticQPot',
+    ['include/GMatElastoPlasticQPot/python.cpp'],
     include_dirs=[
       pybind11.get_include(False),
       pybind11.get_include(True ),
@@ -33,14 +33,14 @@ ext_modules = [
 ]
 
 setup(
-  name             = 'ElastoPlasticQPot',
+  name             = 'GMatElastoPlasticQPot',
   description      = 'Elasto-plastic material model',
   long_description = desc,
   version          = __version__,
   license          = 'MIT',
   author           = 'Tom de Geus',
   author_email     = 'tom@geus.me',
-  url              = 'https://github.com/tdegeus/ElastoPlasticQPot',
+  url              = 'https://github.com/tdegeus/GMatElastoPlasticQPot',
   ext_modules      = ext_modules,
   install_requires = ['pybind11>=2.2.0'],
   cmdclass         = {'build_ext': pyxtensor.BuildExt},
