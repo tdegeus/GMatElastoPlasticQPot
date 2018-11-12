@@ -308,12 +308,11 @@ inline void Matrix::setSmooth(const xt::xtensor<size_t,2> &I, const xt::xtensor<
 
 inline void Matrix::Sig(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4> &a_Sig) const
 {
-  assert( a_Eps.shape().size() == 4             );
-  assert( a_Eps.shape()[0]     == m_nelem       );
-  assert( a_Eps.shape()[1]     == m_nip         );
-  assert( a_Eps.shape()[2]     == m_ndim        );
-  assert( a_Eps.shape()[3]     == m_ndim        );
-  assert( a_Eps.shape()        == a_Sig.shape() );
+  assert( a_Eps.shape()[0] == m_nelem       );
+  assert( a_Eps.shape()[1] == m_nip         );
+  assert( a_Eps.shape()[2] == m_ndim        );
+  assert( a_Eps.shape()[3] == m_ndim        );
+  assert( a_Eps.shape()    == a_Sig.shape() );
 
   #pragma omp parallel
   {
@@ -341,12 +340,11 @@ inline void Matrix::Sig(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4
 
 inline void Matrix::energy(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_energy) const
 {
-  assert( a_Eps.shape().size() == 4              );
-  assert( a_Eps.shape()[0]     == m_nelem        );
-  assert( a_Eps.shape()[1]     == m_nip          );
-  assert( a_Eps.shape()[2]     == m_ndim         );
-  assert( a_Eps.shape()[3]     == m_ndim         );
-  assert( a_energy.shape()     == m_type.shape() );
+  assert( a_Eps.shape()[0] == m_nelem        );
+  assert( a_Eps.shape()[1] == m_nip          );
+  assert( a_Eps.shape()[2] == m_ndim         );
+  assert( a_Eps.shape()[3] == m_ndim         );
+  assert( a_energy.shape() == m_type.shape() );
 
   #pragma omp parallel
   {
@@ -373,12 +371,11 @@ inline void Matrix::energy(const xt::xtensor<double,4> &a_Eps, xt::xtensor<doubl
 
 inline void Matrix::find(const xt::xtensor<double,4> &a_Eps, xt::xtensor<size_t,2> &a_idx) const
 {
-  assert( a_Eps.shape().size() == 4              );
-  assert( a_Eps.shape()[0]     == m_nelem        );
-  assert( a_Eps.shape()[1]     == m_nip          );
-  assert( a_Eps.shape()[2]     == m_ndim         );
-  assert( a_Eps.shape()[3]     == m_ndim         );
-  assert( a_idx.shape()        == m_type.shape() );
+  assert( a_Eps.shape()[0] == m_nelem        );
+  assert( a_Eps.shape()[1] == m_nip          );
+  assert( a_Eps.shape()[2] == m_ndim         );
+  assert( a_Eps.shape()[3] == m_ndim         );
+  assert( a_idx.shape()    == m_type.shape() );
 
   #pragma omp parallel
   {
@@ -431,12 +428,11 @@ inline void Matrix::epsy(const xt::xtensor<size_t,2> &a_idx, xt::xtensor<double,
 
 inline void Matrix::epsp(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_epsp) const
 {
-  assert( a_Eps.shape().size() == 4              );
-  assert( a_Eps.shape()[0]     == m_nelem        );
-  assert( a_Eps.shape()[1]     == m_nip          );
-  assert( a_Eps.shape()[2]     == m_ndim         );
-  assert( a_Eps.shape()[3]     == m_ndim         );
-  assert( a_epsp.shape()       == m_type.shape() );
+  assert( a_Eps.shape()[0] == m_nelem        );
+  assert( a_Eps.shape()[1] == m_nip          );
+  assert( a_Eps.shape()[2] == m_ndim         );
+  assert( a_Eps.shape()[3] == m_ndim         );
+  assert( a_epsp.shape()   == m_type.shape() );
 
   #pragma omp parallel
   {
