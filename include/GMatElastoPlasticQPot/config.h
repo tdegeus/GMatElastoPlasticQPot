@@ -4,8 +4,8 @@
 
 ================================================================================================= */
 
-#ifndef GMATELASTOPLASTICQPOT_H
-#define GMATELASTOPLASTICQPOT_H
+#ifndef GMATELASTOPLASTICQPOT_CONFIG_H
+#define GMATELASTOPLASTICQPOT_CONFIG_H
 
 // -------------------------------------------------------------------------------------------------
 
@@ -49,15 +49,6 @@
   (GMATELASTOPLASTICQPOT_WORLD_VERSION==x && \
    GMATELASTOPLASTICQPOT_MAJOR_VERSION==y && \
    GMATELASTOPLASTICQPOT_MINOR_VERSION==z)
-
-// -------------------------------------------------------------------------------------------------
-
-#include "Cartesian2d.h"
-#include "Cartesian2d.hpp"
-#include "Cartesian2d_Elastic.hpp"
-#include "Cartesian2d_Cusp.hpp"
-#include "Cartesian2d_Smooth.hpp"
-#include "Cartesian2d_Matrix.hpp"
 
 // -------------------------------------------------------------------------------------------------
 

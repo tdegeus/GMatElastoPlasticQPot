@@ -9,7 +9,7 @@ import setuptools
 import pybind11
 import pyxtensor
 
-header = open('include/GMatElastoPlasticQPot/GMatElastoPlasticQPot.h','r').read()
+header = open('include/GMatElastoPlasticQPot/config.h','r').read()
 world  = re.split(r'(.*)(\#define GMATELASTOPLASTICQPOT_WORLD_VERSION\ )([0-9]+)(.*)',header)[3]
 major  = re.split(r'(.*)(\#define GMATELASTOPLASTICQPOT_MAJOR_VERSION\ )([0-9]+)(.*)',header)[3]
 minor  = re.split(r'(.*)(\#define GMATELASTOPLASTICQPOT_MINOR_VERSION\ )([0-9]+)(.*)',header)[3]

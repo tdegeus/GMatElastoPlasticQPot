@@ -7,7 +7,7 @@
 #include <pybind11/pybind11.h>
 #include <pyxtensor/pyxtensor.hpp>
 
-#include "GMatElastoPlasticQPot.h"
+#include "Cartesian2d.h"
 
 // =================================================================================================
 

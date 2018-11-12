@@ -25,11 +25,11 @@ option(BUILD_TESTS "${PROJECT_NAME} test suite" OFF)
 project(GMatElastoPlasticQPot)
 
 # file that contains the version information
-set(parse_version include/GMatElastoPlasticQPot/GMatElastoPlasticQPot.h)
+set(parse_version include/GMatElastoPlasticQPot/config.h)
 
 # header files
 set(headers
-  include/GMatElastoPlasticQPot/GMatElastoPlasticQPot.h
+  include/GMatElastoPlasticQPot/config.h
   include/GMatElastoPlasticQPot/Cartesian2d.h
   include/GMatElastoPlasticQPot/Cartesian2d.hpp
   include/GMatElastoPlasticQPot/Cartesian2d_Matrix.hpp
