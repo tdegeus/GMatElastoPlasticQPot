@@ -24,12 +24,9 @@ inline Elastic::Elastic(double K, double G) : m_K(K), m_G(G)
 
 // -------------------------------------------------------------------------------------------------
 
-inline double Elastic::epsd(const T2s &Eps) const
-{
-  auto Epsd = Eps - 0.5 * trace(Eps) * eye();
+inline double Elastic::K() const { return m_K; }
 
-  return std::sqrt(.5*ddot(Epsd,Epsd));
-}
+inline double Elastic::G() const { return m_G; }
 
 // -------------------------------------------------------------------------------------------------
 

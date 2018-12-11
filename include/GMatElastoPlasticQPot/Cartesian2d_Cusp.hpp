@@ -36,12 +36,9 @@ inline Cusp::Cusp(double K, double G, const xt::xtensor<double,1> &epsy, bool in
 
 // -------------------------------------------------------------------------------------------------
 
-inline double Cusp::epsd(const T2s &Eps) const
-{
-  auto Epsd = Eps - 0.5 * trace(Eps) * eye();
+inline double Cusp::K() const { return m_K; }
 
-  return std::sqrt(.5*ddot(Epsd,Epsd));
-}
+inline double Cusp::G() const { return m_G; }
 
 // -------------------------------------------------------------------------------------------------
 

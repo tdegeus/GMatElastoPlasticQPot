@@ -36,12 +36,9 @@ inline Smooth::Smooth(double K, double G, const xt::xtensor<double,1> &epsy, boo
 
 // -------------------------------------------------------------------------------------------------
 
-inline double Smooth::epsd(const T2s &Eps) const
-{
-  auto Epsd = Eps - 0.5 * trace(Eps) * eye();
+inline double Smooth::K() const { return m_K; }
 
-  return std::sqrt(.5*ddot(Epsd,Epsd));
-}
+inline double Smooth::G() const { return m_G; }
 
 // -------------------------------------------------------------------------------------------------
 

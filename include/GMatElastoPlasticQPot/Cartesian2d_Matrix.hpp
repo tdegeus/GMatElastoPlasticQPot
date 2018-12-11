@@ -26,24 +26,29 @@ inline Matrix::Matrix(size_t nelem, size_t nip) : m_nelem(nelem), m_nip(nip)
 
 // -------------------------------------------------------------------------------------------------
 
+inline size_t Matrix::nelem() const { return m_nelem; };
+
+inline size_t Matrix::nip() const { return m_nip; };
+
+inline xt::xtensor<size_t,2> Matrix::type() const { return m_type; };
+
+// -------------------------------------------------------------------------------------------------
+
 inline xt::xtensor<double,2> Matrix::K() const
 {
   xt::xtensor<double,2> a_K = xt::empty<double>({m_nelem, m_nip});
 
-  #pragma omp parallel
+  #pragma omp parallel for
+  for ( size_t e = 0 ; e < m_nelem ; ++e )
   {
-    #pragma omp for
-    for ( size_t e = 0 ; e < m_nelem ; ++e )
+    for ( size_t q = 0 ; q < m_nip ; ++q )
     {
-      for ( size_t q = 0 ; q < m_nip ; ++q )
+      switch ( m_type(e,q) )
       {
-        switch ( m_type(e,q) )
-        {
-          case Type::Elastic: a_K(e,q) = m_Elastic[m_index(e,q)].K(); break;
-          case Type::Cusp   : a_K(e,q) = m_Cusp   [m_index(e,q)].K(); break;
-          case Type::Smooth : a_K(e,q) = m_Smooth [m_index(e,q)].K(); break;
-          default: std::runtime_error("Unknown material");
-        }
+        case Type::Elastic: a_K(e,q) = m_Elastic[m_index(e,q)].K(); break;
+        case Type::Cusp   : a_K(e,q) = m_Cusp   [m_index(e,q)].K(); break;
+        case Type::Smooth : a_K(e,q) = m_Smooth [m_index(e,q)].K(); break;
+        default: std::runtime_error("Unknown material");
       }
     }
   }
@@ -57,20 +62,17 @@ inline xt::xtensor<double,2> Matrix::G() const
 {
   xt::xtensor<double,2> a_G = xt::empty<double>({m_nelem, m_nip});
 
-  #pragma omp parallel
+  #pragma omp parallel for
+  for ( size_t e = 0 ; e < m_nelem ; ++e )
   {
-    #pragma omp for
-    for ( size_t e = 0 ; e < m_nelem ; ++e )
+    for ( size_t q = 0 ; q < m_nip ; ++q )
     {
-      for ( size_t q = 0 ; q < m_nip ; ++q )
+      switch ( m_type(e,q) )
       {
-        switch ( m_type(e,q) )
-        {
-          case Type::Elastic: a_G(e,q) = m_Elastic[m_index(e,q)].G(); break;
-          case Type::Cusp   : a_G(e,q) = m_Cusp   [m_index(e,q)].G(); break;
-          case Type::Smooth : a_G(e,q) = m_Smooth [m_index(e,q)].G(); break;
-          default: std::runtime_error("Unknown material");
-        }
+        case Type::Elastic: a_G(e,q) = m_Elastic[m_index(e,q)].G(); break;
+        case Type::Cusp   : a_G(e,q) = m_Cusp   [m_index(e,q)].G(); break;
+        case Type::Smooth : a_G(e,q) = m_Smooth [m_index(e,q)].G(); break;
+        default: std::runtime_error("Unknown material");
       }
     }
   }
@@ -129,6 +131,11 @@ inline void Matrix::setElastic(const xt::xtensor<size_t,2> &I, double K, double 
     }
   }
 
+  if ( ! xt::any(xt::equal(m_type, Type::Unset)) )
+    m_allSet = true;
+  else
+    m_allSet = false;
+
   m_Elastic.push_back(Elastic(K, G));
 }
 
@@ -159,6 +166,11 @@ inline void Matrix::setCusp(const xt::xtensor<size_t,2> &I,
     }
   }
 
+  if ( ! xt::any(xt::equal(m_type, Type::Unset)) )
+    m_allSet = true;
+  else
+    m_allSet = false;
+
   m_Cusp.push_back(Cusp(K, G, epsy, init_elastic));
 }
 
@@ -188,6 +200,11 @@ inline void Matrix::setSmooth(const xt::xtensor<size_t,2> &I,
       }
     }
   }
+
+  if ( ! xt::any(xt::equal(m_type, Type::Unset)) )
+    m_allSet = true;
+  else
+    m_allSet = false;
 
   m_Smooth.push_back(Smooth(K, G, epsy, init_elastic));
 }
@@ -223,6 +240,11 @@ inline void Matrix::setElastic(const xt::xtensor<size_t,2> &I, const xt::xtensor
       }
     }
   }
+
+  if ( ! xt::any(xt::equal(m_type, Type::Unset)) )
+    m_allSet = true;
+  else
+    m_allSet = false;
 
   for ( size_t i = 0 ; i < K.size() ; ++i )
     m_Elastic.push_back(Elastic(K(i), G(i)));
@@ -262,6 +284,11 @@ inline void Matrix::setCusp(const xt::xtensor<size_t,2> &I, const xt::xtensor<si
     }
   }
 
+  if ( ! xt::any(xt::equal(m_type, Type::Unset)) )
+    m_allSet = true;
+  else
+    m_allSet = false;
+
   for ( size_t i = 0 ; i < K.size() ; ++i )
     m_Cusp.push_back(Cusp(K(i), G(i), xt::view(epsy,i,xt::all()), init_elastic));
 }
@@ -300,6 +327,11 @@ inline void Matrix::setSmooth(const xt::xtensor<size_t,2> &I, const xt::xtensor<
     }
   }
 
+  if ( ! xt::any(xt::equal(m_type, Type::Unset)) )
+    m_allSet = true;
+  else
+    m_allSet = false;
+
   for ( size_t i = 0 ; i < K.size() ; ++i )
     m_Smooth.push_back(Smooth(K(i), G(i), xt::view(epsy,i,xt::all()), init_elastic));
 }
@@ -308,29 +340,27 @@ inline void Matrix::setSmooth(const xt::xtensor<size_t,2> &I, const xt::xtensor<
 
 inline void Matrix::Sig(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4> &a_Sig) const
 {
+  assert( m_allSet                          );
   assert( a_Eps.shape()[0] == m_nelem       );
   assert( a_Eps.shape()[1] == m_nip         );
   assert( a_Eps.shape()[2] == m_ndim        );
   assert( a_Eps.shape()[3] == m_ndim        );
   assert( a_Eps.shape()    == a_Sig.shape() );
 
-  #pragma omp parallel
+  #pragma omp parallel for
+  for ( size_t e = 0 ; e < m_nelem ; ++e )
   {
-    #pragma omp for
-    for ( size_t e = 0 ; e < m_nelem ; ++e )
+    for ( size_t q = 0 ; q < m_nip ; ++q )
     {
-      for ( size_t q = 0 ; q < m_nip ; ++q )
-      {
-        auto Eps = xt::adapt(&a_Eps(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
-        auto Sig = xt::adapt(&a_Sig(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
+      auto Eps = xt::adapt(&a_Eps(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
+      auto Sig = xt::adapt(&a_Sig(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
 
-        switch ( m_type(e,q) )
-        {
-          case Type::Elastic: xt::noalias(Sig) = m_Elastic[m_index(e,q)].Sig(Eps); break;
-          case Type::Cusp   : xt::noalias(Sig) = m_Cusp   [m_index(e,q)].Sig(Eps); break;
-          case Type::Smooth : xt::noalias(Sig) = m_Smooth [m_index(e,q)].Sig(Eps); break;
-          default: std::runtime_error("Unknown material");
-        }
+      switch ( m_type(e,q) )
+      {
+        case Type::Elastic: xt::noalias(Sig) = m_Elastic[m_index(e,q)].Sig(Eps); break;
+        case Type::Cusp   : xt::noalias(Sig) = m_Cusp   [m_index(e,q)].Sig(Eps); break;
+        case Type::Smooth : xt::noalias(Sig) = m_Smooth [m_index(e,q)].Sig(Eps); break;
+        default: std::runtime_error("Unknown material");
       }
     }
   }
@@ -340,28 +370,26 @@ inline void Matrix::Sig(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4
 
 inline void Matrix::energy(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_energy) const
 {
+  assert( m_allSet                           );
   assert( a_Eps.shape()[0] == m_nelem        );
   assert( a_Eps.shape()[1] == m_nip          );
   assert( a_Eps.shape()[2] == m_ndim         );
   assert( a_Eps.shape()[3] == m_ndim         );
   assert( a_energy.shape() == m_type.shape() );
 
-  #pragma omp parallel
+  #pragma omp parallel for
+  for ( size_t e = 0 ; e < m_nelem ; ++e )
   {
-    #pragma omp for
-    for ( size_t e = 0 ; e < m_nelem ; ++e )
+    for ( size_t q = 0 ; q < m_nip ; ++q )
     {
-      for ( size_t q = 0 ; q < m_nip ; ++q )
-      {
-        auto Eps = xt::adapt(&a_Eps(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
+      auto Eps = xt::adapt(&a_Eps(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
 
-        switch ( m_type(e,q) )
-        {
-          case Type::Elastic: a_energy(e,q) = m_Elastic[m_index(e,q)].energy(Eps); break;
-          case Type::Cusp   : a_energy(e,q) = m_Cusp   [m_index(e,q)].energy(Eps); break;
-          case Type::Smooth : a_energy(e,q) = m_Smooth [m_index(e,q)].energy(Eps); break;
-          default: std::runtime_error("Unknown material");
-        }
+      switch ( m_type(e,q) )
+      {
+        case Type::Elastic: a_energy(e,q) = m_Elastic[m_index(e,q)].energy(Eps); break;
+        case Type::Cusp   : a_energy(e,q) = m_Cusp   [m_index(e,q)].energy(Eps); break;
+        case Type::Smooth : a_energy(e,q) = m_Smooth [m_index(e,q)].energy(Eps); break;
+        default: std::runtime_error("Unknown material");
       }
     }
   }
@@ -371,28 +399,26 @@ inline void Matrix::energy(const xt::xtensor<double,4> &a_Eps, xt::xtensor<doubl
 
 inline void Matrix::find(const xt::xtensor<double,4> &a_Eps, xt::xtensor<size_t,2> &a_idx) const
 {
+  assert( m_allSet                           );
   assert( a_Eps.shape()[0] == m_nelem        );
   assert( a_Eps.shape()[1] == m_nip          );
   assert( a_Eps.shape()[2] == m_ndim         );
   assert( a_Eps.shape()[3] == m_ndim         );
   assert( a_idx.shape()    == m_type.shape() );
 
-  #pragma omp parallel
+  #pragma omp parallel for
+  for ( size_t e = 0 ; e < m_nelem ; ++e )
   {
-    #pragma omp for
-    for ( size_t e = 0 ; e < m_nelem ; ++e )
+    for ( size_t q = 0 ; q < m_nip ; ++q )
     {
-      for ( size_t q = 0 ; q < m_nip ; ++q )
-      {
-        auto Eps = xt::adapt(&a_Eps(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
+      auto Eps = xt::adapt(&a_Eps(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
 
-        switch ( m_type(e,q) )
-        {
-          case Type::Elastic: a_idx(e,q) = m_Elastic[m_index(e,q)].find(Eps); break;
-          case Type::Cusp   : a_idx(e,q) = m_Cusp   [m_index(e,q)].find(Eps); break;
-          case Type::Smooth : a_idx(e,q) = m_Smooth [m_index(e,q)].find(Eps); break;
-          default: std::runtime_error("Unknown material");
-        }
+      switch ( m_type(e,q) )
+      {
+        case Type::Elastic: a_idx(e,q) = m_Elastic[m_index(e,q)].find(Eps); break;
+        case Type::Cusp   : a_idx(e,q) = m_Cusp   [m_index(e,q)].find(Eps); break;
+        case Type::Smooth : a_idx(e,q) = m_Smooth [m_index(e,q)].find(Eps); break;
+        default: std::runtime_error("Unknown material");
       }
     }
   }
@@ -402,23 +428,21 @@ inline void Matrix::find(const xt::xtensor<double,4> &a_Eps, xt::xtensor<size_t,
 
 inline void Matrix::epsy(const xt::xtensor<size_t,2> &a_idx, xt::xtensor<double,2> &a_epsy) const
 {
+  assert( m_allSet                         );
   assert( a_idx.shape()  == m_type.shape() );
   assert( a_epsy.shape() == m_type.shape() );
 
-  #pragma omp parallel
+  #pragma omp parallel for
+  for ( size_t e = 0 ; e < m_nelem ; ++e )
   {
-    #pragma omp for
-    for ( size_t e = 0 ; e < m_nelem ; ++e )
+    for ( size_t q = 0 ; q < m_nip ; ++q )
     {
-      for ( size_t q = 0 ; q < m_nip ; ++q )
+      switch ( m_type(e,q) )
       {
-        switch ( m_type(e,q) )
-        {
-          case Type::Elastic: a_epsy(e,q) = m_Elastic[m_index(e,q)].epsy(a_idx(e,q)); break;
-          case Type::Cusp   : a_epsy(e,q) = m_Cusp   [m_index(e,q)].epsy(a_idx(e,q)); break;
-          case Type::Smooth : a_epsy(e,q) = m_Smooth [m_index(e,q)].epsy(a_idx(e,q)); break;
-          default: std::runtime_error("Unknown material");
-        }
+        case Type::Elastic: a_epsy(e,q) = m_Elastic[m_index(e,q)].epsy(a_idx(e,q)); break;
+        case Type::Cusp   : a_epsy(e,q) = m_Cusp   [m_index(e,q)].epsy(a_idx(e,q)); break;
+        case Type::Smooth : a_epsy(e,q) = m_Smooth [m_index(e,q)].epsy(a_idx(e,q)); break;
+        default: std::runtime_error("Unknown material");
       }
     }
   }
@@ -428,28 +452,26 @@ inline void Matrix::epsy(const xt::xtensor<size_t,2> &a_idx, xt::xtensor<double,
 
 inline void Matrix::epsp(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_epsp) const
 {
+  assert( m_allSet                           );
   assert( a_Eps.shape()[0] == m_nelem        );
   assert( a_Eps.shape()[1] == m_nip          );
   assert( a_Eps.shape()[2] == m_ndim         );
   assert( a_Eps.shape()[3] == m_ndim         );
   assert( a_epsp.shape()   == m_type.shape() );
 
-  #pragma omp parallel
+  #pragma omp parallel for
+  for ( size_t e = 0 ; e < m_nelem ; ++e )
   {
-    #pragma omp for
-    for ( size_t e = 0 ; e < m_nelem ; ++e )
+    for ( size_t q = 0 ; q < m_nip ; ++q )
     {
-      for ( size_t q = 0 ; q < m_nip ; ++q )
-      {
-        auto Eps = xt::adapt(&a_Eps(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
+      auto Eps = xt::adapt(&a_Eps(e,q,0,0), xt::xshape<m_ndim,m_ndim>());
 
-        switch ( m_type(e,q) )
-        {
-          case Type::Elastic: a_epsp(e,q) = m_Elastic[m_index(e,q)].epsp(Eps); break;
-          case Type::Cusp   : a_epsp(e,q) = m_Cusp   [m_index(e,q)].epsp(Eps); break;
-          case Type::Smooth : a_epsp(e,q) = m_Smooth [m_index(e,q)].epsp(Eps); break;
-          default: std::runtime_error("Unknown material");
-        }
+      switch ( m_type(e,q) )
+      {
+        case Type::Elastic: a_epsp(e,q) = m_Elastic[m_index(e,q)].epsp(Eps); break;
+        case Type::Cusp   : a_epsp(e,q) = m_Cusp   [m_index(e,q)].epsp(Eps); break;
+        case Type::Smooth : a_epsp(e,q) = m_Smooth [m_index(e,q)].epsp(Eps); break;
+        default: std::runtime_error("Unknown material");
       }
     }
   }
@@ -459,7 +481,7 @@ inline void Matrix::epsp(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,
 
 inline xt::xtensor<double,4> Matrix::Sig(const xt::xtensor<double,4> &a_Eps) const
 {
-  xt::xtensor<double,4> a_Sig = xt::empty<double>(a_Eps.shape());
+  xt::xtensor<double,4> a_Sig = xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim});
 
   this->Sig(a_Eps, a_Sig);
 

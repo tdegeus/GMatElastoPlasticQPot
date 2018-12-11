@@ -42,26 +42,26 @@ inline T2s Epsd(const T2s &Eps);
 // -------------------------------------------------------------------------------------------------
 
 // no allocation
-inline void sigm(const xt::xtensor<double,4> &a_Sig, xt::xtensor<double,2> &a_sigm);
-inline void epsm(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_epsm);
-inline void sigd(const xt::xtensor<double,4> &a_Sig, xt::xtensor<double,2> &a_sigd);
-inline void epsd(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_epsd);
-inline void Sigd(const xt::xtensor<double,4> &a_Sig, xt::xtensor<double,4> &a_Sigd);
-inline void Epsd(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4> &a_Epsd);
+inline void sigm(const xt::xtensor<double,4> &Sig, xt::xtensor<double,2> &sigm);
+inline void epsm(const xt::xtensor<double,4> &Eps, xt::xtensor<double,2> &epsm);
+inline void sigd(const xt::xtensor<double,4> &Sig, xt::xtensor<double,2> &sigd);
+inline void epsd(const xt::xtensor<double,4> &Eps, xt::xtensor<double,2> &epsd);
+inline void Sigd(const xt::xtensor<double,4> &Sig, xt::xtensor<double,4> &Sigd);
+inline void Epsd(const xt::xtensor<double,4> &Eps, xt::xtensor<double,4> &Epsd);
 
 // return allocated result
-inline xt::xtensor<double,2> sigm(const xt::xtensor<double,4> &a_Sig);
-inline xt::xtensor<double,2> epsm(const xt::xtensor<double,4> &a_Eps);
-inline xt::xtensor<double,2> sigd(const xt::xtensor<double,4> &a_Sig);
-inline xt::xtensor<double,2> epsd(const xt::xtensor<double,4> &a_Eps);
-inline xt::xtensor<double,4> Sigd(const xt::xtensor<double,4> &a_Sig);
-inline xt::xtensor<double,4> Epsd(const xt::xtensor<double,4> &a_Eps);
+inline xt::xtensor<double,2> sigm(const xt::xtensor<double,4> &Sig);
+inline xt::xtensor<double,2> epsm(const xt::xtensor<double,4> &Eps);
+inline xt::xtensor<double,2> sigd(const xt::xtensor<double,4> &Sig);
+inline xt::xtensor<double,2> epsd(const xt::xtensor<double,4> &Eps);
+inline xt::xtensor<double,4> Sigd(const xt::xtensor<double,4> &Sig);
+inline xt::xtensor<double,4> Epsd(const xt::xtensor<double,4> &Eps);
 
 // compute maximum, avoiding allocation
-inline double sigm_max(const xt::xtensor<double,4> &a_Sig);
-inline double epsm_max(const xt::xtensor<double,4> &a_Eps);
-inline double sigd_max(const xt::xtensor<double,4> &a_Sig);
-inline double epsd_max(const xt::xtensor<double,4> &a_Eps);
+inline double sigm_max(const xt::xtensor<double,4> &Sig);
+inline double epsm_max(const xt::xtensor<double,4> &Eps);
+inline double sigd_max(const xt::xtensor<double,4> &Sig);
+inline double epsd_max(const xt::xtensor<double,4> &Eps);
 
 // -------------------------------------------------------------------------------------------------
 
@@ -77,14 +77,11 @@ public:
   T2s Sig(const T2s &Eps) const;
 
   // parameters
-  double K() const { return m_K; };
-  double G() const { return m_G; };
+  double K() const;
+  double G() const;
 
   // energy
   double energy(const T2s &Eps) const;
-
-  // equivalent deviatoric strain
-  double epsd(const T2s &Eps) const;
 
   // index of the current yield strain
   size_t find(const T2s &Eps) const;
@@ -117,14 +114,11 @@ public:
   T2s Sig(const T2s &Eps) const;
 
   // parameters
-  double K() const { return m_K; };
-  double G() const { return m_G; };
+  double K() const;
+  double G() const;
 
   // energy
   double energy(const T2s &Eps) const;
-
-  // equivalent deviatoric strain
-  double epsd(const T2s &Eps) const;
 
   // index of the current yield strain
   size_t find(const T2s &Eps) const;
@@ -158,14 +152,11 @@ public:
   T2s Sig(const T2s &Eps) const;
 
   // parameters
-  double K() const { return m_K; };
-  double G() const { return m_G; };
+  double K() const;
+  double G() const;
 
   // energy
   double energy(const T2s &Eps) const;
-
-  // equivalent deviatoric strain
-  double epsd(const T2s &Eps) const;
 
   // index of the current yield strain
   size_t find(const T2s &Eps) const;
@@ -209,11 +200,11 @@ public:
   Matrix(size_t nelem, size_t nip);
 
   // return shape
-  size_t nelem() const { return m_nelem; };
-  size_t nip()   const { return m_nip;   };
+  size_t nelem() const;
+  size_t nip()   const;
 
   // return type
-  xt::xtensor<size_t,2> type() const { return m_type; };
+  xt::xtensor<size_t,2> type() const;
 
   // return plastic yes/no
   xt::xtensor<size_t,2> isPlastic() const;
@@ -256,18 +247,18 @@ public:
     const xt::xtensor<double,2> &epsy, bool init_elastic=true);
 
   // compute (no allocation)
-  void Sig   (const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,4> &a_Sig   ) const;
-  void energy(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_energy) const;
-  void find  (const xt::xtensor<double,4> &a_Eps, xt::xtensor<size_t,2> &a_find  ) const;
-  void epsy  (const xt::xtensor<size_t,2> &a_idx, xt::xtensor<double,2> &a_epsy  ) const;
-  void epsp  (const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_epsp  ) const;
+  void Sig   (const xt::xtensor<double,4> &Eps, xt::xtensor<double,4> &Sig   ) const;
+  void energy(const xt::xtensor<double,4> &Eps, xt::xtensor<double,2> &energy) const;
+  void find  (const xt::xtensor<double,4> &Eps, xt::xtensor<size_t,2> &find  ) const;
+  void epsy  (const xt::xtensor<size_t,2> &idx, xt::xtensor<double,2> &epsy  ) const;
+  void epsp  (const xt::xtensor<double,4> &Eps, xt::xtensor<double,2> &epsp  ) const;
 
   // compute (return allocated result)
-  xt::xtensor<double,4> Sig   (const xt::xtensor<double,4> &a_Eps) const;
-  xt::xtensor<double,2> energy(const xt::xtensor<double,4> &a_Eps) const;
-  xt::xtensor<size_t,2> find  (const xt::xtensor<double,4> &a_Eps) const;
-  xt::xtensor<double,2> epsy  (const xt::xtensor<size_t,2> &a_idx) const;
-  xt::xtensor<double,2> epsp  (const xt::xtensor<double,4> &a_Eps) const;
+  xt::xtensor<double,4> Sig   (const xt::xtensor<double,4> &Eps) const;
+  xt::xtensor<double,2> energy(const xt::xtensor<double,4> &Eps) const;
+  xt::xtensor<size_t,2> find  (const xt::xtensor<double,4> &Eps) const;
+  xt::xtensor<double,2> epsy  (const xt::xtensor<size_t,2> &idx) const;
+  xt::xtensor<double,2> epsp  (const xt::xtensor<double,4> &Eps) const;
 
 private:
 
@@ -284,6 +275,9 @@ private:
   size_t m_nelem;
   size_t m_nip;
   static const size_t m_ndim=2;
+
+  // internal check
+  bool m_allSet=false;
 
 };
 
