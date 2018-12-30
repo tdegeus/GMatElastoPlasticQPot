@@ -46,6 +46,7 @@ inline void sigm(const xt::xtensor<double,4> &Sig, xt::xtensor<double,2> &sigm);
 inline void epsm(const xt::xtensor<double,4> &Eps, xt::xtensor<double,2> &epsm);
 inline void sigd(const xt::xtensor<double,4> &Sig, xt::xtensor<double,2> &sigd);
 inline void epsd(const xt::xtensor<double,4> &Eps, xt::xtensor<double,2> &epsd);
+inline void epsd(const xt::xtensor<double,3> &Eps, xt::xtensor<double,1> &epsd);
 inline void Sigd(const xt::xtensor<double,4> &Sig, xt::xtensor<double,4> &Sigd);
 inline void Epsd(const xt::xtensor<double,4> &Eps, xt::xtensor<double,4> &Epsd);
 

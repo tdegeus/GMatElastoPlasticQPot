@@ -112,6 +112,30 @@ inline void epsm(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_ep
 
 // -------------------------------------------------------------------------------------------------
 
+inline void epsd(const xt::xtensor<double,3> &a_Eps, xt::xtensor<double,1> &a_epsd)
+{
+  assert( a_Eps.shape()[0] == a_epsd.shape()[0] );
+  assert( a_Eps.shape()[2] == 2 );
+  assert( a_Eps.shape()[3] == 2 );
+
+  #pragma omp parallel
+  {
+    T2s I = eye();
+
+    #pragma omp for
+    for ( size_t e = 0 ; e < a_Eps.shape()[0] ; ++e )
+    {
+      auto Eps = xt::adapt(&a_Eps(e,0,0), xt::xshape<2,2>());
+
+      auto Epsd = Eps - trace(Eps)/2. * I;
+
+      a_epsd(e) = std::sqrt(.5*ddot(Epsd,Epsd));
+    }
+  }
+}
+
+// -------------------------------------------------------------------------------------------------
+
 inline void epsd(const xt::xtensor<double,4> &a_Eps, xt::xtensor<double,2> &a_epsd)
 {
   assert( a_Eps.shape()[0] == a_epsd.shape()[0] );

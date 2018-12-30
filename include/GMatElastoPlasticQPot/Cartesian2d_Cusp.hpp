@@ -95,7 +95,7 @@ inline T2s Cusp::Sig(const T2s &Eps) const
 
   // read current yield strains
   size_t i       = find(epsd);
-  double eps_min = ( m_epsy(i+1) + m_epsy(i) ) / 2.;
+  double eps_min = .5 * ( m_epsy(i+1) + m_epsy(i) );
 
   // return stress tensor
   return m_K * epsm * I + m_G * (1.-eps_min/epsd) * Epsd;
@@ -116,8 +116,8 @@ inline double Cusp::energy(const T2s &Eps) const
 
   // read current yield strain
   size_t i       = find(epsd);
-  double eps_min = ( m_epsy(i+1) + m_epsy(i) ) / 2.;
-  double deps_y  = ( m_epsy(i+1) - m_epsy(i) ) / 2.;
+  double eps_min = .5 * ( m_epsy(i+1) + m_epsy(i) );
+  double deps_y  = .5 * ( m_epsy(i+1) - m_epsy(i) );
 
   // deviatoric part of the energy
   double V = m_G * ( std::pow(epsd-eps_min,2.) - std::pow(deps_y,2.) );
