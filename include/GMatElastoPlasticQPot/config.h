@@ -36,9 +36,26 @@
 
 // -------------------------------------------------------------------------------------------------
 
+#ifndef NDEBUG
+#define GMATELASTOPLASTICQPOT_ENABLE_ASSERT
+#endif
+
+#ifdef GMATELASTOPLASTICQPOT_ENABLE_ASSERT
+#define GMATELASTOPLASTICQPOT_ASSERT(expr) GMATELASTOPLASTICQPOT_ASSERT_IMPL(expr, __FILE__, __LINE__)
+#define GMATELASTOPLASTICQPOT_ASSERT_IMPL(expr, file, line)                                                               \
+    if (!(expr))                                                                                                          \
+    {                                                                                                                     \
+        throw std::runtime_error(std::string(file) + ':' + std::to_string(line) + ": assertion failed (" #expr ") \n\t"); \
+    }
+#else
+#define GMATELASTOPLASTICQPOT_ASSERT(expr)
+#endif
+
+// -------------------------------------------------------------------------------------------------
+
 #define GMATELASTOPLASTICQPOT_WORLD_VERSION 0
-#define GMATELASTOPLASTICQPOT_MAJOR_VERSION 1
-#define GMATELASTOPLASTICQPOT_MINOR_VERSION 2
+#define GMATELASTOPLASTICQPOT_MAJOR_VERSION 2
+#define GMATELASTOPLASTICQPOT_MINOR_VERSION 0
 
 #define GMATELASTOPLASTICQPOT_VERSION_AT_LEAST(x,y,z) \
   (GMATELASTOPLASTICQPOT_WORLD_VERSION>x || (GMATELASTOPLASTICQPOT_WORLD_VERSION>=x && \
