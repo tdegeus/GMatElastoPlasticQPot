@@ -16,8 +16,9 @@ namespace Cartesian2d {
 
 inline Matrix::Matrix(size_t nelem, size_t nip) : m_nelem(nelem), m_nip(nip)
 {
-  m_type  = Type::Unset * xt::ones <size_t>({m_nelem, m_nip});
-  m_index =               xt::empty<size_t>({m_nelem, m_nip});
+  m_type   = xt::ones <size_t>({m_nelem, m_nip}) * Type::Unset;
+  m_index  = xt::empty<size_t>({m_nelem, m_nip});
+  m_allSet = false;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -33,6 +34,13 @@ inline size_t Matrix::nip() const
 {
   return m_nip;
 }
+
+// -------------------------------------------------------------------------------------------------
+
+inline xt::xtensor<size_t,2> Matrix::type() const
+{
+  return m_type;
+};
 
 // -------------------------------------------------------------------------------------------------
 
@@ -73,13 +81,6 @@ inline xt::xtensor<double,2> Matrix::G() const
   }
   return out;
 }
-
-// -------------------------------------------------------------------------------------------------
-
-inline xt::xtensor<size_t,2> Matrix::type() const
-{
-  return m_type;
-};
 
 // -------------------------------------------------------------------------------------------------
 
@@ -245,7 +246,7 @@ inline void Matrix::stress(const xt::xtensor<double,4>& a_Eps, xt::xtensor<doubl
 {
   GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
   GMATELASTOPLASTICQPOT_ASSERT(a_Eps.shape() ==\
-   std::decay_t<decltype(a_Eps)>::shape_type({m_nelem, m_nip, m_ndim, m_ndim}));
+    std::decay_t<decltype(a_Eps)>::shape_type({m_nelem, m_nip, m_ndim, m_ndim}));
   GMATELASTOPLASTICQPOT_ASSERT(a_Eps.shape() == a_Sig.shape());
 
   #pragma omp parallel for
@@ -268,7 +269,7 @@ inline void Matrix::energy(const xt::xtensor<double,4>& a_Eps, xt::xtensor<doubl
 {
   GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
   GMATELASTOPLASTICQPOT_ASSERT(a_Eps.shape() ==\
-   std::decay_t<decltype(a_Eps)>::shape_type({m_nelem, m_nip, m_ndim, m_ndim}));
+    std::decay_t<decltype(a_Eps)>::shape_type({m_nelem, m_nip, m_ndim, m_ndim}));
   GMATELASTOPLASTICQPOT_ASSERT(a_energy.shape() == m_type.shape());
 
   #pragma omp parallel for
@@ -350,47 +351,47 @@ inline void Matrix::epsp(const xt::xtensor<double,4>& a_Eps, xt::xtensor<double,
 
 // -------------------------------------------------------------------------------------------------
 
-inline xt::xtensor<double,4> Matrix::Stress(const xt::xtensor<double,4>& a_Eps) const
+inline xt::xtensor<double,4> Matrix::Stress(const xt::xtensor<double,4>& Eps) const
 {
-  xt::xtensor<double,4> a_Sig = xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim});
-  this->stress(a_Eps, a_Sig);
-  return a_Sig;
+  xt::xtensor<double,4> Sig = xt::empty<double>(Eps.shape());
+  this->stress(Eps, Sig);
+  return Sig;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-inline xt::xtensor<double,2> Matrix::Energy(const xt::xtensor<double,4>& a_Eps) const
+inline xt::xtensor<double,2> Matrix::Energy(const xt::xtensor<double,4>& Eps) const
 {
-  xt::xtensor<double,2> a_energy = xt::empty<double>({m_nelem, m_nip});
-  this->energy(a_Eps, a_energy);
-  return a_energy;
+  xt::xtensor<double,2> out = xt::empty<double>({m_nelem, m_nip});
+  this->energy(Eps, out);
+  return out;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-inline xt::xtensor<size_t,2> Matrix::Find(const xt::xtensor<double,4>& a_Eps) const
+inline xt::xtensor<size_t,2> Matrix::Find(const xt::xtensor<double,4>& Eps) const
 {
-  xt::xtensor<size_t,2> a_idx = xt::empty<size_t>({m_nelem, m_nip});
-  this->find(a_Eps, a_idx);
-  return a_idx;
+  xt::xtensor<size_t,2> out = xt::empty<size_t>({m_nelem, m_nip});
+  this->find(Eps, out);
+  return out;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-inline xt::xtensor<double,2> Matrix::Epsy(const xt::xtensor<size_t,2>& a_idx) const
+inline xt::xtensor<double,2> Matrix::Epsy(const xt::xtensor<size_t,2>& idx) const
 {
-  xt::xtensor<double,2> a_epsy = xt::empty<double>({m_nelem, m_nip});
-  this->epsy(a_idx, a_epsy);
-  return a_epsy;
+  xt::xtensor<double,2> out = xt::empty<double>({m_nelem, m_nip});
+  this->epsy(idx, out);
+  return out;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-inline xt::xtensor<double,2> Matrix::Epsp(const xt::xtensor<double,4>& a_Eps) const
+inline xt::xtensor<double,2> Matrix::Epsp(const xt::xtensor<double,4>& Eps) const
 {
-  xt::xtensor<double,2> a_epsp = xt::empty<double>({m_nelem, m_nip});
-  this->epsp(a_Eps, a_epsp);
-  return a_epsp;
+  xt::xtensor<double,2> out = xt::empty<double>({m_nelem, m_nip});
+  this->epsp(Eps, out);
+  return out;
 }
 
 // -------------------------------------------------------------------------------------------------

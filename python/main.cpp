@@ -36,11 +36,11 @@ typedef SM::T2 T2;
 
 sm.def("Hydrostatic",
   py::overload_cast<const T2&>(&SM::Hydrostatic),
-  "Hydrostatic strain",
-  py::arg("Eps"));
+  "Hydrostatic part of a 2nd-order tensor",
+  py::arg("A"));
 
-sm.def("Deviator",
-  py::overload_cast<const T2&>(&SM::Deviator),
+sm.def("Deviatoric",
+  py::overload_cast<const T2&>(&SM::Deviatoric),
   "Deviator",
   py::arg("A"));
 
@@ -58,11 +58,11 @@ sm.def("Sigd",
 
 sm.def("Hydrostatic",
   py::overload_cast<const xt::xtensor<double,4>&>(&SM::Hydrostatic),
-  "Hydrostatic strain",
-  py::arg("Eps"));
+  "Hydrostatic part of a 2nd-order tensor",
+  py::arg("A"));
 
-sm.def("Deviator",
-  py::overload_cast<const xt::xtensor<double,4>&>(&SM::Deviator),
+sm.def("Deviatoric",
+  py::overload_cast<const xt::xtensor<double,4>&>(&SM::Deviatoric),
   "Deviator",
   py::arg("A"));
 
@@ -79,29 +79,29 @@ sm.def("Sigd",
 // -------------------------------------------------------------------------------------------------
 
 py::class_<SM::Elastic>(sm, "Elastic")
-  // constructor
+
   .def(
     py::init<double,double>(),
     "Elastic material",
     py::arg("K"),
     py::arg("G")
   )
-  // methods
+
   .def("Stress", &SM::Elastic::Stress, py::arg("Eps"))
   .def("energy", &SM::Elastic::energy, py::arg("Eps"))
-  .def("epsy"  , &SM::Elastic::epsy  , py::arg("idx"))
-  .def("epsp"  , py::overload_cast<const T2&>(&SM::Elastic::epsp, py::const_), py::arg("Eps" ))
-  .def("epsp"  , py::overload_cast<double   >(&SM::Elastic::epsp, py::const_), py::arg("epsd"))
-  .def("find"  , py::overload_cast<const T2&>(&SM::Elastic::find, py::const_), py::arg("Eps" ))
-  .def("find"  , py::overload_cast<double   >(&SM::Elastic::find, py::const_), py::arg("epsd"))
-  // print to screen
+  .def("epsy", &SM::Elastic::epsy  , py::arg("idx"))
+  .def("epsp", py::overload_cast<const T2&>(&SM::Elastic::epsp, py::const_), py::arg("Eps"))
+  .def("epsp", py::overload_cast<double>(&SM::Elastic::epsp, py::const_), py::arg("epsd"))
+  .def("find", py::overload_cast<const T2&>(&SM::Elastic::find, py::const_), py::arg("Eps"))
+  .def("find", py::overload_cast<double>(&SM::Elastic::find, py::const_), py::arg("epsd"))
+
   .def("__repr__", [](const SM::Elastic &){
     return "<GMatElastoPlasticQPot.Cartesian2d.Elastic>"; });
 
 // -------------------------------------------------------------------------------------------------
 
 py::class_<SM::Cusp>(sm, "Cusp")
-  // constructor
+
   .def(
     py::init<double,double,const xt::xtensor<double,1>&, bool>(),
     "Cusp material",
@@ -110,22 +110,22 @@ py::class_<SM::Cusp>(sm, "Cusp")
     py::arg("epsy"),
     py::arg("init_elastic")=true
   )
-  // methods
+
   .def("Stress", &SM::Cusp::Stress, py::arg("Eps"))
   .def("energy", &SM::Cusp::energy, py::arg("Eps"))
-  .def("epsy"  , &SM::Cusp::epsy  , py::arg("idx"))
-  .def("epsp"  , py::overload_cast<const T2&>(&SM::Cusp::epsp, py::const_), py::arg("Eps" ))
-  .def("epsp"  , py::overload_cast<double   >(&SM::Cusp::epsp, py::const_), py::arg("epsd"))
-  .def("find"  , py::overload_cast<const T2&>(&SM::Cusp::find, py::const_), py::arg("Eps" ))
-  .def("find"  , py::overload_cast<double   >(&SM::Cusp::find, py::const_), py::arg("epsd"))
-  // print to screen
+  .def("epsy", &SM::Cusp::epsy  , py::arg("idx"))
+  .def("epsp", py::overload_cast<const T2&>(&SM::Cusp::epsp, py::const_), py::arg("Eps"))
+  .def("epsp", py::overload_cast<double>(&SM::Cusp::epsp, py::const_), py::arg("epsd"))
+  .def("find", py::overload_cast<const T2&>(&SM::Cusp::find, py::const_), py::arg("Eps"))
+  .def("find", py::overload_cast<double>(&SM::Cusp::find, py::const_), py::arg("epsd"))
+
   .def("__repr__", [](const SM::Cusp &){
     return "<GMatElastoPlasticQPot.Cartesian2d.Cusp>"; });
 
 // -------------------------------------------------------------------------------------------------
 
 py::class_<SM::Smooth>(sm, "Smooth")
-  // constructor
+
   .def(
     py::init<double,double,const xt::xtensor<double,1>&, bool>(),
     "Smooth material",
@@ -134,15 +134,15 @@ py::class_<SM::Smooth>(sm, "Smooth")
     py::arg("epsy"),
     py::arg("init_elastic")=true
   )
-  // methods
+
   .def("Stress", &SM::Smooth::Stress, py::arg("Eps"))
   .def("energy", &SM::Smooth::energy, py::arg("Eps"))
-  .def("epsy"  , &SM::Smooth::epsy  , py::arg("idx"))
-  .def("epsp"  , py::overload_cast<const T2&>(&SM::Smooth::epsp, py::const_), py::arg("Eps" ))
-  .def("epsp"  , py::overload_cast<double   >(&SM::Smooth::epsp, py::const_), py::arg("epsd"))
-  .def("find"  , py::overload_cast<const T2&>(&SM::Smooth::find, py::const_), py::arg("Eps" ))
-  .def("find"  , py::overload_cast<double   >(&SM::Smooth::find, py::const_), py::arg("epsd"))
-  // print to screen
+  .def("epsy", &SM::Smooth::epsy  , py::arg("idx"))
+  .def("epsp", py::overload_cast<const T2&>(&SM::Smooth::epsp, py::const_), py::arg("Eps"))
+  .def("epsp", py::overload_cast<double>(&SM::Smooth::epsp, py::const_), py::arg("epsd"))
+  .def("find", py::overload_cast<const T2&>(&SM::Smooth::find, py::const_), py::arg("Eps"))
+  .def("find", py::overload_cast<double>(&SM::Smooth::find, py::const_), py::arg("epsd"))
+
   .def("__repr__", [](const SM::Smooth &){
     return "<GMatElastoPlasticQPot.Cartesian2d.Smooth>"; });
 
@@ -163,19 +163,14 @@ py::class_<SM::Matrix>(sm, "Matrix")
 
   .def(
     py::init<size_t, size_t>(),
-    "Matrix of materials",
+    "Matrix of material points",
     py::arg("nelem"),
     py::arg("nip")
   )
 
-  .def("type",
-    &SM::Matrix::type)
-
-  .def("nelem",
-    &SM::Matrix::nelem)
-
-  .def("nip",
-    &SM::Matrix::nip)
+  .def("type", &SM::Matrix::type)
+  .def("nelem", &SM::Matrix::nelem)
+  .def("nip", &SM::Matrix::nip)
 
   .def("setElastic",
     py::overload_cast<
