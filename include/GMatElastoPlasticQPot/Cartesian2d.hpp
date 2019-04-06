@@ -14,56 +14,40 @@ namespace Cartesian2d {
 
 // -------------------------------------------------------------------------------------------------
 
-template<class T>
-inline double trace(const T& A)
+inline Tensor2 I()
 {
-  return A(0,0) + A(1,1);
+  return Tensor2({{1.0, 0.0},
+                  {0.0, 1.0}});
 }
 
 // -------------------------------------------------------------------------------------------------
 
-template <class T>
-inline double ddot22(const T& A, const T& B)
-{
-  return A(0,0) * B(0,0) + 2.0 * A(0,1) * B(0,1) + A(1,1) * B(1,1);
-}
-
-// -------------------------------------------------------------------------------------------------
-
-inline T2 I()
-{
-  return T2({{1., 0.},
-             {0., 1.}});
-}
-
-// -------------------------------------------------------------------------------------------------
-
-inline double Hydrostatic(const T2& A)
+inline double Hydrostatic(const Tensor2& A)
 {
   return 0.5 * trace(A);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-inline T2 Deviatoric(const T2& A)
+inline Tensor2 Deviatoric(const Tensor2& A)
 {
   return A - 0.5 * trace(A) * I();
 }
 
 // -------------------------------------------------------------------------------------------------
 
-inline double Epsd(const T2& Eps)
+inline double Epsd(const Tensor2& Eps)
 {
-  T2 Epsd = Eps - 0.5 * trace(Eps) * I();
-  return std::sqrt(0.5 * ddot22(Epsd,Epsd));
+  Tensor2 Epsd = Eps - 0.5 * trace(Eps) * I();
+  return std::sqrt(0.5 * A2_ddot_B2(Epsd,Epsd));
 }
 
 // -------------------------------------------------------------------------------------------------
 
-inline double Sigd(const T2& Sig)
+inline double Sigd(const Tensor2& Sig)
 {
-  T2 Sigd = Sig - 0.5 * trace(Sig) * I();
-  return std::sqrt(2.0 * ddot22(Sigd,Sigd));
+  Tensor2 Sigd = Sig - 0.5 * trace(Sig) * I();
+  return std::sqrt(2.0 * A2_ddot_B2(Sigd,Sigd));
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -95,7 +79,7 @@ inline void deviatoric(const xt::xtensor<double,4>& A, xt::xtensor<double,4>& Ad
 
   #pragma omp parallel
   {
-    T2 I = Cartesian2d::I();
+    Tensor2 I = Cartesian2d::I();
     #pragma omp for
     for (size_t e = 0; e < A.shape()[0]; ++e) {
       for (size_t q = 0; q < A.shape()[1]; ++q) {
@@ -116,13 +100,13 @@ inline void epsd(const xt::xtensor<double,4>& A, xt::xtensor<double,2>& Aeq)
 
   #pragma omp parallel
   {
-    T2 I = Cartesian2d::I();
+    Tensor2 I = Cartesian2d::I();
     #pragma omp for
     for (size_t e = 0; e < A.shape()[0]; ++e) {
       for (size_t q = 0; q < A.shape()[1]; ++q) {
         auto Ai  = xt::adapt(&A(e,q,0,0), xt::xshape<2,2>());
         auto Aid = Ai - 0.5 * trace(Ai) * I;
-        Aeq(e,q) = std::sqrt(0.5 * ddot22(Aid,Aid));
+        Aeq(e,q) = std::sqrt(0.5 * A2_ddot_B2(Aid,Aid));
       }
     }
   }
@@ -137,13 +121,13 @@ inline void sigd(const xt::xtensor<double,4>& A, xt::xtensor<double,2>& Aeq)
 
   #pragma omp parallel
   {
-    T2 I = Cartesian2d::I();
+    Tensor2 I = Cartesian2d::I();
     #pragma omp for
     for (size_t e = 0; e < A.shape()[0]; ++e) {
       for (size_t q = 0; q < A.shape()[1]; ++q) {
         auto Ai  = xt::adapt(&A(e,q,0,0), xt::xshape<2,2>());
         auto Aid = Ai - 0.5 * trace(Ai) * I;
-        Aeq(e,q) = std::sqrt(2.0 * ddot22(Aid,Aid));
+        Aeq(e,q) = std::sqrt(2.0 * A2_ddot_B2(Aid,Aid));
       }
     }
   }
@@ -183,6 +167,22 @@ inline xt::xtensor<double,2> Sigd(const xt::xtensor<double,4>& A)
   xt::xtensor<double,2> Aeq = xt::empty<double>({A.shape()[0], A.shape()[1]});
   Cartesian2d::sigd(A, Aeq);
   return Aeq;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+template <class U>
+inline double trace(const U& A)
+{
+  return A(0,0) + A(1,1);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+template <class U, class V>
+inline double A2_ddot_B2(const U& A, const V& B)
+{
+  return A(0,0) * B(0,0) + 2.0 * A(0,1) * B(0,1) + A(1,1) * B(1,1);
 }
 
 // -------------------------------------------------------------------------------------------------

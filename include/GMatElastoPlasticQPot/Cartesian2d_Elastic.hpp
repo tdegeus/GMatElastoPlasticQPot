@@ -34,7 +34,7 @@ inline double Elastic::G() const
 
 // -------------------------------------------------------------------------------------------------
 
-inline double Elastic::epsp(const T2&) const
+inline double Elastic::epsp(const Tensor2&) const
 {
   return 0.0;
 }
@@ -55,7 +55,7 @@ inline double Elastic::epsy(size_t) const
 
 // -------------------------------------------------------------------------------------------------
 
-inline size_t Elastic::find(const T2&) const
+inline size_t Elastic::find(const Tensor2&) const
 {
   return 0;
 }
@@ -70,7 +70,7 @@ inline size_t Elastic::find(double) const
 // -------------------------------------------------------------------------------------------------
 
 template <class T>
-inline void Elastic::stress(const T2& Eps, T&& Sig) const
+inline void Elastic::stress(const Tensor2& Eps, T&& Sig) const
 {
   auto I    = Cartesian2d::I();
   auto epsm = 0.5 * trace(Eps);
@@ -80,21 +80,21 @@ inline void Elastic::stress(const T2& Eps, T&& Sig) const
 
 // -------------------------------------------------------------------------------------------------
 
-inline T2 Elastic::Stress(const T2& Eps) const
+inline Tensor2 Elastic::Stress(const Tensor2& Eps) const
 {
-  T2 Sig;
+  Tensor2 Sig;
   this->stress(Eps, Sig);
   return Sig;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-inline double Elastic::energy(const T2& Eps) const
+inline double Elastic::energy(const Tensor2& Eps) const
 {
   auto I    = Cartesian2d::I();
   auto epsm = 0.5 * trace(Eps);
   auto Epsd = Eps - epsm * I;
-  auto epsd = std::sqrt(0.5 * ddot22(Epsd,Epsd));
+  auto epsd = std::sqrt(0.5 * A2_ddot_B2(Epsd,Epsd));
   auto U    = m_K * std::pow(epsm,2.0);
   auto V    = m_G * std::pow(epsd,2.0);
   return U + V;

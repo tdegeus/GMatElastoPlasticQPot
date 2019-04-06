@@ -42,7 +42,7 @@ inline double Smooth::G() const
 
 // -------------------------------------------------------------------------------------------------
 
-inline double Smooth::epsp(const T2& Eps) const
+inline double Smooth::epsp(const Tensor2& Eps) const
 {
   return this->epsp(Cartesian2d::Epsd(Eps));
 }
@@ -64,7 +64,7 @@ inline double Smooth::epsy(size_t i) const
 
 // -------------------------------------------------------------------------------------------------
 
-inline size_t Smooth::find(const T2& Eps) const
+inline size_t Smooth::find(const Tensor2& Eps) const
 {
   return this->find(Cartesian2d::Epsd(Eps));
 }
@@ -81,13 +81,13 @@ inline size_t Smooth::find(double epsd) const
 // -------------------------------------------------------------------------------------------------
 
 template <class T>
-inline void Smooth::stress(const T2& Eps, T&& Sig) const
+inline void Smooth::stress(const Tensor2& Eps, T&& Sig) const
 {
   // decompose strain: hydrostatic part, deviatoric part
   auto I    = Cartesian2d::I();
   auto epsm = 0.5 * trace(Eps);
   auto Epsd = Eps - epsm * I;
-  auto epsd = std::sqrt(0.5 * ddot22(Epsd,Epsd));
+  auto epsd = std::sqrt(0.5 * A2_ddot_B2(Epsd,Epsd));
 
   // no deviatoric strain -> only hydrostatic stress
   if (epsd <= 0.) {
@@ -106,22 +106,22 @@ inline void Smooth::stress(const T2& Eps, T&& Sig) const
 
 // -------------------------------------------------------------------------------------------------
 
-inline T2 Smooth::Stress(const T2& Eps) const
+inline Tensor2 Smooth::Stress(const Tensor2& Eps) const
 {
-  T2 Sig;
+  Tensor2 Sig;
   this->stress(Eps, Sig);
   return Sig;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-inline double Smooth::energy(const T2& Eps) const
+inline double Smooth::energy(const Tensor2& Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
   auto I    = Cartesian2d::I();
   auto epsm = 0.5 * trace(Eps);
   auto Epsd = Eps - epsm * I;
-  auto epsd = std::sqrt(0.5 * ddot22(Epsd,Epsd));
+  auto epsd = std::sqrt(0.5 * A2_ddot_B2(Epsd,Epsd));
 
   // hydrostatic part of the energy
   double U = m_K * std::pow(epsm,2.);

@@ -19,8 +19,8 @@
 #include <iostream>
 #include <vector>
 #include <xtensor/xarray.hpp>
-#include <xtensor/xnoalias.hpp>
 #include <xtensor/xtensor.hpp>
+#include <xtensor/xnoalias.hpp>
 #include <xtensor/xfixed.hpp>
 #include <xtensor/xadapt.hpp>
 #include <xtensor/xview.hpp>
@@ -28,11 +28,6 @@
 #include <xtensor/xoperation.hpp>
 #include <xtensor/xsort.hpp>
 #include <xtensor/xmath.hpp>
-
-// -------------------------------------------------------------------------------------------------
-
-// dummy operation that can be use to suppress the "unused parameter" warnings
-#define UNUSED(p) ( (void)(p) )
 
 // -------------------------------------------------------------------------------------------------
 

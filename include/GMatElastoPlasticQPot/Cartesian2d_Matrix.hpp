@@ -23,6 +23,13 @@ inline Matrix::Matrix(size_t nelem, size_t nip) : m_nelem(nelem), m_nip(nip)
 
 // -------------------------------------------------------------------------------------------------
 
+inline size_t Matrix::ndim() const
+{
+  return m_ndim;
+}
+
+// -------------------------------------------------------------------------------------------------
+
 inline size_t Matrix::nelem() const
 {
   return m_nelem;

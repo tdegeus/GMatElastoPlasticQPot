@@ -16,45 +16,40 @@ namespace Cartesian2d {
 
 // Alias
 
-using T2 = xt::xtensor_fixed<double, xt::xshape<2,2>>;
-
-// Tensor operations
-
-template <class T> inline double trace (const T& A);
-template <class T> inline double ddot22(const T& A, const T& B);
+using Tensor2 = xt::xtensor_fixed<double, xt::xshape<2,2>>;
 
 // Unit tensors
 
-inline T2 I();
+inline Tensor2 I();
 
 // -------------------------------------------------------------------------------------------------
 
 // Hydrostatic stress/strain
 
-inline double Hydrostatic(const T2& A);
+inline double Hydrostatic(const Tensor2& A);
 
 // Deviatoric part of a tensor
 
-inline T2 Deviatoric(const T2& A);
+inline Tensor2 Deviatoric(const Tensor2& A);
 
 // Equivalent deviatoric stress/stress
 
-inline double Sigd(const T2& Sig);
-inline double Epsd(const T2& Eps);
+inline double Sigd(const Tensor2& Sig);
+inline double Epsd(const Tensor2& Eps);
 
 // Matrix version of the functions above (no allocation)
 
-inline void hydrostatic(const xt::xtensor<double,4>& A, xt::xtensor<double,2>& Am);
-inline void deviatoric(const xt::xtensor<double,4>& A, xt::xtensor<double,4>& Ad);
-inline void sigd(const xt::xtensor<double,4>& A, xt::xtensor<double,2>& Aeq);
-inline void epsd(const xt::xtensor<double,4>& A, xt::xtensor<double,2>& Aeq);
+inline void hydrostatic(const xt::xtensor<double,4>& A  , xt::xtensor<double,2>& Am   );
+inline void deviatoric (const xt::xtensor<double,4>& A  , xt::xtensor<double,4>& Ad   );
+inline void sigd       (const xt::xtensor<double,4>& Sig, xt::xtensor<double,2>& Sigeq);
+inline void epsd       (const xt::xtensor<double,4>& Eps, xt::xtensor<double,2>& Epseq);
 
 // Auto-allocation allocation of the functions above
 
-inline xt::xtensor<double,2> Hydrostatic(const xt::xtensor<double,4>& A);
-inline xt::xtensor<double,4> Deviatoric(const xt::xtensor<double,4>& A);
-inline xt::xtensor<double,2> Sigd(const xt::xtensor<double,4>& Sig);
-inline xt::xtensor<double,2> Epsd(const xt::xtensor<double,4>& Eps);
+inline xt::xtensor<double,2> Hydrostatic(const xt::xtensor<double,4>& A  );
+inline xt::xtensor<double,4> Deviatoric (const xt::xtensor<double,4>& A  );
+inline xt::xtensor<double,2> Sigd       (const xt::xtensor<double,4>& Sig);
+inline xt::xtensor<double,2> Epsd       (const xt::xtensor<double,4>& Eps);
 
 // -------------------------------------------------------------------------------------------------
 
@@ -71,25 +66,25 @@ public:
   double G() const;
 
   // Stress (no allocation, overwrites "Sig")
-  template <class T>
-  void stress(const T2& Eps, T&& Sig) const;
+  template <class U>
+  void stress(const Tensor2& Eps, U&& Sig) const;
 
   // Stress (auto allocation)
-  T2 Stress(const T2& Eps) const;
+  Tensor2 Stress(const Tensor2& Eps) const;
 
   // Energy
-  double energy(const T2& Eps) const;
+  double energy(const Tensor2& Eps) const;
 
   // Index of the current yield strain
-  size_t find(const T2& Eps) const; // strain tensor
-  size_t find(double epsd) const;   // equivalent deviatoric strain (epsd == Deviatoric(Eps))
+  size_t find(const Tensor2& Eps) const; // strain tensor
+  size_t find(double epsd) const;        // equivalent deviatoric strain (epsd == Deviatoric(Eps))
 
   // Certain yield strain
   double epsy(size_t idx) const;
 
   // Equivalent plastic strain
-  double epsp(const T2& Eps) const; // strain tensor
-  double epsp(double epsd) const;   // equivalent deviatoric strain (epsd == Deviatoric(Eps))
+  double epsp(const Tensor2& Eps) const; // strain tensor
+  double epsp(double epsd) const;        // equivalent deviatoric strain (epsd == Deviatoric(Eps))
 
 private:
 
@@ -112,25 +107,25 @@ public:
   double G() const;
 
   // Stress (no allocation, overwrites "Sig")
-  template <class T>
-  void stress(const T2& Eps, T&& Sig) const;
+  template <class U>
+  void stress(const Tensor2& Eps, U&& Sig) const;
 
   // Stress (auto allocation)
-  T2 Stress(const T2& Eps) const;
+  Tensor2 Stress(const Tensor2& Eps) const;
 
   // Energy
-  double energy(const T2& Eps) const;
+  double energy(const Tensor2& Eps) const;
 
   // Index of the current yield strain
-  size_t find(const T2& Eps) const; // strain tensor
-  size_t find(double epsd) const;   // equivalent deviatoric strain (epsd == Deviatoric(Eps))
+  size_t find(const Tensor2& Eps) const; // strain tensor
+  size_t find(double epsd) const;        // equivalent deviatoric strain (epsd == Deviatoric(Eps))
 
   // Certain yield strain
   double epsy(size_t idx) const;
 
   // Equivalent plastic strain
-  double epsp(const T2& Eps) const; // strain tensor
-  double epsp(double epsd) const;   // equivalent deviatoric strain (epsd == Deviatoric(Eps))
+  double epsp(const Tensor2& Eps) const; // strain tensor
+  double epsp(double epsd) const;        // equivalent deviatoric strain (epsd == Deviatoric(Eps))
 
 private:
 
@@ -154,25 +149,25 @@ public:
   double G() const;
 
   // Stress (no allocation, overwrites "Sig")
-  template <class T>
-  void stress(const T2& Eps, T&& Sig) const;
+  template <class U>
+  void stress(const Tensor2& Eps, U&& Sig) const;
 
   // Stress (auto allocation)
-  T2 Stress(const T2& Eps) const;
+  Tensor2 Stress(const Tensor2& Eps) const;
 
   // Energy
-  double energy(const T2& Eps) const;
+  double energy(const Tensor2& Eps) const;
 
   // Index of the current yield strain
-  size_t find(const T2& Eps) const; // strain tensor
-  size_t find(double epsd) const;   // equivalent deviatoric strain (epsd == Deviatoric(Eps))
+  size_t find(const Tensor2& Eps) const; // strain tensor
+  size_t find(double epsd) const;        // equivalent deviatoric strain (epsd == Deviatoric(Eps))
 
   // Certain yield strain
   double epsy(size_t idx) const;
 
   // Equivalent plastic strain
-  double epsp(const T2& Eps) const; // strain tensor
-  double epsp(double epsd) const;   // equivalent deviatoric strain (epsd == Deviatoric(Eps))
+  double epsp(const Tensor2& Eps) const; // strain tensor
+  double epsp(double epsd) const;        // equivalent deviatoric strain (epsd == Deviatoric(Eps))
 
 private:
 
@@ -205,6 +200,7 @@ public:
 
   // Shape
 
+  size_t ndim() const;
   size_t nelem() const;
   size_t nip() const;
 
@@ -305,6 +301,19 @@ private:
   void checkAllSet();
 
 };
+
+// -------------------------------------------------------------------------------------------------
+// Internal support functions
+// -------------------------------------------------------------------------------------------------
+
+// Trace: "c = A_ii"
+template <class U>
+inline double trace(const U& A);
+
+// Tensor contraction: "c = A_ij * B_ji"
+// Symmetric tensors only, no assertion
+template <class U, class V>
+inline double A2_ddot_B2(const U& A, const V& B);
 
 // -------------------------------------------------------------------------------------------------
 
