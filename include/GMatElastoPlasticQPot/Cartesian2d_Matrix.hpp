@@ -47,7 +47,7 @@ inline size_t Matrix::nip() const
 inline xt::xtensor<size_t,2> Matrix::type() const
 {
   return m_type;
-};
+}
 
 // -------------------------------------------------------------------------------------------------
 

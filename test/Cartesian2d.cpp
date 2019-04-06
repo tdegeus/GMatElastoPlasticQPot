@@ -24,7 +24,7 @@ SECTION("Elastic")
   GM::Elastic mat(K,G);
 
   // allocate tensors
-  GM::T2 Eps, Sig;
+  GM::Tensor2 Eps, Sig;
 
   // simple shear + volumetric deformation
   // - parameters
@@ -58,7 +58,7 @@ SECTION("Cusp")
   GM::Cusp mat(K,G,{0.01, 0.03, 0.10});
 
   // allocate tensors
-  GM::T2 Eps, Sig;
+  GM::Tensor2 Eps, Sig;
 
   // simple shear + volumetric deformation
   // - parameters
@@ -92,7 +92,7 @@ SECTION("Smooth")
   GM::Smooth mat(K,G,{0.01, 0.03, 0.10});
 
   // allocate tensors
-  GM::T2 Eps, Sig;
+  GM::Tensor2 Eps, Sig;
 
   // simple shear + volumetric deformation
   // - parameters
@@ -151,7 +151,7 @@ SECTION("Matrix")
   }
 
   // allocate tensors
-  GM::T2 Eps;
+  GM::Tensor2 Eps;
 
   // simple shear + volumetric deformation
   // - parameters
