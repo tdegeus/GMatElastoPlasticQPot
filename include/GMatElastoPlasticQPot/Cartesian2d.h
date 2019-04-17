@@ -20,7 +20,7 @@ using Tensor2 = xt::xtensor_fixed<double, xt::xshape<2,2>>;
 
 // Unit tensors
 
-inline Tensor2 I();
+inline Tensor2 I2();
 
 // -------------------------------------------------------------------------------------------------
 

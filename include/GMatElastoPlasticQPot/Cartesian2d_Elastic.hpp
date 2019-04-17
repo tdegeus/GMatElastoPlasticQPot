@@ -72,7 +72,7 @@ inline size_t Elastic::find(double) const
 template <class T>
 inline void Elastic::stress(const Tensor2& Eps, T&& Sig) const
 {
-  auto I    = Cartesian2d::I();
+  auto I    = Cartesian2d::I2();
   auto epsm = 0.5 * trace(Eps);
   auto Epsd = Eps - epsm * I;
   xt::noalias(Sig) = m_K * epsm * I + m_G * Epsd;
@@ -91,7 +91,7 @@ inline Tensor2 Elastic::Stress(const Tensor2& Eps) const
 
 inline double Elastic::energy(const Tensor2& Eps) const
 {
-  auto I    = Cartesian2d::I();
+  auto I    = Cartesian2d::I2();
   auto epsm = 0.5 * trace(Eps);
   auto Epsd = Eps - epsm * I;
   auto epsd = std::sqrt(0.5 * A2_ddot_B2(Epsd,Epsd));

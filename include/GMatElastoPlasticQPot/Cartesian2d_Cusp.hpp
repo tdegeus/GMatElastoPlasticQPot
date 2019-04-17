@@ -84,7 +84,7 @@ template <class T>
 inline void Cusp::stress(const Tensor2& Eps, T&& Sig) const
 {
   // decompose strain: hydrostatic part, deviatoric part
-  auto I    = Cartesian2d::I();
+  auto I    = Cartesian2d::I2();
   auto epsm = 0.5 * trace(Eps);
   auto Epsd = Eps - epsm * I;
   auto epsd = std::sqrt(0.5 * A2_ddot_B2(Epsd,Epsd));
@@ -117,7 +117,7 @@ inline Tensor2 Cusp::Stress(const Tensor2& Eps) const
 inline double Cusp::energy(const Tensor2& Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
-  auto I    = Cartesian2d::I();
+  auto I    = Cartesian2d::I2();
   auto epsm = 0.5 * trace(Eps);
   auto Epsd = Eps - epsm * I;
   auto epsd = std::sqrt(0.5 * A2_ddot_B2(Epsd,Epsd));

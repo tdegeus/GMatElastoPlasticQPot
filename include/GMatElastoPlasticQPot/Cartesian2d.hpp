@@ -14,7 +14,7 @@ namespace Cartesian2d {
 
 // -------------------------------------------------------------------------------------------------
 
-inline Tensor2 I()
+inline Tensor2 I2()
 {
   return Tensor2({{1.0, 0.0},
                   {0.0, 1.0}});
@@ -31,14 +31,14 @@ inline double Hydrostatic(const Tensor2& A)
 
 inline Tensor2 Deviatoric(const Tensor2& A)
 {
-  return A - 0.5 * trace(A) * I();
+  return A - 0.5 * trace(A) * I2();
 }
 
 // -------------------------------------------------------------------------------------------------
 
 inline double Epsd(const Tensor2& Eps)
 {
-  Tensor2 Epsd = Eps - 0.5 * trace(Eps) * I();
+  Tensor2 Epsd = Eps - 0.5 * trace(Eps) * I2();
   return std::sqrt(0.5 * A2_ddot_B2(Epsd,Epsd));
 }
 
@@ -46,7 +46,7 @@ inline double Epsd(const Tensor2& Eps)
 
 inline double Sigd(const Tensor2& Sig)
 {
-  Tensor2 Sigd = Sig - 0.5 * trace(Sig) * I();
+  Tensor2 Sigd = Sig - 0.5 * trace(Sig) * I2();
   return std::sqrt(2.0 * A2_ddot_B2(Sigd,Sigd));
 }
 
@@ -79,7 +79,7 @@ inline void deviatoric(const xt::xtensor<double,4>& A, xt::xtensor<double,4>& Ad
 
   #pragma omp parallel
   {
-    Tensor2 I = Cartesian2d::I();
+    Tensor2 I = I2();
     #pragma omp for
     for (size_t e = 0; e < A.shape()[0]; ++e) {
       for (size_t q = 0; q < A.shape()[1]; ++q) {
@@ -100,7 +100,7 @@ inline void epsd(const xt::xtensor<double,4>& A, xt::xtensor<double,2>& Aeq)
 
   #pragma omp parallel
   {
-    Tensor2 I = Cartesian2d::I();
+    Tensor2 I = I2();
     #pragma omp for
     for (size_t e = 0; e < A.shape()[0]; ++e) {
       for (size_t q = 0; q < A.shape()[1]; ++q) {
@@ -121,7 +121,7 @@ inline void sigd(const xt::xtensor<double,4>& A, xt::xtensor<double,2>& Aeq)
 
   #pragma omp parallel
   {
-    Tensor2 I = Cartesian2d::I();
+    Tensor2 I = I2();
     #pragma omp for
     for (size_t e = 0; e < A.shape()[0]; ++e) {
       for (size_t q = 0; q < A.shape()[1]; ++q) {
@@ -138,7 +138,7 @@ inline void sigd(const xt::xtensor<double,4>& A, xt::xtensor<double,2>& Aeq)
 inline xt::xtensor<double,2> Hydrostatic(const xt::xtensor<double,4>& A)
 {
   xt::xtensor<double,2> Am = xt::empty<double>({A.shape()[0], A.shape()[1]});
-  Cartesian2d::hydrostatic(A, Am);
+  hydrostatic(A, Am);
   return Am;
 }
 
@@ -147,7 +147,7 @@ inline xt::xtensor<double,2> Hydrostatic(const xt::xtensor<double,4>& A)
 inline xt::xtensor<double,4> Deviatoric(const xt::xtensor<double,4>& A)
 {
   xt::xtensor<double,4> Ad = xt::empty<double>(A.shape());
-  Cartesian2d::deviatoric(A, Ad);
+  deviatoric(A, Ad);
   return Ad;
 }
 
@@ -156,7 +156,7 @@ inline xt::xtensor<double,4> Deviatoric(const xt::xtensor<double,4>& A)
 inline xt::xtensor<double,2> Epsd(const xt::xtensor<double,4>& A)
 {
   xt::xtensor<double,2> Aeq = xt::empty<double>({A.shape()[0], A.shape()[1]});
-  Cartesian2d::epsd(A, Aeq);
+  epsd(A, Aeq);
   return Aeq;
 }
 
@@ -165,7 +165,7 @@ inline xt::xtensor<double,2> Epsd(const xt::xtensor<double,4>& A)
 inline xt::xtensor<double,2> Sigd(const xt::xtensor<double,4>& A)
 {
   xt::xtensor<double,2> Aeq = xt::empty<double>({A.shape()[0], A.shape()[1]});
-  Cartesian2d::sigd(A, Aeq);
+  sigd(A, Aeq);
   return Aeq;
 }
 
