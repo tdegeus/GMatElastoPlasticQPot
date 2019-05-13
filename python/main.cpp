@@ -56,6 +56,28 @@ sm.def("Sigd",
 // -------------------------------------------------------------------------------------------------
 
 sm.def("Hydrostatic",
+  py::overload_cast<const xt::xtensor<double,3>&>(&SM::Hydrostatic),
+  "Hydrostatic part of a 2nd-order tensor",
+  py::arg("A"));
+
+sm.def("Deviatoric",
+  py::overload_cast<const xt::xtensor<double,3>&>(&SM::Deviatoric),
+  "Deviatoric",
+  py::arg("A"));
+
+sm.def("Epsd",
+  py::overload_cast<const xt::xtensor<double,3>&>(&SM::Epsd),
+  "Equivalent strain deviator",
+  py::arg("Eps"));
+
+sm.def("Sigd",
+  py::overload_cast<const xt::xtensor<double,3>&>(&SM::Sigd),
+  "Equivalent stress deviator",
+  py::arg("Sig"));
+
+// -------------------------------------------------------------------------------------------------
+
+sm.def("Hydrostatic",
   py::overload_cast<const xt::xtensor<double,4>&>(&SM::Hydrostatic),
   "Hydrostatic part of a 2nd-order tensor",
   py::arg("A"));
@@ -88,7 +110,7 @@ py::class_<SM::Elastic>(sm, "Elastic")
 
   .def("Stress", &SM::Elastic::Stress, py::arg("Eps"))
   .def("energy", &SM::Elastic::energy, py::arg("Eps"))
-  .def("epsy", &SM::Elastic::epsy  , py::arg("idx"))
+  .def("epsy", &SM::Elastic::epsy, py::arg("idx"))
   .def("epsp", py::overload_cast<const SM::Tensor2&>(&SM::Elastic::epsp, py::const_), py::arg("Eps" ))
   .def("epsp", py::overload_cast<double            >(&SM::Elastic::epsp, py::const_), py::arg("epsd"))
   .def("find", py::overload_cast<const SM::Tensor2&>(&SM::Elastic::find, py::const_), py::arg("Eps" ))
@@ -112,7 +134,7 @@ py::class_<SM::Cusp>(sm, "Cusp")
 
   .def("Stress", &SM::Cusp::Stress, py::arg("Eps"))
   .def("energy", &SM::Cusp::energy, py::arg("Eps"))
-  .def("epsy", &SM::Cusp::epsy  , py::arg("idx"))
+  .def("epsy", &SM::Cusp::epsy, py::arg("idx"))
   .def("epsp", py::overload_cast<const SM::Tensor2&>(&SM::Cusp::epsp, py::const_), py::arg("Eps" ))
   .def("epsp", py::overload_cast<double            >(&SM::Cusp::epsp, py::const_), py::arg("epsd"))
   .def("find", py::overload_cast<const SM::Tensor2&>(&SM::Cusp::find, py::const_), py::arg("Eps" ))
@@ -136,7 +158,7 @@ py::class_<SM::Smooth>(sm, "Smooth")
 
   .def("Stress", &SM::Smooth::Stress, py::arg("Eps"))
   .def("energy", &SM::Smooth::energy, py::arg("Eps"))
-  .def("epsy", &SM::Smooth::epsy  , py::arg("idx"))
+  .def("epsy", &SM::Smooth::epsy, py::arg("idx"))
   .def("epsp", py::overload_cast<const SM::Tensor2&>(&SM::Smooth::epsp, py::const_), py::arg("Eps" ))
   .def("epsp", py::overload_cast<double            >(&SM::Smooth::epsp, py::const_), py::arg("epsd"))
   .def("find", py::overload_cast<const SM::Tensor2&>(&SM::Smooth::find, py::const_), py::arg("Eps" ))
