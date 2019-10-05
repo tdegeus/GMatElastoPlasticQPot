@@ -1,11 +1,11 @@
 % ------------------------------------------------------------------------------
 %  @LaTeX-class-file{
 %     filename        = "goose-article.cls",
-%     version         = "0.3",
-%     date            = "16 November 2016",
+%     version         = "0.2.1",
+%     date            = "July 2019",
 %     codetable       = "ISO/ASCII",
 %     keywords        = "LaTeX, goose-article",
-%     supported       = "http://tdegeus.github.io/GooseLaTeX",
+%     supported       = "https://github.com/tdegeus/goose-article",
 %     docstring       = "A customized article-class."
 % ------------------------------------------------------------------------------
 
@@ -40,6 +40,20 @@
 \newif\if@doublespacing
 \let\if@doublespacing\iffalse
 \DeclareOption{doublespacing}{\let\if@doublespacing\iftrue}
+
+% No header: [empty]
+% ------------------
+
+\newif\if@empty
+\let\if@empty\iffalse
+\DeclareOption{empty}{\let\if@empty\iftrue}
+
+% Single-column bibliography [twocolumnbib]
+% -----------------------------------------
+
+\newif\if@twocolumnbib
+\let\if@twocolumnbib\iffalse
+\DeclareOption{twocolumnbib}{\let\if@twocolumnbib\iftrue}
 
 % Font: [times,garamond,verdana]
 % ------------------------------
@@ -76,16 +90,15 @@
 \RequirePackage{fix-cm}
 \RequirePackage{graphicx}
 \RequirePackage[labelformat=simple]{subcaption}
-\RequirePackage{amssymb,amsfonts,bm,cancel}
+\RequirePackage{amssymb,amsfonts,bm}
 \RequirePackage{enumerate}
 \RequirePackage[fleqn]{amsmath}
 \RequirePackage[font={small},labelfont=bf,labelsep=period]{caption}
 \RequirePackage[bf]{titlesec}
 \RequirePackage[dvipsnames]{xcolor}
 \RequirePackage{authblk}
+\RequirePackage{multicol}
 \RequirePackage{hyperref}
-
-\renewcommand\thesubfigure{(\alph{subfigure})}
 
 % ==============================================================================
 % Citation style
@@ -98,7 +111,11 @@
     \bibliographystyle{apalike}
     \setlength{\bibsep}{3pt plus 0.3ex}
     \def\bibfont{\scriptsize}
-    \oldbibliography{#1}
+    \if@twocolumnbib
+    \begin{multicols}{2}\raggedright\oldbibliography{#1}\end{multicols}
+    \else
+    \raggedright\oldbibliography{#1}
+    \fi
   }
 \else
   \RequirePackage[square,sort&compress,numbers,comma]{natbib}
@@ -107,13 +124,17 @@
     \bibliographystyle{unsrtnat}
     \setlength{\bibsep}{3pt plus 0.3ex}
     \def\bibfont{\scriptsize}
-    \oldbibliography{#1}
+    \if@twocolumnbib
+    \begin{multicols}{2}\raggedright\oldbibliography{#1}\end{multicols}
+    \else
+    \raggedright\oldbibliography{#1}
+    \fi
   }
 \fi
 
 % define DOI command
 \newcommand*{\doi}[1]{\sloppy\href{http://dx.doi.org/#1}{doi:~#1}}
-\newcommand*{\eprint}[1]{\sloppy\href{http://arxiv.org/abs/#1}{arXiv:~#1}}
+\newcommand*{\arxivid}[1]{\sloppy\href{http://arxiv.org/abs/#1}{arXiv:~#1}}
 
 % ==============================================================================
 % Font
@@ -213,6 +234,7 @@
   {}
   {}
   {}
+  {}
 
 % spacing {left}{top}{bottom}, of:
 % - section
@@ -221,6 +243,9 @@
 % - subsection
 \titlespacing{\subsection}
   {0pt}{0.8em}{0.4em}
+% - paragraph
+\titlespacing{\paragraph}
+  {0pt}{0.8em}{0em}
 
 % no paragraph indent after header
 \AtBeginDocument{%
@@ -233,20 +258,21 @@
 }
 
 % ==============================================================================
-% Title
+% Title, authors, affiliation layout
 % ==============================================================================
 
-% title, authors, affiliation layout
-% - contact
+% add option
 \newcommand{\contact}[1]{\date{{#1}}}
-% - basic settings
+
+% basic settings
 \newcommand{\nl}{\vspace*{-.3em}\protect\\ \fontsize{9}{10.8}\itshape}
 \renewcommand\Authfont{\fontsize{11}{14.4}\selectfont}
 \renewcommand\Affilfont{\fontsize{9}{10.8}\itshape}
 \renewcommand*{\Authsep}{, }
 \renewcommand*{\Authand}{, }
 \renewcommand*{\Authands}{, }
-% - actual layout
+
+% actual layout
 \renewcommand{\maketitle}{%
   \newpage
   \null
@@ -269,6 +295,18 @@
 }
 
 % ==============================================================================
+% Keywords
+% ==============================================================================
+
+\newcommand{\keywords}[1]{\vspace*{0.5eM}\noindent\textbf{Keywords: }#1}
+
+% ==============================================================================
+% Numbering
+% ==============================================================================
+
+\renewcommand\thesubfigure{(\alph{subfigure})}
+
+% ==============================================================================
 % Header and footer
 % ==============================================================================
 
@@ -279,12 +317,10 @@
 \fancyfoot{}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
-\fancyhead[RO,LE]{\scriptsize \thepage}
-\newcommand{\header}[1]{\fancyhead[LO,RE]{\scriptsize\itshape#1}}
-
-% ==============================================================================
-% Abstract and keywords
-% ==============================================================================
-
-\renewenvironment{abstract}{\section*{Abstract}\noindent\ignorespaces}{\ignorespacesafterend}
-\newcommand{\keywords}[1]{\vspace*{0.5eM}\noindent\textbf{Keywords: }#1}
+\if@empty
+\else
+\fancyhead[RO,LE]{\thepage}
+\fi
+\newcommand{\header}[1]{\fancyhead[LO,RE]{#1}}
+\newcommand{\headerOdd}[1]{\fancyhead[LO]{#1}}
+\newcommand{\headerEven}[1]{\fancyhead[RE]{#1}}
