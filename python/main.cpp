@@ -202,41 +202,6 @@ py::class_<SM::Matrix>(sm, "Matrix")
   .def("setElastic",
     py::overload_cast<
       const xt::xtensor<size_t,2>&,
-      double,
-      double>(&SM::Matrix::setElastic),
-    py::arg("I"),
-    py::arg("K"),
-    py::arg("G"))
-
-  .def("setCusp",
-    py::overload_cast<
-      const xt::xtensor<size_t,2>&,
-      double,
-      double,
-      const xt::xtensor<double,1>&,
-      bool>(&SM::Matrix::setCusp),
-    py::arg("I"),
-    py::arg("K"),
-    py::arg("G"),
-    py::arg("epsy"),
-    py::arg("init_elastic")=true)
-
-  .def("setSmooth",
-    py::overload_cast<
-      const xt::xtensor<size_t,2>&,
-      double,
-      double,
-      const xt::xtensor<double,1>&,
-      bool>(&SM::Matrix::setSmooth),
-    py::arg("I"),
-    py::arg("K"),
-    py::arg("G"),
-    py::arg("epsy"),
-    py::arg("init_elastic")=true)
-
-  .def("setElastic",
-    py::overload_cast<
-      const xt::xtensor<size_t,2>&,
       const xt::xtensor<size_t,2>&,
       const xt::xtensor<double,1>&,
       const xt::xtensor<double,1>&>(&SM::Matrix::setElastic),
@@ -270,6 +235,41 @@ py::class_<SM::Matrix>(sm, "Matrix")
       bool>(&SM::Matrix::setSmooth),
     py::arg("I"),
     py::arg("idx"),
+    py::arg("K"),
+    py::arg("G"),
+    py::arg("epsy"),
+    py::arg("init_elastic")=true)
+
+  .def("setElastic",
+    py::overload_cast<
+      const xt::xtensor<size_t,2>&,
+      double,
+      double>(&SM::Matrix::setElastic),
+    py::arg("I"),
+    py::arg("K"),
+    py::arg("G"))
+
+  .def("setCusp",
+    py::overload_cast<
+      const xt::xtensor<size_t,2>&,
+      double,
+      double,
+      const xt::xtensor<double,1>&,
+      bool>(&SM::Matrix::setCusp),
+    py::arg("I"),
+    py::arg("K"),
+    py::arg("G"),
+    py::arg("epsy"),
+    py::arg("init_elastic")=true)
+
+  .def("setSmooth",
+    py::overload_cast<
+      const xt::xtensor<size_t,2>&,
+      double,
+      double,
+      const xt::xtensor<double,1>&,
+      bool>(&SM::Matrix::setSmooth),
+    py::arg("I"),
     py::arg("K"),
     py::arg("G"),
     py::arg("epsy"),
