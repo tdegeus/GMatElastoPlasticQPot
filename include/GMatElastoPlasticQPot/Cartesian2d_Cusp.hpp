@@ -52,7 +52,7 @@ inline double Cusp::epsp(const Tensor2& Eps) const
 inline double Cusp::epsp(double epsd) const
 {
   size_t i = this->find(epsd);
-  return 0.5 * ( m_epsy(i+1) + m_epsy(i) );
+  return 0.5 * (m_epsy(i+1) + m_epsy(i));
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -96,11 +96,11 @@ inline void Cusp::stress(const Tensor2& Eps, T&& Sig) const
   }
 
   // read current yield strains
-  size_t i       = this->find(epsd);
-  double eps_min = 0.5 * ( m_epsy(i+1) + m_epsy(i) );
+  size_t i = this->find(epsd);
+  double eps_min = 0.5 * (m_epsy(i+1) + m_epsy(i));
 
   // return stress tensor
-  xt::noalias(Sig) = m_K * epsm * I + m_G * (1.0 - eps_min/epsd) * Epsd;
+  xt::noalias(Sig) = m_K * epsm * I + m_G * (1.0 - eps_min / epsd) * Epsd;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -127,11 +127,11 @@ inline double Cusp::energy(const Tensor2& Eps) const
 
   // read current yield strain
   size_t i       = this->find(epsd);
-  double eps_min = 0.5 * ( m_epsy(i+1) + m_epsy(i) );
-  double deps_y  = 0.5 * ( m_epsy(i+1) - m_epsy(i) );
+  double eps_min = 0.5 * (m_epsy(i+1) + m_epsy(i));
+  double deps_y  = 0.5 * (m_epsy(i+1) - m_epsy(i));
 
   // deviatoric part of the energy
-  double V = m_G * ( std::pow(epsd-eps_min,2.0) - std::pow(deps_y,2.0) );
+  double V = m_G * (std::pow(epsd-eps_min,2.0) - std::pow(deps_y,2.0));
 
   // return total energy
   return U + V;
