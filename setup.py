@@ -14,7 +14,7 @@ major = re.split(r'(.*)(\#define GMATELASTOPLASTICQPOT_VERSION_MAJOR\ )([0-9]+)(
 minor = re.split(r'(.*)(\#define GMATELASTOPLASTICQPOT_VERSION_MINOR\ )([0-9]+)(.*)',header)[3]
 patch = re.split(r'(.*)(\#define GMATELASTOPLASTICQPOT_VERSION_PATCH\ )([0-9]+)(.*)',header)[3]
 
-__version__ = '.'.join([world,major,minor])
+__version__ = '.'.join([major, minor, patch])
 
 ext_modules = [
   Extension(
