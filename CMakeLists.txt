@@ -7,7 +7,6 @@ cmake_minimum_required(VERSION 3.0)
 project(GMatElastoPlasticQPot)
 
 option(BUILD_TESTS "${PROJECT_NAME} Build tests" OFF)
-option(BUILD_EXAMPLES "${PROJECT_NAME} Build examples" OFF)
 
 # Internals
 # =========
@@ -115,10 +114,3 @@ install(
 if(BUILD_TESTS)
     add_subdirectory(test)
 endif()
-
-if(BUILD_EXAMPLES)
-    add_subdirectory(docs/examples)
-endif()
-
-
-

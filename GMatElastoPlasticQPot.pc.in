@@ -2,6 +2,6 @@ prefix=@CMAKE_INSTALL_PREFIX@
 includedir=${prefix}/include
 
 Name: @PROJECT_NAME@
-Description: Geometric statistics in C++/Python
+Description: Elasto-plastic material model based on a manifold of quadratic potentials.
 Version: @GMATELASTOPLASTICQPOT_VERSION@
 Cflags: -I${includedir}

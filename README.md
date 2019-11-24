@@ -73,7 +73,7 @@ int main()
 ## Using conda
 
 ```bash
-conda install -c conda-forge GMatElastoPlasticQPot
+conda install -c conda-forge gmatelastoplasticqpot
 ```
 
 ## From source
