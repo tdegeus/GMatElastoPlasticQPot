@@ -1,121 +1,124 @@
-#===================================================================================================
-#
-# (c - MIT) T.W.J. de Geus (Tom) | www.geus.me | github.com/tdegeus/GMatElastoPlasticQPot                                                   #
-#
-#===================================================================================================
 
-# initialization
-# --------------
-
-# required to specify the c++ standard
 cmake_minimum_required(VERSION 3.0)
 
-# required for install
+# Options
+# =======
+
+project(GMatElastoPlasticQPot)
+
+option(BUILD_TESTS "${PROJECT_NAME} Build tests" OFF)
+option(BUILD_EXAMPLES "${PROJECT_NAME} Build examples" OFF)
+
+# Internals
+# =========
+
+set(GMATELASTOPLASTICQPOT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+# Version
+# =======
+
+file(
+    STRINGS "${GMATELASTOPLASTICQPOT_INCLUDE_DIR}/GMatElastoPlasticQPot/config.h" GMatElastoPlasticQPot_version_defines
+    REGEX "#define GMATELASTOPLASTICQPOT_VERSION_(MAJOR|MINOR|PATCH)")
+
+foreach(ver ${GMatElastoPlasticQPot_version_defines})
+    if(ver MATCHES "#define GMATELASTOPLASTICQPOT_VERSION_(MAJOR|MINOR|PATCH) +([^ ]+)$")
+        set(GMATELASTOPLASTICQPOT_VERSION_${CMAKE_MATCH_1} "${CMAKE_MATCH_2}" CACHE INTERNAL "")
+    endif()
+endforeach()
+
+set(GMATELASTOPLASTICQPOT_VERSION
+    ${GMATELASTOPLASTICQPOT_VERSION_MAJOR}.${GMATELASTOPLASTICQPOT_VERSION_MINOR}.${GMATELASTOPLASTICQPOT_VERSION_PATCH})
+
+message(STATUS "Building GMatElastoPlasticQPot v${GMATELASTOPLASTICQPOT_VERSION}")
+
+# Build
+# =====
+
+set(GMATELASTOPLASTICQPOT_HEADERS
+    ${GMATELASTOPLASTICQPOT_INCLUDE_DIR}/GMatElastoPlasticQPot/Cartesian2d.h
+    ${GMATELASTOPLASTICQPOT_INCLUDE_DIR}/GMatElastoPlasticQPot/Cartesian2d.hpp
+    ${GMATELASTOPLASTICQPOT_INCLUDE_DIR}/GMatElastoPlasticQPot/Cartesian2d_Cusp.hpp
+    ${GMATELASTOPLASTICQPOT_INCLUDE_DIR}/GMatElastoPlasticQPot/Cartesian2d_Elastic.hpp
+    ${GMATELASTOPLASTICQPOT_INCLUDE_DIR}/GMatElastoPlasticQPot/Cartesian2d_Matrix.hpp
+    ${GMATELASTOPLASTICQPOT_INCLUDE_DIR}/GMatElastoPlasticQPot/Cartesian2d_Smooth.hpp
+    ${GMATELASTOPLASTICQPOT_INCLUDE_DIR}/GMatElastoPlasticQPot/config.h)
+
+add_library(${PROJECT_NAME} INTERFACE)
+
+target_include_directories(
+    ${PROJECT_NAME} INTERFACE
+    $<BUILD_INTERFACE:${GMATELASTOPLASTICQPOT_INCLUDE_DIR}>
+    $<INSTALL_INTERFACE:include>)
+
+# Installation
+# ============
+
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
-# options
-option(PKGCONFIG "Build pkg-config" ON)
-option(BUILD_TESTS "${PROJECT_NAME} test suite" OFF)
+install(
+    TARGETS ${PROJECT_NAME}
+    EXPORT ${PROJECT_NAME}-targets)
 
-# project settings
-# ----------------
+export(
+    EXPORT ${PROJECT_NAME}-targets
+    FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
 
-# name
-project(GMatElastoPlasticQPot)
+install(
+    FILES ${GMATELASTOPLASTICQPOT_HEADERS}
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
 
-# file that contains the version information
-set(parse_version include/GMatElastoPlasticQPot/config.h)
-
-# header files
-set(headers
-  include/GMatElastoPlasticQPot/config.h
-  include/GMatElastoPlasticQPot/Cartesian2d.h
-  include/GMatElastoPlasticQPot/Cartesian2d.hpp
-  include/GMatElastoPlasticQPot/Cartesian2d_Matrix.hpp
-  include/GMatElastoPlasticQPot/Cartesian2d_Elastic.hpp
-  include/GMatElastoPlasticQPot/Cartesian2d_Cusp.hpp
-  include/GMatElastoPlasticQPot/Cartesian2d_Smooth.hpp
-)
-
-# automatically parse the version number
-file(READ "${parse_version}" version)
-string(REGEX MATCH "define[ \t]+GMATELASTOPLASTICQPOT_WORLD_VERSION[ \t]+([0-9]+)" _ "${version}")
-set(world_version "${CMAKE_MATCH_1}")
-string(REGEX MATCH "define[ \t]+GMATELASTOPLASTICQPOT_MAJOR_VERSION[ \t]+([0-9]+)" _ "${version}")
-set(major_version "${CMAKE_MATCH_1}")
-string(REGEX MATCH "define[ \t]+GMATELASTOPLASTICQPOT_MINOR_VERSION[ \t]+([0-9]+)" _ "${version}")
-set(minor_version "${CMAKE_MATCH_1}")
-set(GMATELASTOPLASTICQPOT_VERSION ${world_version}.${major_version}.${minor_version})
-
-# print information to screen
-message(STATUS "Building ${PROJECT_NAME} v${GMATELASTOPLASTICQPOT_VERSION}")
-
-# paths
-# -----
-
-set(GMATELASTOPLASTICQPOT_ROOT_DIR    "${CMAKE_INSTALL_PREFIX}")
-set(GMATELASTOPLASTICQPOT_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}")
-set(INCLUDE_INSTALL_DIR               "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")
-set(CMAKEPACKAGE_INSTALL_DIR          "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
-set(PKGCONFIG_INSTALL_DIR             "${CMAKE_INSTALL_DATADIR}/pkgconfig")
-set(fcmake                            "GMatElastoPlasticQPotConfig.cmake")
-set(fpkg                              "GMatElastoPlasticQPot.pc")
-
-# configure CMake
-# ---------------
+set(GMATELASTOPLASTICQPOT_CMAKECONFIG_INSTALL_DIR
+    "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}" CACHE
+    STRING "install path for ${PROJECT_NAME}Config.cmake")
 
 configure_package_config_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/GMatElastoPlasticQPotConfig.cmake.in
-  ${CMAKE_CURRENT_BINARY_DIR}/GMatElastoPlasticQPotConfig.cmake
-  PATH_VARS GMATELASTOPLASTICQPOT_INCLUDE_DIR GMATELASTOPLASTICQPOT_ROOT_DIR
-  INSTALL_DESTINATION ${CMAKEPACKAGE_INSTALL_DIR}
-  NO_CHECK_REQUIRED_COMPONENTS_MACRO
-)
+    "GMatElastoPlasticQPotConfig.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    INSTALL_DESTINATION ${GMATELASTOPLASTICQPOT_CMAKECONFIG_INSTALL_DIR})
 
-# install/build
-# -------------
+set(_GMATELASTOPLASTICQPOT_CMAKE_SIZEOF_VOID_P ${CMAKE_SIZEOF_VOID_P})
 
-# build test cases
+unset(CMAKE_SIZEOF_VOID_P)
+
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+    VERSION ${GMATELASTOPLASTICQPOT_VERSION}
+    COMPATIBILITY AnyNewerVersion)
+
+set(CMAKE_SIZEOF_VOID_P ${_GMATELASTOPLASTICQPOT_CMAKE_SIZEOF_VOID_P})
+
+install(
+    FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+    DESTINATION ${GMATELASTOPLASTICQPOT_CMAKECONFIG_INSTALL_DIR})
+
+install(
+    EXPORT ${PROJECT_NAME}-targets
+    FILE "${PROJECT_NAME}Targets.cmake"
+    DESTINATION ${GMATELASTOPLASTICQPOT_CMAKECONFIG_INSTALL_DIR})
+
+configure_file(
+    "GMatElastoPlasticQPot.pc.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
+     @ONLY)
+
+install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig/")
+
+# Add builds
+# ==========
+
 if(BUILD_TESTS)
-  add_subdirectory(test)
+    add_subdirectory(test)
 endif()
 
-# disable pkg-config for native Windows builds
-if(WIN32 OR CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
-  option(PKGCONFIG "Build pkg-config ${fpkg} file" OFF)
+if(BUILD_EXAMPLES)
+    add_subdirectory(docs/examples)
 endif()
 
-# pkg-config
-if(PKGCONFIG)
-  configure_file(${fpkg}.in ${fpkg} @ONLY)
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${fpkg} DESTINATION ${PKGCONFIG_INSTALL_DIR})
-endif()
 
-# CMake
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${fcmake} DESTINATION ${CMAKEPACKAGE_INSTALL_DIR})
 
-# header files
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${headers} DESTINATION ${INCLUDE_INSTALL_DIR})
-
-# print information to screen
-# ---------------------------
-
-message(STATUS "")
-message(STATUS "+---------------------------------------------------------------------------------")
-message(STATUS "|")
-message(STATUS "| Use 'make install' to install in")
-message(STATUS "|   ${CMAKE_INSTALL_PREFIX}")
-if(BUILD_TESTS)
-  message(STATUS "|")
-  message(STATUS "| Use 'make' and './test/test' to run the tests")
-endif()
-message(STATUS "|")
-message(STATUS "| To specify a custom directory call")
-message(STATUS "|   cmake /path/to/${PROJECT_NAME} -DCMAKE_INSTALL_PREFIX=yourprefix")
-message(STATUS "|")
-message(STATUS "| For custom paths, add the following line to your '~/.bashrc'")
-message(STATUS "|   export PKG_CONFIG_PATH=${CMAKE_INSTALL_PREFIX}/share/pkgconfig:$PKG_CONFIG_PATH")
-message(STATUS "|")
-message(STATUS "+---------------------------------------------------------------------------------")
-message(STATUS "")

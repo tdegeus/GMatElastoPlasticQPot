@@ -14,7 +14,7 @@
 #define GMATELASTOPLASTICQPOT_ENABLE_ASSERT
 
 // include library
-#include "../include/GMatElastoPlasticQPot/Cartesian2d.h"
+#include <GMatElastoPlasticQPot/Cartesian2d.h>
 
 // abbreviate name-space
 namespace py = pybind11;
