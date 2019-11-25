@@ -37,13 +37,13 @@ ext_modules = [
     'GMatElastoPlasticQPot',
     ['python/main.cpp'],
     include_dirs = include_dirs,
-    language = 'c++'),
-]
+    language = 'c++')]
 
 setup(
   name = 'GMatElastoPlasticQPot',
   description = 'Elasto-plastic material model',
   long_description = desc,
+  keywords = 'Material model; FEM; FFT',
   version = __version__,
   license = 'MIT',
   author = 'Tom de Geus',
