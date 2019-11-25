@@ -1,7 +1,6 @@
 # GMatElastoPlasticQPot
 
 [![Travis](https://travis-ci.com/tdegeus/GMatElastoPlasticQPot.svg?branch=master)](https://travis-ci.com/tdegeus/GMatElastoPlasticQPot)
-[![Build status](https://ci.appveyor.com/api/projects/status/2i9t2ly3qyyn970h?svg=true)](https://ci.appveyor.com/project/tdegeus/gmatelastoplasticqpot)
 
 Elasto-plastic material model based on a manifold of quadratic potentials. An overview of the theory can be found in `docs/` in particular in this [PDF](docs/readme.pdf).
 
