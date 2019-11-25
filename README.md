@@ -19,8 +19,12 @@ Elasto-plastic material model based on a manifold of quadratic potentials. An ov
 
 - [Implementation](#implementation)
 - [Installation](#installation)
-    - [Using conda](#using-conda)
+    - [C++ headers](#c-headers)
+        - [Using conda](#using-conda)
     - [From source](#from-source)
+    - [Python module](#python-module)
+        - [Using conda](#using-conda-1)
+    - [From source](#from-source-1)
 - [Compiling](#compiling)
     - [By hand](#by-hand)
     - [Using pkg-config](#using-pkg-config)
@@ -70,7 +74,9 @@ int main()
 
 # Installation
 
-## Using conda
+## C++ headers
+
+### Using conda
 
 ```bash
 conda install -c conda-forge gmatelastoplasticqpot
@@ -83,9 +89,34 @@ conda install -c conda-forge gmatelastoplasticqpot
 git checkout https://github.com/tdegeus/GMatElastoPlasticQPot.git
 cd GMatElastoPlasticQPot
 
-# For CMake or pkg-config use
+# Install headers, CMake and pkg-config support
 cmake .
 make install
+```
+
+## Python module
+
+### Using conda
+
+> Warning: this has the disadvantage of xsimd optimisation being switched off
+
+```bash
+conda install -c conda-forge python-gmatelastoplasticqpot
+```
+
+## From source
+
+> To get the prerequisites you can use conda
+> 
+> ```bash
+> conda install -c conda-forge pyxtensor
+> conda install -c conda-forge xsimd
+> ```
+
+```bash
+# Download GMatElastoPlasticQPot
+git checkout https://github.com/tdegeus/GMatElastoPlasticQPot.git
+cd GMatElastoPlasticQPot
 
 # Compile and install the Python module
 python setup.py build
