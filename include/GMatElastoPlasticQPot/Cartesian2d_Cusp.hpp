@@ -52,7 +52,7 @@ inline double Cusp::epsp(const Tensor2& Eps) const
 inline double Cusp::epsp(double epsd) const
 {
   size_t i = this->find(epsd);
-  return 0.5 * ( m_epsy(i+1) + m_epsy(i) );
+  return 0.5 * (m_epsy(i+1) + m_epsy(i));
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -100,7 +100,7 @@ inline void Cusp::stress(const Tensor2& Eps, T&& Sig) const
   double eps_min = 0.5 * (m_epsy(i+1) + m_epsy(i));
 
   // return stress tensor
-  xt::noalias(Sig) = m_K * epsm * I + m_G * (1.0 - eps_min/epsd) * Epsd;
+  xt::noalias(Sig) = m_K * epsm * I + m_G * (1.0 - eps_min / epsd) * Epsd;
 }
 
 // -------------------------------------------------------------------------------------------------
