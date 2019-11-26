@@ -4,8 +4,6 @@
 
 ================================================================================================= */
 
-#define XTENSOR_USE_XSIMD
-
 #include <pybind11/pybind11.h>
 #include <pyxtensor/pyxtensor.hpp>
 
@@ -13,10 +11,8 @@
 // (doesn't cost a lot of time, but avoids segmentation faults)
 #define GMATELASTOPLASTICQPOT_ENABLE_ASSERT
 
-// include library
-#include "../include/GMatElastoPlasticQPot/Cartesian2d.h"
+#include <GMatElastoPlasticQPot/Cartesian2d.h>
 
-// abbreviate name-space
 namespace py = pybind11;
 
 // -------------------------------------------------------------------------------------------------

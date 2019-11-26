@@ -4,15 +4,29 @@
 
 Elasto-plastic material model based on a manifold of quadratic potentials. An overview of the theory can be found in `docs/` in particular in this [PDF](docs/readme.pdf).
 
+>   **Disclaimer**
+>   
+>   This library is free to use under the [MIT license](https://github.com/tdegeus/GMatElastoPlasticQPot/blob/master/LICENSE). Any additions are very much appreciated, in terms of suggested functionality, code, documentation, testimonials, word-of-mouth advertisement, etc. Bug reports or feature requests can be filed on [GitHub](https://github.com/tdegeus/GMatElastoPlasticQPot). As always, the code comes with no guarantee. None of the developers can be held responsible for possible mistakes.
+>   
+>   Download: [.zip file](https://github.com/tdegeus/GMatElastoPlasticQPot/zipball/master) | [.tar.gz file](https://github.com/tdegeus/GMatElastoPlasticQPot/tarball/master).
+>   
+>   (c - [MIT](https://github.com/tdegeus/GMatElastoPlasticQPot/blob/master/LICENSE)) T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me | [github.com/tdegeus/GMatElastoPlasticQPot](https://github.com/tdegeus/GMatElastoPlasticQPot)
+
 # Contents
 
 <!-- MarkdownTOC -->
 
 - [Implementation](#implementation)
 - [Installation](#installation)
-    - [Linux / macOS](#linux--macos)
-        - [Install system-wide \(depends on your privileges\)](#install-system-wide-depends-on-your-privileges)
-        - [Install in custom location \(user\)](#install-in-custom-location-user)
+    - [C++ headers](#c-headers)
+        - [Using conda](#using-conda)
+        - [From source](#from-source)
+    - [Python module](#python-module)
+        - [From source](#from-source-1)
+- [Compiling](#compiling)
+    - [By hand](#by-hand)
+    - [Using pkg-config](#using-pkg-config)
+    - [Using `CMakeLists.txt`](#using-cmakeliststxt)
 - [References / Credits](#references--credits)
 
 <!-- /MarkdownTOC -->
@@ -58,56 +72,94 @@ int main()
 
 # Installation
 
-## Linux / macOS
+## C++ headers
 
-### Install system-wide (depends on your privileges)
+### Using conda
 
-1.  Proceed to a (temporary) build directory. For example:
+```bash
+conda install -c conda-forge gmatelastoplasticqpot
+```
 
-    ```bash
-    cd /path/to/GMatElastoPlasticQPot
-    mkdir build
-    cd build
-    ```
+### From source
 
-2.  'Install' `GMatElastoPlasticQPot`. For the path in **1.**:
+```bash
+# Download GMatElastoPlasticQPot
+git checkout https://github.com/tdegeus/GMatElastoPlasticQPot.git
+cd GMatElastoPlasticQPot
 
-    ```bash
-    cmake .. 
-    make install
-    ```
+# Install headers, CMake and pkg-config support
+cmake .
+make install
+```
 
-> One usually does not need any compiler arguments after following this protocol.
+## Python module
 
-### Install in custom location (user)
+### From source
 
-1.  Proceed to a (temporary) build directory. For example:
+> To get the prerequisites you *can* use conda
+> 
+> ```bash
+> conda install -c conda-forge pyxtensor
+> conda install -c conda-forge xsimd
+> ```
 
-    ```bash
-    cd /path/to/GMatElastoPlasticQPot
-    mkdir build
-    cd build
-    ```
+```bash
+# Download GMatElastoPlasticQPot
+git checkout https://github.com/tdegeus/GMatElastoPlasticQPot.git
+cd GMatElastoPlasticQPot
 
-2.  'Install' `GMatElastoPlasticQPot`, to install it in a custom location. For the path in **1.**:
+# Compile and install the Python module
+python setup.py build
+python setup.py install
+```
 
-    ```bash
-    mkdir /custom/install/path
-    cmake .. -DCMAKE_INSTALL_PREFIX:PATH=/custom/install/path
-    make install
-    ```
+# Compiling
 
-3.  Add the appropriate paths to for example your ``~/.bashrc`` (or ``~/.zshrc``). For the path in **2.**: 
+## By hand
 
-    ```bash
-    export PKG_CONFIG_PATH=/custom/install/path/share/pkgconfig:$PKG_CONFIG_PATH
-    export CPLUS_INCLUDE_PATH=$HOME/custom/install/path/include:$CPLUS_INCLUDE_PATH
-    ```
+Presuming that the compiler is `c++`, compile using:
 
-> One usually has to inform the CMake or the compiler about `${CPLUS_INCLUDE_PATH}`.
+```
+c++ -I/path/to/GMatElastoPlasticQPot/include ...
+```
+
+## Using pkg-config
+
+Presuming that the compiler is `c++`, compile using:
+
+```
+c++ `pkg-config --cflags GMatElastoPlasticQPot` ...
+```
+
+## Using `CMakeLists.txt`
+
+Using *GMatElastoPlasticQPot* the `CMakeLists.txt` can be as follows
+
+```cmake
+cmake_minimum_required(VERSION 3.1)
+
+project(example)
+
+find_package(xtensor REQUIRED)
+find_package(GMatElastoPlasticQPot REQUIRED)
+
+add_executable(example example.cpp)
+
+target_link_libraries(example
+    PRIVATE
+    xtensor
+    GMatElastoPlasticQPot)
+```
+
+Compilation can then proceed using 
+
+```bash
+cmake .
+make
+```
 
 # References / Credits
 
-*   The model is described in *T.W.J. de Geus, M. Popović, W. Ji, A. Rosso, M. Wyart (2019). How collective asperity detachments nucleate slip at frictional interfaces. [arXiv: 1904.07635](http://arxiv.org/abs/1904.07635)*.
+*   The model is described in *T.W.J. de Geus, M. Popović, W. Ji, A. Rosso, M. Wyart. How collective asperity detachments nucleate slip at frictional interfaces. Proceedings of the National Academy of Sciences, 2019, 201906551. [doi: 10.1073/pnas.1906551116](https://doi.org/10.1073/pnas.1906551116), [arXiv: 1904.07635](http://arxiv.org/abs/1904.07635)*.
 
 *   [xtensor](https://github.com/QuantStack/xtensor) is used under the hood.

@@ -1,4 +1,13 @@
-set(GMATELASTOPLASTICQPOT_FOUND 1)
+# GMatElastoPlasticQPot cmake module
+# This module sets the following variables:
+#
+#   GMatElastoPlasticQPot_FOUND - true if GMatElastoPlasticQPot found
+#   GMatElastoPlasticQPot_INCLUDE_DIRS - the directory containing GMatElastoPlasticQPot headers
+#   GMatElastoPlasticQPot_LIBRARY - empty
 
-set(GMATELASTOPLASTICQPOT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-set(GMATELASTOPLASTICQPOT_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR})
+@PACKAGE_INIT@
+
+if(NOT TARGET @PROJECT_NAME@)
+  include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
+  get_target_property(@PROJECT_NAME@_INCLUDE_DIRS @PROJECT_NAME@ INTERFACE_INCLUDE_DIRECTORIES)
+endif()

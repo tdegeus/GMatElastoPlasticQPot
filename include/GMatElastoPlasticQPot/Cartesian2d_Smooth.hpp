@@ -52,7 +52,7 @@ inline double Smooth::epsp(const Tensor2& Eps) const
 inline double Smooth::epsp(double epsd) const
 {
   size_t i = this->find(epsd);
-  return 0.5 * ( m_epsy(i+1) + m_epsy(i) );
+  return 0.5 * (m_epsy(i + 1) + m_epsy(i));
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -87,7 +87,7 @@ inline void Smooth::stress(const Tensor2& Eps, T&& Sig) const
   auto I    = Cartesian2d::I2();
   auto epsm = 0.5 * trace(Eps);
   auto Epsd = Eps - epsm * I;
-  auto epsd = std::sqrt(0.5 * A2_ddot_B2(Epsd,Epsd));
+  auto epsd = std::sqrt(0.5 * A2_ddot_B2(Epsd, Epsd));
 
   // no deviatoric strain -> only hydrostatic stress
   if (epsd <= 0.) {
@@ -96,9 +96,9 @@ inline void Smooth::stress(const Tensor2& Eps, T&& Sig) const
   }
 
   // read current yield strains
-  size_t i       = this->find(epsd);
-  double eps_min = 0.5 * ( m_epsy(i+1) + m_epsy(i) );
-  double deps_y  = 0.5 * ( m_epsy(i+1) - m_epsy(i) );
+  size_t i = this->find(epsd);
+  double eps_min = 0.5 * (m_epsy(i + 1) + m_epsy(i));
+  double deps_y = 0.5 * (m_epsy(i + 1) - m_epsy(i));
 
   // return stress tensor
   xt::noalias(Sig) = m_K*epsm*I + (m_G/epsd)*(deps_y/M_PI)*sin(M_PI/deps_y*(epsd-eps_min))*Epsd;
@@ -118,21 +118,21 @@ inline Tensor2 Smooth::Stress(const Tensor2& Eps) const
 inline double Smooth::energy(const Tensor2& Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
-  auto I    = Cartesian2d::I2();
+  auto I = Cartesian2d::I2();
   auto epsm = 0.5 * trace(Eps);
   auto Epsd = Eps - epsm * I;
-  auto epsd = std::sqrt(0.5 * A2_ddot_B2(Epsd,Epsd));
+  auto epsd = std::sqrt(0.5 * A2_ddot_B2(Epsd, Epsd));
 
   // hydrostatic part of the energy
-  double U = m_K * std::pow(epsm,2.);
+  double U = m_K * std::pow(epsm, 2.0);
 
   // read current yield strain
-  size_t i       = this->find(epsd);
-  double eps_min = 0.5 * ( m_epsy(i+1) + m_epsy(i) );
-  double deps_y  = 0.5 * ( m_epsy(i+1) - m_epsy(i) );
+  size_t i = this->find(epsd);
+  double eps_min = 0.5 * (m_epsy(i + 1) + m_epsy(i));
+  double deps_y = 0.5 * (m_epsy(i + 1) - m_epsy(i));
 
   // deviatoric part of the energy
-  double V = -2.0 * m_G * std::pow(deps_y/M_PI,2.0) * ( 1.0 + cos(M_PI/deps_y * (epsd-eps_min)) );
+  double V = -2.0 * m_G * std::pow(deps_y/M_PI,2.0) * (1.0 + cos(M_PI/deps_y * (epsd-eps_min)));
 
   // return total energy
   return U + V;

@@ -84,10 +84,10 @@ template <class T>
 inline void Cusp::stress(const Tensor2& Eps, T&& Sig) const
 {
   // decompose strain: hydrostatic part, deviatoric part
-  auto I    = Cartesian2d::I2();
+  auto I = Cartesian2d::I2();
   auto epsm = 0.5 * trace(Eps);
   auto Epsd = Eps - epsm * I;
-  auto epsd = std::sqrt(0.5 * A2_ddot_B2(Epsd,Epsd));
+  auto epsd = std::sqrt(0.5 * A2_ddot_B2(Epsd, Epsd));
 
   // no deviatoric strain -> only hydrostatic stress
   if (epsd <= 0.) {
@@ -117,21 +117,21 @@ inline Tensor2 Cusp::Stress(const Tensor2& Eps) const
 inline double Cusp::energy(const Tensor2& Eps) const
 {
   // decompose strain: hydrostatic part, deviatoric part
-  auto I    = Cartesian2d::I2();
+  auto I = Cartesian2d::I2();
   auto epsm = 0.5 * trace(Eps);
   auto Epsd = Eps - epsm * I;
-  auto epsd = std::sqrt(0.5 * A2_ddot_B2(Epsd,Epsd));
+  auto epsd = std::sqrt(0.5 * A2_ddot_B2(Epsd, Epsd));
 
   // hydrostatic part of the energy
-  double U = m_K * std::pow(epsm,2.);
+  double U = m_K * std::pow(epsm, 2.0);
 
   // read current yield strain
-  size_t i       = this->find(epsd);
+  size_t i = this->find(epsd);
   double eps_min = 0.5 * (m_epsy(i+1) + m_epsy(i));
-  double deps_y  = 0.5 * (m_epsy(i+1) - m_epsy(i));
+  double deps_y = 0.5 * (m_epsy(i+1) - m_epsy(i));
 
   // deviatoric part of the energy
-  double V = m_G * (std::pow(epsd-eps_min,2.0) - std::pow(deps_y,2.0));
+  double V = m_G * (std::pow(epsd - eps_min, 2.0) - std::pow(deps_y, 2.0));
 
   // return total energy
   return U + V;
