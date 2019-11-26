@@ -91,12 +91,12 @@ inline Tensor2 Elastic::Stress(const Tensor2& Eps) const
 
 inline double Elastic::energy(const Tensor2& Eps) const
 {
-  auto I    = Cartesian2d::I2();
+  auto I = Cartesian2d::I2();
   auto epsm = 0.5 * trace(Eps);
   auto Epsd = Eps - epsm * I;
   auto epsd = std::sqrt(0.5 * A2_ddot_B2(Epsd,Epsd));
-  auto U    = m_K * std::pow(epsm,2.0);
-  auto V    = m_G * std::pow(epsd,2.0);
+  auto U = m_K * std::pow(epsm, 2.0);
+  auto V = m_G * std::pow(epsd, 2.0);
   return U + V;
 }
 

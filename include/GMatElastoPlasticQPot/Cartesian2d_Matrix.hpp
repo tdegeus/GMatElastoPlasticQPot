@@ -16,8 +16,8 @@ namespace Cartesian2d {
 
 inline Matrix::Matrix(size_t nelem, size_t nip) : m_nelem(nelem), m_nip(nip)
 {
-  m_type   = xt::ones <size_t>({m_nelem, m_nip}) * Type::Unset;
-  m_index  = xt::empty<size_t>({m_nelem, m_nip});
+  m_type = xt::ones <size_t>({m_nelem, m_nip}) * Type::Unset;
+  m_index = xt::empty<size_t>({m_nelem, m_nip});
   m_allSet = false;
 }
 

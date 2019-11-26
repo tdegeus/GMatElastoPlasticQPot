@@ -11,10 +11,8 @@
 // (doesn't cost a lot of time, but avoids segmentation faults)
 #define GMATELASTOPLASTICQPOT_ENABLE_ASSERT
 
-// include library
 #include <GMatElastoPlasticQPot/Cartesian2d.h>
 
-// abbreviate name-space
 namespace py = pybind11;
 
 // -------------------------------------------------------------------------------------------------

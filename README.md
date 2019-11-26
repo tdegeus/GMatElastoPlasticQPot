@@ -20,10 +20,9 @@ Elasto-plastic material model based on a manifold of quadratic potentials. An ov
 - [Installation](#installation)
     - [C++ headers](#c-headers)
         - [Using conda](#using-conda)
-    - [From source](#from-source)
+        - [From source](#from-source)
     - [Python module](#python-module)
-        - [Using conda](#using-conda-1)
-    - [From source](#from-source-1)
+        - [From source](#from-source-1)
 - [Compiling](#compiling)
     - [By hand](#by-hand)
     - [Using pkg-config](#using-pkg-config)
@@ -81,7 +80,7 @@ int main()
 conda install -c conda-forge gmatelastoplasticqpot
 ```
 
-## From source
+### From source
 
 ```bash
 # Download GMatElastoPlasticQPot
@@ -95,17 +94,9 @@ make install
 
 ## Python module
 
-### Using conda
+### From source
 
-> Warning: this has the disadvantage of xsimd optimisation being switched off
-
-```bash
-conda install -c conda-forge python-gmatelastoplasticqpot
-```
-
-## From source
-
-> To get the prerequisites you can use conda
+> To get the prerequisites you *can* use conda
 > 
 > ```bash
 > conda install -c conda-forge pyxtensor
