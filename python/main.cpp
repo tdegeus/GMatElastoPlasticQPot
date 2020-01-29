@@ -308,7 +308,7 @@ py::class_<SM::Matrix>(sm, "Matrix")
             const xt::xtensor<size_t,2>&,
             const xt::xtensor<double,1>&,
             const xt::xtensor<double,1>&>(&SM::Matrix::setElastic),
-        "Set specific entries 'Elastic'."
+        "Set specific entries 'Elastic'.",
         py::arg("I"),
         py::arg("idx"),
         py::arg("K"),
@@ -322,7 +322,7 @@ py::class_<SM::Matrix>(sm, "Matrix")
             const xt::xtensor<double,1>&,
             const xt::xtensor<double,2>&,
             bool>(&SM::Matrix::setCusp),
-        "Set specific entries 'Cusp'."
+        "Set specific entries 'Cusp'.",
         py::arg("I"),
         py::arg("idx"),
         py::arg("K"),
@@ -338,7 +338,7 @@ py::class_<SM::Matrix>(sm, "Matrix")
             const xt::xtensor<double,1>&,
             const xt::xtensor<double,2>&,
             bool>(&SM::Matrix::setSmooth),
-        "Set specific entries 'Smooth'."
+        "Set specific entries 'Smooth'.",
         py::arg("I"),
         py::arg("idx"),
         py::arg("K"),
@@ -351,7 +351,7 @@ py::class_<SM::Matrix>(sm, "Matrix")
             const xt::xtensor<size_t,2>&,
             double,
             double>(&SM::Matrix::setElastic),
-        "Set specific entries 'Elastic'."
+        "Set specific entries 'Elastic'.",
         py::arg("I"),
         py::arg("K"),
         py::arg("G"))
@@ -363,7 +363,7 @@ py::class_<SM::Matrix>(sm, "Matrix")
             double,
             const xt::xtensor<double,1>&,
             bool>(&SM::Matrix::setCusp),
-        "Set specific entries 'Cusp'."
+        "Set specific entries 'Cusp'.",
         py::arg("I"),
         py::arg("K"),
         py::arg("G"),
@@ -377,7 +377,7 @@ py::class_<SM::Matrix>(sm, "Matrix")
             double,
             const xt::xtensor<double,1>&,
             bool>(&SM::Matrix::setSmooth),
-        "Set specific entries 'Smooth'."
+        "Set specific entries 'Smooth'.",
         py::arg("I"),
         py::arg("K"),
         py::arg("G"),
