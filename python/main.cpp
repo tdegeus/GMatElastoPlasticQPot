@@ -386,27 +386,27 @@ py::class_<SM::Matrix>(sm, "Matrix")
 
     .def("Stress",
         &SM::Matrix::Stress,
-        "Returns matrix of stress tensors, given matrix of strain tensors."
+        "Returns matrix of stress tensors, given matrix of strain tensors.",
         py::arg("Eps"))
 
     .def("Energy",
         &SM::Matrix::Energy,
-        "Returns matrix of energies, given matrix of strain tensors."
+        "Returns matrix of energies, given matrix of strain tensors.",
         py::arg("Eps"))
 
     .def("Epsy",
         &SM::Matrix::Epsy,
-        "Returns matrix of yield strains, given matrix of potential indices."
+        "Returns matrix of yield strains, given matrix of potential indices.",
         py::arg("idx"))
 
     .def("Epsp",
         &SM::Matrix::Epsp,
-        "Returns matrix of equivalent plastic strains, given matrix of strain tensors."
+        "Returns matrix of equivalent plastic strains, given matrix of strain tensors.",
         py::arg("Eps"))
 
     .def("Find",
         &SM::Matrix::Find,
-        "Returns matrix of potential indices, given matrix of strain tensors."
+        "Returns matrix of potential indices, given matrix of strain tensors.",
         py::arg("Eps"))
 
     .def("__repr__", [](const SM::Matrix &){
