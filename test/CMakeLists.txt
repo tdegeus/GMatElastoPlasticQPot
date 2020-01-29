@@ -7,6 +7,7 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 endif()
 
 option(WARNINGS "Show build warnings" ON)
+option(ASSERT "Enable assertions" ON)
 option(XSIMD "Use xsimd and 'march=native' optimisations" OFF)
 
 set(CMAKE_BUILD_TYPE Release)

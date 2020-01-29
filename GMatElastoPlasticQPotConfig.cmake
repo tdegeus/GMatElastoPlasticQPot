@@ -31,27 +31,27 @@ find_dependency(xtensor)
 
 # Define support target "GMatElastoPlasticQPot::compiler_warnings"
 
-if (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} VERSION_GREATER_EQUAL 3.11)
-    if(NOT TARGET GMatElastoPlasticQPot::compiler_warnings)
-        add_library(GMatElastoPlasticQPot::compiler_warnings INTERFACE IMPORTED)
-        if(MSVC)
-            target_compile_options(GMatElastoPlasticQPot::compiler_warnings INTERFACE
-                /W4)
-        else()
-            target_compile_options(GMatElastoPlasticQPot::compiler_warnings INTERFACE
-                -Wall
-                -Wextra
-                -pedantic
-                -Wno-unknown-pragmas)
-        endif()
+if(NOT TARGET GMatElastoPlasticQPot::compiler_warnings)
+    add_library(GMatElastoPlasticQPot::compiler_warnings INTERFACE IMPORTED)
+    if(MSVC)
+        set_property(
+            TARGET GMatElastoPlasticQPot::compiler_warnings
+            PROPERTY INTERFACE_COMPILE_OPTIONS
+            /W4)
+    else()
+        set_property(
+            TARGET GMatElastoPlasticQPot::compiler_warnings
+            PROPERTY INTERFACE_COMPILE_OPTIONS
+            -Wall -Wextra -pedantic -Wno-unknown-pragmas)
     endif()
 endif()
 
 # Define support target "GMatElastoPlasticQPot::assert"
 
-if (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} VERSION_GREATER_EQUAL 3.11)
-    if(NOT TARGET GMatElastoPlasticQPot::assert)
-        add_library(GMatElastoPlasticQPot::assert INTERFACE IMPORTED)
-        target_compile_definitions(GMatElastoPlasticQPot::assert INTERFACE GMATELASTOPLASTICQPOT_ENABLE_ASSERT)
-    endif()
+if(NOT TARGET GMatElastoPlasticQPot::assert)
+    add_library(GMatElastoPlasticQPot::assert INTERFACE IMPORTED)
+    set_property(
+        TARGET GMatElastoPlasticQPot::assert
+        PROPERTY INTERFACE_COMPILE_DEFINITIONS
+        GMATELASTOPLASTICQPOT_ENABLE_ASSERT)
 endif()
