@@ -7,7 +7,6 @@
 #ifndef GMATELASTOPLASTICQPOT_CONFIG_H
 #define GMATELASTOPLASTICQPOT_CONFIG_H
 
-// -------------------------------------------------------------------------------------------------
 
 // use "M_PI" from "math.h"
 #define _USE_MATH_DEFINES
@@ -29,39 +28,52 @@
 #include <xtensor/xsort.hpp>
 #include <xtensor/xmath.hpp>
 
-// -------------------------------------------------------------------------------------------------
 
 #ifndef NDEBUG
-#define GMATELASTOPLASTICQPOT_ENABLE_ASSERT
+    #define GMATELASTOPLASTICQPOT_ENABLE_ASSERT
 #endif
+
+
+#ifdef GMATELASTOPLASTICQPOT_DISABLE_ASSERT
+    #ifdef GMATELASTOPLASTICQPOT_ENABLE_ASSERT
+    #undef GMATELASTOPLASTICQPOT_ENABLE_ASSERT
+    #endif
+#endif
+
 
 #ifdef GMATELASTOPLASTICQPOT_ENABLE_ASSERT
-#define GMATELASTOPLASTICQPOT_ASSERT(expr) GMATELASTOPLASTICQPOT_ASSERT_IMPL(expr, __FILE__, __LINE__)
-#define GMATELASTOPLASTICQPOT_ASSERT_IMPL(expr, file, line)                                                               \
-    if (!(expr))                                                                                                          \
-    {                                                                                                                     \
-        throw std::runtime_error(std::string(file) + ':' + std::to_string(line) + ": assertion failed (" #expr ") \n\t"); \
-    }
+
+    #define GMATELASTOPLASTICQPOT_ASSERT(expr) \
+        GMATELASTOPLASTICQPOT_ASSERT_IMPL(expr, __FILE__, __LINE__)
+
+    #define GMATELASTOPLASTICQPOT_ASSERT_IMPL(expr, file, line) \
+        if (!(expr)) \
+        { \
+            throw std::runtime_error( \
+                std::string(file) + ':' + std::to_string(line) + \
+                ": assertion failed (" #expr ") \n\t"); \
+        }
+
 #else
-#define GMATELASTOPLASTICQPOT_ASSERT(expr)
+
+    #define GMATELASTOPLASTICQPOT_ASSERT(expr)
+
 #endif
 
-// -------------------------------------------------------------------------------------------------
 
 #define GMATELASTOPLASTICQPOT_VERSION_MAJOR 0
 #define GMATELASTOPLASTICQPOT_VERSION_MINOR 2
-#define GMATELASTOPLASTICQPOT_VERSION_PATCH 2
+#define GMATELASTOPLASTICQPOT_VERSION_PATCH 3
 
 #define GMATELASTOPLASTICQPOT_VERSION_AT_LEAST(x,y,z) \
-  (GMATELASTOPLASTICQPOT_VERSION_MAJOR > x || (GMATELASTOPLASTICQPOT_VERSION_MAJOR >= x && \
-  (GMATELASTOPLASTICQPOT_VERSION_MINOR > y || (GMATELASTOPLASTICQPOT_VERSION_MINOR >= y && \
-                                               GMATELASTOPLASTICQPOT_VERSION_PATCH >= z))))
+    (GMATELASTOPLASTICQPOT_VERSION_MAJOR > x || (GMATELASTOPLASTICQPOT_VERSION_MAJOR >= x && \
+    (GMATELASTOPLASTICQPOT_VERSION_MINOR > y || (GMATELASTOPLASTICQPOT_VERSION_MINOR >= y && \
+                                                 GMATELASTOPLASTICQPOT_VERSION_PATCH >= z))))
 
 #define GMATELASTOPLASTICQPOT_VERSION(x,y,z) \
-  (GMATELASTOPLASTICQPOT_VERSION_MAJOR == x && \
-   GMATELASTOPLASTICQPOT_VERSION_MINOR == y && \
-   GMATELASTOPLASTICQPOT_VERSION_PATCH == z)
+    (GMATELASTOPLASTICQPOT_VERSION_MAJOR == x && \
+     GMATELASTOPLASTICQPOT_VERSION_MINOR == y && \
+     GMATELASTOPLASTICQPOT_VERSION_PATCH == z)
 
-// -------------------------------------------------------------------------------------------------
 
 #endif
