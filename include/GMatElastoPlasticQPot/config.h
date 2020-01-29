@@ -1,8 +1,8 @@
-/* =================================================================================================
+/*
 
 (c - MIT) T.W.J. de Geus (Tom) | www.geus.me | github.com/tdegeus/GMatElastoPlasticQPot
 
-================================================================================================= */
+*/
 
 #ifndef GMATELASTOPLASTICQPOT_CONFIG_H
 #define GMATELASTOPLASTICQPOT_CONFIG_H

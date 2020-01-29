@@ -1,8 +1,8 @@
-/* =================================================================================================
+/*
 
 (c - MIT) T.W.J. de Geus (Tom) | www.geus.me | github.com/tdegeus/GMatElastoPlasticQPot
 
-================================================================================================= */
+*/
 
 #include <pybind11/pybind11.h>
 #include <pyxtensor/pyxtensor.hpp>

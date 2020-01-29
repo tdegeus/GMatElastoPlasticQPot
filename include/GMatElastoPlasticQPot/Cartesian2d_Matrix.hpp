@@ -1,8 +1,8 @@
-/* =================================================================================================
+/*
 
 (c - MIT) T.W.J. de Geus (Tom) | www.geus.me | github.com/tdegeus/GMatElastoPlasticQPot
 
-================================================================================================= */
+*/
 
 #ifndef GMATELASTOPLASTICQPOT_CARTESIAN2D_MATRIX_HPP
 #define GMATELASTOPLASTICQPOT_CARTESIAN2D_MATRIX_HPP
