@@ -1,4 +1,4 @@
-\documentclass[namecite]{goose-article}
+\documentclass[namecite, fleqn]{goose-article}
 
 \title{%
   GMatElastoPlasticQPot --
@@ -18,13 +18,7 @@
   {https://github.com/tdegeus/GMatElastoPlasticQPot}%
 }
 
-\hypersetup{pdfauthor={T.W.J.
-de Geus}}
-
-\header{%
-  \href{https://github.com/tdegeus/GMatElastoPlasticQPot}{GMatElastoPlasticQPot} --
-  \href{http://www.geus.me}{T.W.J.\ de Geus}%
-}
+\hypersetup{pdfauthor={T.W.J. de Geus}}
 
 \newcommand\leftstar[1]{\hspace*{-.3em}~^\star\!#1}
 
@@ -112,25 +106,26 @@ will be defined by slowly increasing complexity, departing from linear elasticit
 
 We start simple by considering linear elasticity.
 In this case the volumetric strain energy $U$ and the shear strain energy $V$ read
-\begin{equation}
+\begin{align}
     \label{eq:W:elas}
-    U ( \varepsilon_\mathrm{m}  ) = \frac{d}{2} \, K \, \varepsilon_\mathrm{m}^2
-    \;, \qquad
-    V ( \varepsilon_\mathrm{d} ) = G \, \varepsilon_\mathrm{d}^2
-\end{equation}
-The two potentials are plotted in Fig.~\ref{fig:U-V:elas}
+    U (\varepsilon_\mathrm{m})
+    &= \frac{d}{2} \, K \, \varepsilon_\mathrm{m}^2
+    \\
+    \label{eq:V:elas}
+    V (\varepsilon_\mathrm{d})
+    &= G \, \varepsilon_\mathrm{d}^2
+\end{align}
+The two potentials are plotted in \cref{fig:U-V:elas}
 (only $\varepsilon_\mathrm{d} \geq 0$ is shown, as it is by definition non-negative).
 It is trivial to obtain that
-\begin{equation}
+\begin{align}
     \frac{\partial U}{\partial \varepsilon_\mathrm{m}}
-    =
-    d \, K \, \varepsilon_\mathrm{m}
-    \;, \qquad
+    &= d \, K \, \varepsilon_\mathrm{m}
+    \\
     \frac{\partial V}{\partial \varepsilon_\mathrm{d}}
-    =
-    2 \, G \, \varepsilon_\mathrm{d}
-\end{equation}
-(plotted in Fig.~\ref{fig:dU-dV:elas}).
+    &= 2 \, G \, \varepsilon_\mathrm{d}
+\end{align}
+(plotted in \cref{fig:dU-dV:elas}).
 From which we obtain the following expression for the stress
 \begin{equation}
     \label{eq:sig-elas}
@@ -159,7 +154,7 @@ Note that
     }
     = \tfrac{1}{2} \T{N}_\mathrm{d}
 \end{equation}
-(see Appendix~\ref{sec:nomenclature:derivatives}).
+(see \cref{sec:nomenclature:derivatives}).
 
 \begin{figure}[htp]
     \centering
@@ -189,11 +184,12 @@ while in shear the model is governed by multiple minima.
 These minima have the effect that when the material reaches a certain yield stress,
 it jumps to the next minimum.
 Around this minimum the elasticity is always the same.
-When loading is continued the the material again jumps to a new minimum when the next yield stress is reached.
+When loading is continued the the material again jumps to a new minimum
+when the next yield stress is reached.
 The magnitude of the jumps and of the yield stress are thereby related.
 
 As described, the volumetric behaviour is simply elastic; whereby the potential is given by
-Eq.~(\ref{eq:W:elas}a) and is plotted in Fig.~\ref{fig:U-V:elas}(a).
+\cref{eq:W:elas} and is plotted in \cref{fig:U-V:elas}(a).
 To attain the desired behaviour in shear, the equivalent shear strain space is divided in a
 finite number of yield strains $\varepsilon_\mathrm{y}^{(0)},
 \varepsilon_\mathrm{y}^{(1)}, \varepsilon_\mathrm{y}^{(2)}, ...$.
@@ -230,7 +226,7 @@ $\varepsilon_\mathrm{y}^{(i+1)}$ is
     =
     \tfrac{1}{2} \Big[\, \varepsilon_\mathrm{y}^{(i+1)} - \varepsilon_\mathrm{y}^{(i)} \,\Big]
 \end{equation}
-The resulting shear strain energy is plotted in Fig.~\ref{fig:V:plas}(a).
+The resulting shear strain energy is plotted in \cref{fig:V:plas}(a).
 
 The stress response is obtained from
 \begin{equation}
@@ -239,9 +235,9 @@ The stress response is obtained from
     =
     2 \, G \, \Big[\, \varepsilon_\mathrm{d} - \varepsilon_\mathrm{min}^{(i)} \,\Big]
 \end{equation}
-(see Fig.~\ref{fig:dV:plas}(a)).
+(see \cref{fig:dV:plas}(a)).
 From which it can be observed that in elasticity the behaviour is identical to above
-(cf.~(\ref{eq:dU-dV:elas}b)).
+(cf.~\cref{eq:dU-dV:elas}).
 For the case that $\varepsilon_\mathrm{y}^{(0)} = - \varepsilon_\mathrm{y}^{(1)}$ the
 responses are even identical until initial yield stress is reached.
 For completeness, the stress reads
@@ -259,7 +255,7 @@ For completeness, the stress reads
 \end{equation}
 whereby one has to assume that when $\varepsilon_\mathrm{d} = 0$ also
 $\T{\sigma}_\mathrm{d} = \T{0}$ in order to avoid zero division.
-The response is plotted in Fig.~\ref{fig:dV:plas}(a),
+The response is plotted in \cref{fig:dV:plas}(a),
 from which it is observed that it exhibits stress jumps between different parabola in the potential,
 because of the discontinuity in the second derivative of the elastic potential.
 This can be remedied, such as in the model presented below.
@@ -286,7 +282,7 @@ The remedy the discontinuity in the second derivative of the potential, it is sm
       \right)
     \right]
 \end{equation}
-which is plotted in Fig.~\ref{fig:V:plas}(b).
+which is plotted in \cref{fig:V:plas}(b).
 In this case the stress is obtained from
 \begin{equation}
     \label{eq:dV-plas-smooth}
@@ -299,17 +295,17 @@ In this case the stress is obtained from
       \Big[\, \varepsilon_\mathrm{d} - \varepsilon_\mathrm{min}^{(i)} \,\Big]
     \right)
 \end{equation}
-(see Fig.~\ref{fig:dV:plas}(b)).
+(see \cref{fig:dV:plas}(b)).
 Which is to the first order equal to linear elasticity around its minimum
 $\varepsilon_\mathrm{min}^{(i)}$.
-Indeed, the first order Taylor series of Eq.~\eqref{eq:dV-plas-smooth} around
+Indeed, the first order Taylor series of \cref{eq:dV-plas-smooth} around
 $\varepsilon_\mathrm{d} = \varepsilon_\mathrm{min}^{(i)}$,
 \begin{equation}
     \frac{\partial V^{(i)}}{\partial \varepsilon_\mathrm{d}}
     \approx
     2 \, G \, \Big[\, \varepsilon_\mathrm{d} - \varepsilon_\mathrm{min}^{(i)} \,\Big]
 \end{equation}
-is identical to Eq.~\eqref{eq:dV-plas}.
+is identical to \cref{eq:dV-plas}.
 
 For completeness, also in case the expression for the entire stress tensor
 \begin{equation}
@@ -361,7 +357,7 @@ There are, however, cases for which an anisotropic model is more realistic.
 Below a model is proposed in which the plasticity can only occur along a specific plane.
 Before that, the claim of isotropy is further motivated in two dimensions.
 In that case the strain tensor has three independent modes,
-illustrated in Fig.~\ref{fig:strain-modes:2d}.
+illustrated in \cref{fig:strain-modes:2d}.
 
 \begin{figure}[htp]
     \centering
@@ -370,7 +366,7 @@ illustrated in Fig.~\ref{fig:strain-modes:2d}.
     \label{fig:strain-modes:2d}
 \end{figure}
 
-The first shear mode, in Fig.~\ref{fig:strain-modes:2d}(b), c
+The first shear mode, in \cref{fig:strain-modes:2d}(b), c
 orresponds to a strain tensor of the following structure
 \begin{equation}
     \label{eq:strain-modes:basic}
@@ -381,7 +377,7 @@ orresponds to a strain tensor of the following structure
         \gamma & 0
     \end{bmatrix}
 \end{equation}
-The second shear mode, in Figure~\ref{fig:strain-modes:2d}(c),
+The second shear mode, in \cref{fig:strain-modes:2d}(c),
 corresponds to the same shear deformation rotated by $-\pi/4$.
 It is therefore of the structure
 \begin{equation}
@@ -395,7 +391,7 @@ It is therefore of the structure
 
 In terms of the equivalent shear strain, both modes result in $\varepsilon_\mathrm{d} = |\gamma|$.
 This is further illustrated by rotating the strain tensor
-from Eq.~\eqref{eq:strain-modes:basic} by an angle $\theta$:
+from \cref{eq:strain-modes:basic} by an angle $\theta$:
 \begin{equation}
     \underline{\underline{\varepsilon}}^\prime
     =
@@ -413,12 +409,12 @@ where the rotation matrix depends on the rotation angle $\theta$ as follows
     \end{bmatrix}
 \end{equation}
 Trivially $\varepsilon_\mathrm{d} = | \gamma |$, independent of $\theta$ --
-as plotted in Fig~\ref{fig:shear-modes:epseq} in black.
+as plotted in \cref{fig:shear-modes:epseq} in black.
 The contributions of the two shear modes are examined by examining $\varepsilon^\prime_{xy}$,
-representative of the first shear mode in Fig.~\ref{fig:strain-modes:2d}(b),
+representative of the first shear mode in \cref{fig:strain-modes:2d}(b),
 and $\varepsilon^\prime_{xx}$,
-representative of the second shear mode in Fig.~\ref{fig:strain-modes:2d}(c).
-These contributions are plotted in Fig.~\ref{fig:shear-modes:epseq} respectively in green and red.
+representative of the second shear mode in \cref{fig:strain-modes:2d}(c).
+These contributions are plotted in \cref{fig:shear-modes:epseq} respectively in green and red.
 Indeed, the contributions of the two shear modes vary with $\theta$,
 while $\varepsilon_\mathrm{d}$ it is oblivious to this rotation.
 
@@ -443,7 +439,7 @@ and normal $\vec{n} = \vec{e}_y$.}
 \subsection{Model}
 
 In this model, the plasticity will be localised on a plane with normal $\vec{n}$
-(which has unit length $||\, \vec{n} \,|| \equiv 1$), see Fig.~\ref{fig:strain-vector-planar}.
+(which has unit length $||\, \vec{n} \,|| \equiv 1$), see \cref{fig:strain-vector-planar}.
 To do so, the strain deviator $\T{\varepsilon}_\mathrm{d}$ is decomposed in two parts,
 the strain along the plastic (`weak') plane $\T{\varepsilon}_\mathrm{s}$,
 and the remaining strain $\T{\varepsilon}_\mathrm{n}$.
@@ -506,7 +502,7 @@ $\vec{s} \cdot \vec{s} \equiv 1$ while $\vec{n} \cdot \vec{s} \equiv 0$).
     \label{fig:strain-vector-planar}
 \end{figure}
 
-The remaining strain can now be trivially obtained from Eq.~\eqref{eq:planar:strain:decomposition} as
+The remaining strain can now be trivially obtained from \cref{eq:planar:strain:decomposition} as
 \begin{equation}
     \T{\varepsilon}_\mathrm{n} = \T{\varepsilon}_\mathrm{d} - \T{\varepsilon}_\mathrm{s}
 \end{equation}
