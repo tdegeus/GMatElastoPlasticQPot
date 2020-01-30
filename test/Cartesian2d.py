@@ -13,8 +13,9 @@ G = 45.6
 gamma = 0.02
 epsm = 0.12
 
-Eps = [[epsm, gamma],
-       [gamma, epsm]]
+Eps = np.array(
+    [[epsm, gamma],
+     [gamma, epsm]])
 
 # Elastic
 
