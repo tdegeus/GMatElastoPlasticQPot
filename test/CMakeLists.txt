@@ -14,15 +14,8 @@ set(CMAKE_BUILD_TYPE Release)
 
 find_package(Catch2 REQUIRED)
 find_package(xtensor REQUIRED)
-find_package(xtl REQUIRED)
-
 add_executable(main main.cpp Cartesian2d.cpp)
-
 target_link_libraries(main PRIVATE Catch2::Catch2 GMatElastoPlasticQPot)
-
-if (XSIMD)
-    target_link_libraries(main PRIVATE xtensor::optimize xtensor::use_xsimd)
-endif()
 
 if (WARNINGS)
     target_link_libraries(main PRIVATE GMatElastoPlasticQPot::compiler_warnings)
@@ -30,4 +23,8 @@ endif()
 
 if (ASSERT)
     target_link_libraries(main PRIVATE GMatElastoPlasticQPot::assert)
+endif()
+
+if (XSIMD)
+    target_link_libraries(main PRIVATE xtensor::optimize xtensor::use_xsimd)
 endif()
