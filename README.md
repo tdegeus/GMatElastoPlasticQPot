@@ -25,6 +25,7 @@ Elasto-plastic material model based on a manifold of quadratic potentials. An ov
     - [Using CMake](#using-cmake)
         - [Example](#example-1)
         - [Targets](#targets)
+        - [Optimization](#optimization)
     - [By hand](#by-hand)
     - [Using pkg-config](#using-pkg-config)
 - [References / Credits](#references--credits)
@@ -51,8 +52,8 @@ The headers are meant to be self-explanatory, please inspect them:
 
 Naming conventions
 
-+   Functions with a capital first letter (e.g. "Stress") return their result.
-+   Functions with a small first letter (e.g. "stress") write to allocated final input argument.
++   Functions whose name starts with a capital (e.g. `Stress`) return their result (allocating it internally).
++   Functions whose name starts with a small (e.g. `stress`) write to, fully allocated, (last) input argument (avoiding internal allocation).
 
 Storage conventions
 
@@ -78,7 +79,7 @@ Storage conventions
 
 ## Example
 
-Only a tiny example is presented here, that is meant to understand the code's structure:
+Only a partial example is presented here, that is meant to understand the code's structure:
 
 ```cpp
 #include <GMatElastoPlasticQPot/Cartesian2d.h>
@@ -90,7 +91,7 @@ int main()
     GMatElastoPlasticQPot::Cartesian2d::Elastic elastic(K, G);
     GMatElastoPlasticQPot::Cartesian2d::Cusp plastic(K, G, epsy);
     // - compute stress [allocate result]
-    Sig = elastic.Stress(Eps);
+    GMatElastoPlasticQPot::Tensor2 Sig = elastic.Stress(Eps);
     ...
     // - compute stress [no allocation]
     elastic.stress(Eps, Sig); 
@@ -103,7 +104,7 @@ int main()
     matrix.setElastic(I, K, G);
     matrix.setCusp(I, K, G, epsy);
     // - compute stress [allocate result]
-    Sig = matrix.Stress(Eps);
+    xt::xtensor<double,4> Sig = matrix.Stress(Eps);
     ...
     // - compute stress [no allocation]
     matrix.stress(Eps, Sig); 
@@ -113,12 +114,9 @@ int main()
 
 ## Debugging
 
-Assertions are enabled:
+To enable assertions define `GMATELASTOPLASTICQPOT_ENABLE_ASSERT` **before** including *GMatElastoPlasticQPot* for the first time. Using *CMake* this can be done using the `GMatElastoPlasticQPot::assert` target (see [below](#using-cmake)).
 
-+   If `NDEBUG` is **not** defined. 
-+   If `GMATELASTOPLASTICQPOT_ENABLE_ASSERT` is defined **before** including *GMatElastoPlasticQPot* for the first time.
-
-Otherwise assertions are not enabled. To explicitly disable them define `GMATELASTOPLASTICQPOT_DISABLE_ASSERT` **before** including *GMatElastoPlasticQPot* for the first time.
+>   To also enable assertions of *xtensor* also define `XTENSOR_ENABLE_ASSERT` **before** including *xtensor* (and *GMatElastoPlasticQPot*) for the first time. Using *CMake* all assertions are enabled using the `GMatElastoPlasticQPot::debug` target (see [below](#using-cmake)).
 
 # Installation
 
@@ -190,13 +188,33 @@ target_link_libraries(example PRIVATE GMatElastoPlasticQPot)
 The following targets are available:
 
 *   `GMatElastoPlasticQPot`
-    Includes the *xtensor* dependency.
+    Includes *GMatElastoPlasticQPot* and the *xtensor* dependency.
 
 *   `GMatElastoPlasticQPot::assert`
     Enables assertions by defining `GMATELASTOPLASTICQPOT_ENABLE_ASSERT`.
 
+*   `GMatElastoPlasticQPot::debug`
+    Enables all assertions by defining `GMATELASTOPLASTICQPOT_ENABLE_ASSERT` and `XTENSOR_ENABLE_ASSERT`.
+
 *   `GMatElastoPlasticQPot::compiler_warings`
     Enables compiler warnings (generic).
+
+### Optimization
+
+It is advised to think about compiler optimization and about enabling *xsimd. In *CMake* this can be done using the `xtensor::optimize` and `xtensor::use_xsimd` targets. The above example then becomes:
+
+```cmake
+cmake_minimum_required(VERSION 3.1)
+project(example)
+find_package(GMatElastoPlasticQPot REQUIRED)
+add_executable(example example.cpp)
+target_link_libraries(example PRIVATE 
+    GMatElastoPlasticQPot 
+    xtensor::optimize 
+    xtensor::use_xsimd)
+```
+
+See the [documentation of xtensor](https://xtensor.readthedocs.io/en/latest/) concerning optimization.
 
 ## By hand
 
@@ -206,6 +224,8 @@ Presuming that the compiler is `c++`, compile using:
 c++ -I/path/to/GMatElastoPlasticQPot/include ...
 ```
 
+Note that you have to take care of the *xtensor* dependency, the C++ version, optimization, enabling *xsimd*, ...
+
 ## Using pkg-config
 
 Presuming that the compiler is `c++`, compile using:
@@ -213,6 +233,8 @@ Presuming that the compiler is `c++`, compile using:
 ```
 c++ `pkg-config --cflags GMatElastoPlasticQPot` ...
 ```
+
+Note that you have to take care of the *xtensor* dependency, the C++ version, optimization, enabling *xsimd*, ...
 
 # References / Credits
 
