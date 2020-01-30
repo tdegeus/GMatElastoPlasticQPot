@@ -53,7 +53,7 @@ The headers are meant to be self-explanatory, please inspect them:
 Naming conventions
 
 +   Functions whose name starts with a capital (e.g. `Stress`) return their result (allocating it internally).
-+   Functions whose name starts with a small (e.g. `stress`) write to, fully allocated, (last) input argument (avoiding internal allocation).
++   Functions whose name starts with a small (e.g. `stress`) write to the, fully allocated, (last) input argument (avoiding re-allocation, but making the user responsible to do it properly).
 
 Storage conventions
 
@@ -87,9 +87,12 @@ Only a partial example is presented here, that is meant to understand the code's
 int main()
 {
     // a single material point
-    // - create class
+    // - construct
     GMatElastoPlasticQPot::Cartesian2d::Elastic elastic(K, G);
     GMatElastoPlasticQPot::Cartesian2d::Cusp plastic(K, G, epsy);
+    // - set strain (follows e.g. from FEM discretisation)
+    GMatElastoPlasticQPot::Tensor2 Eps;
+    ...
     // - compute stress [allocate result]
     GMatElastoPlasticQPot::Tensor2 Sig = elastic.Stress(Eps);
     ...
@@ -97,12 +100,15 @@ int main()
     elastic.stress(Eps, Sig); 
     ...
 
-    // a "matrix" of material points
-    // - create class
+    // a matrix, of shape [nelem, nip]. of material points
+    // - construct
     GMatElastoPlasticQPot::Cartesian2d::Elastic matrix(nelem, nip);
     // - set material
     matrix.setElastic(I, K, G);
     matrix.setCusp(I, K, G, epsy);
+    // - set strain (follows e.g. from FEM discretisation)
+    xt::xtensor<double,4> Eps = xt::empty<double>({nelem, nip, 2ul, 2ul});
+    ... 
     // - compute stress [allocate result]
     xt::xtensor<double,4> Sig = matrix.Stress(Eps);
     ...
@@ -112,11 +118,17 @@ int main()
 }
 ```
 
+>   See [Cartesian2d.h](include/GMatElastoPlasticQPot/Cartesian2d.h) for more details.
+
 ## Debugging
 
-To enable assertions define `GMATELASTOPLASTICQPOT_ENABLE_ASSERT` **before** including *GMatElastoPlasticQPot* for the first time. Using *CMake* this can be done using the `GMatElastoPlasticQPot::assert` target (see [below](#using-cmake)).
+To enable assertions define `GMATELASTOPLASTICQPOT_ENABLE_ASSERT` **before** including *GMatElastoPlasticQPot* for the first time. 
 
->   To also enable assertions of *xtensor* also define `XTENSOR_ENABLE_ASSERT` **before** including *xtensor* (and *GMatElastoPlasticQPot*) for the first time. Using *CMake* all assertions are enabled using the `GMatElastoPlasticQPot::debug` target (see [below](#using-cmake)).
+Using *CMake* this can be done using the `GMatElastoPlasticQPot::assert` target (see [below](#using-cmake)).
+
+>   To also enable assertions of *xtensor* also define `XTENSOR_ENABLE_ASSERT` **before** including *xtensor* (and *GMatElastoPlasticQPot*) for the first time. 
+>   
+>   Using *CMake* all assertions are enabled using the `GMatElastoPlasticQPot::debug` target (see [below](#using-cmake)).
 
 # Installation
 
@@ -148,6 +160,8 @@ make install
 conda install -c conda-forge python-gmatelastoplasticqpot
 ```
 
+Note that *xsimd* and hardware optimisations are not enabled. To enable them you have to compile on your system, as is discussed next.
+
 ### From source
 
 >   To get the prerequisites you *can* use conda
@@ -166,6 +180,14 @@ cd GMatElastoPlasticQPot
 python setup.py build
 python setup.py install
 ```
+
+>   You can also use a single call:
+>   
+>   ```
+>   python -m pip install .
+>   ```
+>   
+>   However potentially leading to less readable output.
 
 # Compiling
 
