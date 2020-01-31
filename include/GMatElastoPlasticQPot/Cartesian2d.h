@@ -100,17 +100,6 @@ public:
     // Energy
     double energy(const Tensor2& Eps) const;
 
-    // Index of the current yield strain
-    size_t find(const Tensor2& Eps) const; // strain tensor
-    size_t find(double epsd) const; // equivalent deviatoric strain (epsd == Deviatoric(Eps))
-
-    // Certain yield strain
-    double epsy(size_t idx) const;
-
-    // Equivalent plastic strain
-    double epsp(const Tensor2& Eps) const; // strain tensor
-    double epsp(double epsd) const; // equivalent deviatoric strain (epsd == Deviatoric(Eps))
-
 private:
 
     double m_K; // bulk modulus

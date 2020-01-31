@@ -15,7 +15,7 @@ namespace Cartesian2d {
 
 inline Matrix::Matrix(size_t nelem, size_t nip) : m_nelem(nelem), m_nip(nip)
 {
-    m_type = xt::ones <size_t>({m_nelem, m_nip}) * Type::Unset;
+    m_type = xt::ones<size_t>({m_nelem, m_nip}) * Type::Unset;
     m_index = xt::empty<size_t>({m_nelem, m_nip});
     m_allSet = false;
 }
@@ -333,7 +333,7 @@ inline void Matrix::find(const xt::xtensor<double,4>& a_Eps, xt::xtensor<size_t,
 
             switch (m_type(e,q)) {
                 case Type::Elastic:
-                    a_idx(e,q) = m_Elastic[m_index(e,q)].find(Eps);
+                    a_idx(e,q) = 0;
                     break;
                 case Type::Cusp:
                     a_idx(e,q) = m_Cusp[m_index(e,q)].find(Eps);
@@ -359,7 +359,7 @@ inline void Matrix::epsy(const xt::xtensor<size_t,2>& a_idx, xt::xtensor<double,
 
             switch (m_type(e,q)) {
               case Type::Elastic:
-                  a_epsy(e,q) = m_Elastic[m_index(e,q)].epsy(a_idx(e,q));
+                  a_epsy(e,q) = std::numeric_limits<double>::infinity();
                   break;
               case Type::Cusp:
                   a_epsy(e,q) = m_Cusp[m_index(e,q)].epsy(a_idx(e,q));
@@ -388,7 +388,7 @@ inline void Matrix::epsp(const xt::xtensor<double,4>& a_Eps, xt::xtensor<double,
 
             switch (m_type(e,q)) {
               case Type::Elastic:
-                  a_epsp(e,q) = m_Elastic[m_index(e,q)].epsp(Eps);
+                  a_epsp(e,q) = 0.0;
                   break;
               case Type::Cusp:
                   a_epsp(e,q) = m_Cusp[m_index(e,q)].epsp(Eps);

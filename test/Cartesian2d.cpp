@@ -35,10 +35,6 @@ SECTION("Elastic: simple shear + volumetric deformation")
     EQ(Sig(1,1), K * epsm);
     EQ(Sig(0,1), G * gamma);
     EQ(Sig(1,0), G * gamma);
-
-    EQ(mat.epsp(Eps), 0.0);
-
-    REQUIRE(mat.find(Eps) == 0);
 }
 
 

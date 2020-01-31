@@ -117,31 +117,6 @@ py::class_<SM::Elastic>(sm, "Elastic")
         "Returns the energy, for a given strain tensor.",
         py::arg("Eps"))
 
-    .def("epsy",
-        &SM::Elastic::epsy,
-        "Returns yield strain for a given potential index (== inf).",
-        py::arg("idx"))
-
-    .def("epsp",
-        py::overload_cast<const SM::Tensor2&>(&SM::Elastic::epsp, py::const_),
-        "Returns the equivalent plastic strain for a given strain tensor (== 0).",
-        py::arg("Eps"))
-
-    .def("epsp",
-        py::overload_cast<double>(&SM::Elastic::epsp, py::const_),
-        "Returns the equivalent plastic strain for a given equivalent strain deviator (== 0).",
-        py::arg("epsd"))
-
-    .def("find",
-        py::overload_cast<const SM::Tensor2&>(&SM::Elastic::find, py::const_),
-        "Returns the potential index, for a given strain tensor (== 0).",
-        py::arg("Eps"))
-
-    .def("find",
-        py::overload_cast<double>(&SM::Elastic::find, py::const_),
-        "Returns the potential index, for a given equivalent strain deviator (== 0).",
-        py::arg("epsd"))
-
     .def("__repr__", [](const SM::Elastic &){
         return "<GMatElastoPlasticQPot.Cartesian2d.Elastic>"; });
 

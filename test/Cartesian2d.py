@@ -28,10 +28,6 @@ EQ(Sig[1,1], K * epsm)
 EQ(Sig[0,1], G * gamma)
 EQ(Sig[1,0], G * gamma)
 
-EQ(mat.epsp(Eps), 0.0)
-
-EQ(mat.find(Eps), 0)
-
 # Cusp
 
 mat = GMat.Cusp(K, G, [0.01, 0.03, 0.10])

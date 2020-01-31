@@ -30,36 +30,6 @@ inline double Elastic::G() const
 }
 
 
-inline double Elastic::epsp(const Tensor2&) const
-{
-    return 0.0;
-}
-
-
-inline double Elastic::epsp(double) const
-{
-    return 0.0;
-}
-
-
-inline double Elastic::epsy(size_t) const
-{
-    return std::numeric_limits<double>::infinity();
-}
-
-
-inline size_t Elastic::find(const Tensor2&) const
-{
-    return 0;
-}
-
-
-inline size_t Elastic::find(double) const
-{
-    return 0;
-}
-
-
 template <class T>
 inline void Elastic::stress(const Tensor2& Eps, T&& Sig) const
 {
