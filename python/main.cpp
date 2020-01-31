@@ -151,8 +151,7 @@ py::class_<SM::Elastic>(sm, "Elastic")
 
 py::class_<SM::Cusp>(sm, "Cusp")
 
-    .def(
-        py::init<double,double,const xt::xtensor<double,1>&, bool>(),
+    .def(py::init<double,double,const xt::xtensor<double,1>&, bool>(),
         "Elasto-plastic material point, with 'cusp' potentials",
         py::arg("K"),
         py::arg("G"),
@@ -203,8 +202,7 @@ py::class_<SM::Cusp>(sm, "Cusp")
 
 py::class_<SM::Smooth>(sm, "Smooth")
 
-  .def(
-      py::init<double,double,const xt::xtensor<double,1>&, bool>(),
+  .def(py::init<double,double,const xt::xtensor<double,1>&, bool>(),
       "Elasto-plastic material point, with 'smooth' potentials",
       py::arg("K"),
       py::arg("G"),
@@ -268,8 +266,7 @@ py::enum_<SM::Type::Value>(smm, "Type")
 
 py::class_<SM::Matrix>(sm, "Matrix")
 
-    .def(
-        py::init<size_t, size_t>(),
+    .def(py::init<size_t, size_t>(),
         "Matrix of material points.",
         py::arg("nelem"),
         py::arg("nip"))
@@ -286,6 +283,14 @@ py::class_<SM::Matrix>(sm, "Matrix")
         &SM::Matrix::nip,
         "Return number of integration points (matrix columns).")
 
+    .def("K",
+        &SM::Matrix::K,
+        "Return matrix with bulk moduli.")
+
+    .def("G",
+        &SM::Matrix::G,
+        "Return matrix with shear moduli.")
+
     .def("type",
         &SM::Matrix::type,
         "Return matrix with material types.")
@@ -294,13 +299,9 @@ py::class_<SM::Matrix>(sm, "Matrix")
         &SM::Matrix::isPlastic,
         "Return matrix with boolean: elastic (0) or plastic (1).")
 
-    .def("K",
-        &SM::Matrix::K,
-        "Return matrix with bulk moduli.")
-
-    .def("G",
-        &SM::Matrix::G,
-        "Return matrix with shear moduli.")
+    .def("check",
+        &SM::Matrix::check,
+        "Check that all matrix entries are set. Throws if any unset point is found.")
 
     .def("setElastic",
         py::overload_cast<
