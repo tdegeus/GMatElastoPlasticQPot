@@ -31,47 +31,34 @@ inline Tensor2 Deviatoric(const Tensor2& A);
 // Equivalent deviatoric stress/stress
 
 inline double Sigd(const Tensor2& Sig);
-
 inline double Epsd(const Tensor2& Eps);
 
 // List version of the functions above (no allocation)
 
 inline void hydrostatic(const xt::xtensor<double,3>& A, xt::xtensor<double,1>& Am);
-
 inline void deviatoric(const xt::xtensor<double,3>& A, xt::xtensor<double,3>& Ad);
-
 inline void sigd(const xt::xtensor<double,3>& Sig, xt::xtensor<double,1>& Sigeq);
-
 inline void epsd(const xt::xtensor<double,3>& Eps, xt::xtensor<double,1>& Epseq);
 
 // Auto-allocation allocation of the functions above
 
 inline xt::xtensor<double,1> Hydrostatic(const xt::xtensor<double,3>& A);
-
 inline xt::xtensor<double,3> Deviatoric(const xt::xtensor<double,3>& A);
-
 inline xt::xtensor<double,1> Sigd(const xt::xtensor<double,3>& Sig);
-
 inline xt::xtensor<double,1> Epsd(const xt::xtensor<double,3>& Eps);
 
 // Matrix version of the functions above (no allocation)
 
 inline void hydrostatic(const xt::xtensor<double,4>& A, xt::xtensor<double,2>& Am);
-
 inline void deviatoric(const xt::xtensor<double,4>& A, xt::xtensor<double,4>& Ad);
-
 inline void sigd(const xt::xtensor<double,4>& Sig, xt::xtensor<double,2>& Sigeq);
-
 inline void epsd(const xt::xtensor<double,4>& Eps, xt::xtensor<double,2>& Epseq);
 
 // Auto-allocation allocation of the functions above
 
 inline xt::xtensor<double,2> Hydrostatic(const xt::xtensor<double,4>& A);
-
 inline xt::xtensor<double,4> Deviatoric(const xt::xtensor<double,4>& A);
-
 inline xt::xtensor<double,2> Sigd(const xt::xtensor<double,4>& Sig);
-
 inline xt::xtensor<double,2> Epsd(const xt::xtensor<double,4>& Eps);
 
 // Material point
@@ -277,25 +264,17 @@ public:
     // Compute (no allocation, overwrites last argument)
 
     void stress(const xt::xtensor<double,4>& Eps, xt::xtensor<double,4>& Sig) const;
-
     void energy(const xt::xtensor<double,4>& Eps, xt::xtensor<double,2>& energy) const;
-
     void find(const xt::xtensor<double,4>& Eps, xt::xtensor<size_t,2>& find) const;
-
     void epsy(const xt::xtensor<size_t,2>& idx, xt::xtensor<double,2>& epsy) const;
-
     void epsp(const xt::xtensor<double,4>& Eps, xt::xtensor<double,2>& epsp) const;
 
     // Auto-allocation of the functions above
 
     xt::xtensor<double,4> Stress(const xt::xtensor<double,4>& Eps) const;
-
     xt::xtensor<double,2> Energy(const xt::xtensor<double,4>& Eps) const;
-
     xt::xtensor<size_t,2> Find(const xt::xtensor<double,4>& Eps) const;
-
     xt::xtensor<double,2> Epsy(const xt::xtensor<size_t,2>& idx) const;
-
     xt::xtensor<double,2> Epsp(const xt::xtensor<double,4>& Eps) const;
 
 private:
