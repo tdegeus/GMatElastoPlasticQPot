@@ -12,10 +12,9 @@
 namespace GMatElastoPlasticQPot {
 namespace Cartesian2d {
 
-
 // Alias
 
-using Tensor2 = xt::xtensor_fixed<double, xt::xshape<2,2>>;
+using Tensor2 = xt::xtensor_fixed<double, xt::xshape<2, 2>>;
 
 // Unit tensors
 
@@ -75,7 +74,6 @@ inline xt::xtensor<double,2> Sigd(const xt::xtensor<double,4>& Sig);
 
 inline xt::xtensor<double,2> Epsd(const xt::xtensor<double,4>& Eps);
 
-
 // Material point
 
 class Elastic
@@ -115,7 +113,7 @@ public:
 
     // Constructors
     Cusp() = default;
-    Cusp(double K, double G, const xt::xtensor<double,1>& epsy, bool init_elastic=true);
+    Cusp(double K, double G, const xt::xtensor<double,1>& epsy, bool init_elastic = true);
 
     // Parameters
     double K() const;
@@ -148,7 +146,6 @@ private:
     double m_G; // shear modulus
     xt::xtensor<double,1> m_epsy; // yield strains
 };
-
 
 // Material point
 
@@ -158,7 +155,7 @@ public:
 
     // Constructors
     Smooth() = default;
-    Smooth(double K, double G, const xt::xtensor<double,1>& epsy, bool init_elastic=true);
+    Smooth(double K, double G, const xt::xtensor<double,1>& epsy, bool init_elastic = true);
 
     // Parameters
     double K() const;
@@ -191,7 +188,6 @@ private:
     double m_G; // shear modulus
     xt::xtensor<double,1> m_epsy; // yield strains
 };
-
 
 // Material identifier
 
@@ -203,7 +199,6 @@ struct Type {
         Smooth,
   };
 };
-
 
 // Matrix of material points
 
@@ -238,24 +233,21 @@ public:
 
     // Set parameters for a batch of points
 
-    void setElastic(
-        const xt::xtensor<size_t,2>& I,
-        double K,
-        double G);
+    void setElastic(const xt::xtensor<size_t,2>& I, double K, double G);
 
     void setCusp(
         const xt::xtensor<size_t,2>& I,
         double K,
         double G,
         const xt::xtensor<double,1>& epsy,
-        bool init_elastic=true);
+        bool init_elastic = true);
 
     void setSmooth(
         const xt::xtensor<size_t,2>& I,
         double K,
         double G,
         const xt::xtensor<double,1>& epsy,
-        bool init_elastic=true);
+        bool init_elastic = true);
 
     // Set parameters for a batch of points
     // the matrix "idx" refers to a which entry "K[idx]", "G[idx]", or "epsy[idx,:]" to use
@@ -272,7 +264,7 @@ public:
         const xt::xtensor<double,1>& K,
         const xt::xtensor<double,1>& G,
         const xt::xtensor<double,2>& epsy,
-        bool init_elastic=true);
+        bool init_elastic = true);
 
     void setSmooth(
         const xt::xtensor<size_t,2>& I,
@@ -280,7 +272,7 @@ public:
         const xt::xtensor<double,1>& K,
         const xt::xtensor<double,1>& G,
         const xt::xtensor<double,2>& epsy,
-        bool init_elastic=true);
+        bool init_elastic = true);
 
     // Compute (no allocation, overwrites last argument)
 
@@ -320,12 +312,11 @@ private:
     // Shape
     size_t m_nelem;
     size_t m_nip;
-    static const size_t m_ndim=2;
+    static const size_t m_ndim = 2;
 
     // Internal check
-    bool m_allSet=false;
+    bool m_allSet = false;
     void checkAllSet();
-
 };
 
 
@@ -340,9 +331,8 @@ inline double trace(const U& A);
 template <class U, class V>
 inline double A2_ddot_B2(const U& A, const V& B);
 
-
-}} // namespace ...
-
+} // namespace Cartesian2d
+} // namespace GMatElastoPlasticQPot
 
 #include "Cartesian2d.hpp"
 #include "Cartesian2d_Elastic.hpp"

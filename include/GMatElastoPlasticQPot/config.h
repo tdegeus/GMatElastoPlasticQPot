@@ -7,7 +7,6 @@
 #ifndef GMATELASTOPLASTICQPOT_CONFIG_H
 #define GMATELASTOPLASTICQPOT_CONFIG_H
 
-
 // use "M_PI" from "math.h"
 #define _USE_MATH_DEFINES
 
@@ -35,8 +34,7 @@
         GMATELASTOPLASTICQPOT_ASSERT_IMPL(expr, __FILE__, __LINE__)
 
     #define GMATELASTOPLASTICQPOT_ASSERT_IMPL(expr, file, line) \
-        if (!(expr)) \
-        { \
+        if (!(expr)) { \
             throw std::runtime_error( \
                 std::string(file) + ':' + std::to_string(line) + \
                 ": assertion failed (" #expr ") \n\t"); \
@@ -47,7 +45,6 @@
     #define GMATELASTOPLASTICQPOT_ASSERT(expr)
 
 #endif
-
 
 #define GMATELASTOPLASTICQPOT_VERSION_MAJOR 0
 #define GMATELASTOPLASTICQPOT_VERSION_MINOR 4
@@ -62,6 +59,5 @@
     (GMATELASTOPLASTICQPOT_VERSION_MAJOR == x && \
      GMATELASTOPLASTICQPOT_VERSION_MINOR == y && \
      GMATELASTOPLASTICQPOT_VERSION_PATCH == z)
-
 
 #endif

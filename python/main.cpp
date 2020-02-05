@@ -15,11 +15,10 @@
 
 namespace py = pybind11;
 
-
-PYBIND11_MODULE(GMatElastoPlasticQPot, m) {
+PYBIND11_MODULE(GMatElastoPlasticQPot, m)
+{
 
 m.doc() = "Elasto-plastic material model";
-
 
 // ---------------------------------
 // GMatElastoPlasticQPot.Cartesian2d
@@ -29,9 +28,7 @@ py::module sm = m.def_submodule("Cartesian2d", "2d Cartesian coordinates");
 
 namespace SM = GMatElastoPlasticQPot::Cartesian2d;
 
-
 // Tensor algebra
-
 
 sm.def("Hydrostatic",
     py::overload_cast<const SM::Tensor2&>(&SM::Hydrostatic),
@@ -48,7 +45,6 @@ sm.def("Hydrostatic",
     "Hydrostatic part of a 2nd-order tensor. Returns matrix of scalars.",
     py::arg("A"));
 
-
 sm.def("Deviatoric",
     py::overload_cast<const SM::Tensor2&>(&SM::Deviatoric),
     "Deviatoric part of a 2nd-order tensor. Returns 2nd-order tensor.",
@@ -63,7 +59,6 @@ sm.def("Deviatoric",
     py::overload_cast<const xt::xtensor<double,4>&>(&SM::Deviatoric),
     "Deviatoric part of a 2nd-order tensor. Returns matrix 2nd-order tensors.",
     py::arg("A"));
-
 
 sm.def("Epsd",
     py::overload_cast<const SM::Tensor2&>(&SM::Epsd),
@@ -80,7 +75,6 @@ sm.def("Epsd",
     "Equivalent strain deviator. Returns matrix of scalars.",
     py::arg("Eps"));
 
-
 sm.def("Sigd",
     py::overload_cast<const SM::Tensor2&>(&SM::Sigd),
     "Equivalent stress deviator. Returns scalar.",
@@ -96,16 +90,11 @@ sm.def("Sigd",
     "Equivalent stress deviator. Returns matrix of scalars.",
     py::arg("Sig"));
 
-
 // Material point: Elastic
-
 
 py::class_<SM::Elastic>(sm, "Elastic")
 
-    .def(py::init<double, double>(),
-        "Elastic material point",
-        py::arg("K"),
-        py::arg("G"))
+    .def(py::init<double, double>(), "Elastic material point", py::arg("K"), py::arg("G"))
 
     .def("Stress",
         &SM::Elastic::Stress,
@@ -117,16 +106,15 @@ py::class_<SM::Elastic>(sm, "Elastic")
         "Returns the energy, for a given strain tensor.",
         py::arg("Eps"))
 
-    .def("__repr__", [](const SM::Elastic &){
-        return "<GMatElastoPlasticQPot.Cartesian2d.Elastic>"; });
-
+    .def("__repr__", [](const SM::Elastic&) {
+        return "<GMatElastoPlasticQPot.Cartesian2d.Elastic>";
+    });
 
 // Material point: Cusp
 
-
 py::class_<SM::Cusp>(sm, "Cusp")
 
-    .def(py::init<double,double,const xt::xtensor<double,1>&, bool>(),
+    .def(py::init<double, double, const xt::xtensor<double,1>&, bool>(),
         "Elasto-plastic material point, with 'cusp' potentials",
         py::arg("K"),
         py::arg("G"),
@@ -168,16 +156,15 @@ py::class_<SM::Cusp>(sm, "Cusp")
         "Returns the potential index, for a given equivalent strain deviator.",
         py::arg("epsd"))
 
-    .def("__repr__", [](const SM::Cusp &){
-        return "<GMatElastoPlasticQPot.Cartesian2d.Cusp>"; });
-
+    .def("__repr__", [](const SM::Cusp&) {
+        return "<GMatElastoPlasticQPot.Cartesian2d.Cusp>";
+    });
 
 // Material point: Smooth
 
-
 py::class_<SM::Smooth>(sm, "Smooth")
 
-  .def(py::init<double,double,const xt::xtensor<double,1>&, bool>(),
+    .def(py::init<double, double, const xt::xtensor<double,1>&, bool>(),
       "Elasto-plastic material point, with 'smooth' potentials",
       py::arg("K"),
       py::arg("G"),
@@ -219,12 +206,11 @@ py::class_<SM::Smooth>(sm, "Smooth")
         "Returns the potential index, for a given equivalent strain deviator.",
         py::arg("epsd"))
 
-    .def("__repr__", [](const SM::Smooth &){
-        return "<GMatElastoPlasticQPot.Cartesian2d.Smooth>"; });
-
+    .def("__repr__", [](const SM::Smooth&) {
+        return "<GMatElastoPlasticQPot.Cartesian2d.Smooth>";
+    });
 
 // Material identifier
-
 
 py::module smm = sm.def_submodule("Type", "Type enumerator");
 
@@ -235,9 +221,7 @@ py::enum_<SM::Type::Value>(smm, "Type")
     .value("Smooth", SM::Type::Smooth)
     .export_values();
 
-
 // Matrix
-
 
 py::class_<SM::Matrix>(sm, "Matrix")
 
@@ -246,29 +230,17 @@ py::class_<SM::Matrix>(sm, "Matrix")
         py::arg("nelem"),
         py::arg("nip"))
 
-    .def("ndim",
-        &SM::Matrix::ndim,
-        "Return number of (tensor) dimensions.")
+    .def("ndim", &SM::Matrix::ndim, "Return number of (tensor) dimensions.")
 
-    .def("nelem",
-        &SM::Matrix::nelem,
-        "Return number of elements (matrix rows).")
+    .def("nelem", &SM::Matrix::nelem, "Return number of elements (matrix rows).")
 
-    .def("nip",
-        &SM::Matrix::nip,
-        "Return number of integration points (matrix columns).")
+    .def("nip", &SM::Matrix::nip, "Return number of integration points (matrix columns).")
 
-    .def("K",
-        &SM::Matrix::K,
-        "Return matrix with bulk moduli.")
+    .def("K", &SM::Matrix::K, "Return matrix with bulk moduli.")
 
-    .def("G",
-        &SM::Matrix::G,
-        "Return matrix with shear moduli.")
+    .def("G", &SM::Matrix::G, "Return matrix with shear moduli.")
 
-    .def("type",
-        &SM::Matrix::type,
-        "Return matrix with material types.")
+    .def("type", &SM::Matrix::type, "Return matrix with material types.")
 
     .def("isPlastic",
         &SM::Matrix::isPlastic,
@@ -323,10 +295,8 @@ py::class_<SM::Matrix>(sm, "Matrix")
         py::arg("init_elastic") = true)
 
     .def("setElastic",
-        py::overload_cast<
-            const xt::xtensor<size_t,2>&,
-            double,
-            double>(&SM::Matrix::setElastic),
+        py::overload_cast<const xt::xtensor<size_t,2>&, double, double>(
+            &SM::Matrix::setElastic),
         "Set specific entries 'Elastic'.",
         py::arg("I"),
         py::arg("K"),
@@ -385,8 +355,7 @@ py::class_<SM::Matrix>(sm, "Matrix")
         "Returns matrix of potential indices, given matrix of strain tensors.",
         py::arg("Eps"))
 
-    .def("__repr__", [](const SM::Matrix &){
-        return "<GMatElastoPlasticQPot.Cartesian2d.Matrix>"; });
-
+    .def("__repr__", [](const SM::Matrix&) {
+        return "<GMatElastoPlasticQPot.Cartesian2d.Matrix>";
+    });
 }
-
