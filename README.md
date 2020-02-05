@@ -4,10 +4,10 @@
 
 Elasto-plastic material model based on a manifold of quadratic potentials. An overview of the theory can be found in `docs/` in particular in this [PDF](docs/readme.pdf).
 
-The code is a [C++ header-only](#c-headers) library, but a [Python module](#python-module) is also provided. The interface for both is identical expect:
+The code is a [C++ header-only](#c-headers) library, but a [Python module](#python-module) is also provided. The interfaces are identical expect:
 
-+   `::` in C++ should be replaced with `.` in Python.
-+   The Python module does not have the interface to share output objects in-place.
++   All `::` in C++ are `.` in Python.
++   The Python module cannot change output objects in-place.
 
 # Contents
 
