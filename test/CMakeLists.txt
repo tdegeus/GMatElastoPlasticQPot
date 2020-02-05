@@ -17,14 +17,14 @@ find_package(xtensor REQUIRED)
 add_executable(main main.cpp Cartesian2d.cpp)
 target_link_libraries(main PRIVATE Catch2::Catch2 GMatElastoPlasticQPot)
 
-if (WARNINGS)
+if(WARNINGS)
     target_link_libraries(main PRIVATE GMatElastoPlasticQPot::compiler_warnings)
 endif()
 
-if (ASSERT)
+if(ASSERT)
     target_link_libraries(main PRIVATE GMatElastoPlasticQPot::assert)
 endif()
 
-if (XSIMD)
+if(XSIMD)
     target_link_libraries(main PRIVATE xtensor::optimize xtensor::use_xsimd)
 endif()

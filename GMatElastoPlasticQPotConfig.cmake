@@ -45,10 +45,7 @@ if(NOT TARGET GMatElastoPlasticQPot::compiler_warnings)
         set_property(
             TARGET GMatElastoPlasticQPot::compiler_warnings
             PROPERTY INTERFACE_COMPILE_OPTIONS
-            -Wall
-            -Wextra
-            -pedantic
-            -Wno-unknown-pragmas)
+            -Wall -Wextra -pedantic -Wno-unknown-pragmas)
     endif()
 endif()
 
@@ -69,6 +66,5 @@ if(NOT TARGET GMatElastoPlasticQPot::debug)
     set_property(
         TARGET GMatElastoPlasticQPot::debug
         PROPERTY INTERFACE_COMPILE_DEFINITIONS
-        XTENSOR_ENABLE_ASSERT
-        GMATELASTOPLASTICQPOT_ENABLE_ASSERT)
+        XTENSOR_ENABLE_ASSERT GMATELASTOPLASTICQPOT_ENABLE_ASSERT)
 endif()
