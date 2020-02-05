@@ -4,28 +4,24 @@
 
 Elasto-plastic material model based on a manifold of quadratic potentials. An overview of the theory can be found in `docs/` in particular in this [PDF](docs/readme.pdf).
 
+The code is a [C++ header-only](#c-headers) library, but a [Python module](#python-module) is also provided. The interface for both is identical expect:
+
++   `::` in C++ should be replaced with `.` in Python.
++   The Python module does not have the interface to share output objects in-place.
+
 # Contents
 
-<!-- MarkdownTOC -->
+<!-- MarkdownTOC levels="1,2" -->
 
 - [Disclaimer](#disclaimer)
 - [Implementation](#implementation)
-    - [Overview](#overview)
-    - [Conventions](#conventions)
-    - [Example](#example)
+    - [Cartesian2d](#cartesian2d)
     - [Debugging](#debugging)
 - [Installation](#installation)
     - [C++ headers](#c-headers)
-        - [Using conda](#using-conda)
-        - [From source](#from-source)
     - [Python module](#python-module)
-        - [Using conda](#using-conda-1)
-        - [From source](#from-source-1)
 - [Compiling](#compiling)
     - [Using CMake](#using-cmake)
-        - [Example](#example-1)
-        - [Targets](#targets)
-        - [Optimization](#optimization)
     - [By hand](#by-hand)
     - [Using pkg-config](#using-pkg-config)
 - [References / Credits](#references--credits)
@@ -42,20 +38,26 @@ Download: [.zip file](https://github.com/tdegeus/GMatElastoPlasticQPot/zipball/m
 
 # Implementation
 
-## Overview
+## Cartesian2d
 
-The headers are meant to be self-explanatory, please inspect them:
+[Cartesian2d.h](include/GMatElastoPlasticQPot/Cartesian2d.h)
 
-+   [Cartesian2d.h](include/GMatElastoPlasticQPot/Cartesian2d.h)
+### Overview
 
-## Conventions
+At the material point level different models are implemented with different classes:
 
-Naming conventions
++   `Elastic`: linear elastic material model that corresponds to the elastic part of the elasto-plastic material model.
++   `Cusp`: the elasto-plastic material model defined by cusp potentials.
++   `Smooth`: the elasto-plastic material model defined by smoothed potentials. 
 
-+   Functions whose name starts with a capital (e.g. `Stress`) return their result (allocating it internally).
-+   Functions whose name starts with a small (e.g. `stress`) write to the, fully allocated, (last) input argument (avoiding re-allocation, but making the user responsible to do it properly).
+There is a `Matrix` class that allows you to combine all these material models and have a single API for a matrix of material points. 
 
-Storage conventions
+### Function names
+
++   Functions whose name starts with a capital letter (e.g. `Stress`) return their result (allocating it internally).
++   Functions whose name starts with a small letter (e.g. `stress`) write to the, fully allocated, (last) input argument (avoiding re-allocation, but making the user responsible to do it properly).
+
+### Storage
 
 +   Scalar
     ```cpp
@@ -64,7 +66,8 @@ Storage conventions
 
 +   2nd-order tensor
     ```cpp
-    Tensor2 = xt::xtensor_fixed<double, xt::xshape<2,2>>
+    xt::xtensor_fixed<double, xt::xshape<2,2>>
+    = GMaElastoPlasticQPot::Cartesian2d::Tensor2
     ```
 
 +   List *(a)* of second order tensors *(i,j)* : *A(a,i,j)*
@@ -77,48 +80,69 @@ Storage conventions
     xt::xtensor<double,4>
     ```
 
-## Example
+### Example
 
-Only a partial example is presented here, that is meant to understand the code's structure:
+Only a partial examples are presented here, that is meant to understand the code's structure.
+
+#### Individual material points
 
 ```cpp
 #include <GMatElastoPlasticQPot/Cartesian2d.h>
+
+namespace GMat = GMatElastoPlasticQPot::Cartesian2d;
 
 int main()
 {
     // a single material point
     // - construct
-    GMatElastoPlasticQPot::Cartesian2d::Elastic elastic(K, G);
-    GMatElastoPlasticQPot::Cartesian2d::Cusp plastic(K, G, epsy);
-    // - set strain (follows e.g. from FEM discretisation)
-    GMatElastoPlasticQPot::Tensor2 Eps;
+    GMat::Elastic elastic(K, G);
+    GMat::Cusp plastic(K, G, epsy);
+    
+    // set strain (follows e.g. from FEM discretisation)
+    GMat::Tensor2 Eps;
     ...
-    // - compute stress [allocate result]
-    GMatElastoPlasticQPot::Tensor2 Sig = elastic.Stress(Eps);
+    
+    // compute stress [allocate result]
+    GMat::Tensor2 Sig = elastic.Stress(Eps);
     ...
     // - compute stress [no allocation]
     elastic.stress(Eps, Sig); 
     ...
-
-    // a matrix, of shape [nelem, nip]. of material points
-    // - construct
-    GMatElastoPlasticQPot::Cartesian2d::Elastic matrix(nelem, nip);
-    // - set material
-    matrix.setElastic(I, K, G);
-    matrix.setCusp(I, K, G, epsy);
-    // - set strain (follows e.g. from FEM discretisation)
-    xt::xtensor<double,4> Eps = xt::empty<double>({nelem, nip, 2ul, 2ul});
-    ... 
-    // - compute stress [allocate result]
-    xt::xtensor<double,4> Sig = matrix.Stress(Eps);
-    ...
-    // - compute stress [no allocation]
-    matrix.stress(Eps, Sig); 
-    ...
+    return 0;
 }
 ```
 
->   See [Cartesian2d.h](include/GMatElastoPlasticQPot/Cartesian2d.h) for more details.
+#### Matrix of material points
+
+```cpp
+#include <GMatElastoPlasticQPot/Cartesian2d.h>
+
+namespace GMat = GMatElastoPlasticQPot::Cartesian2d;
+
+int main()
+{
+    // a matrix, of shape [nelem, nip], of material points
+    GMatElastoPlasticQPot::Cartesian2d::Elastic matrix(nelem, nip);
+
+    // set materials
+    matrix.setElastic(I, K, G);
+    matrix.setCusp(I, K, G, epsy);
+
+    // set strain (follows e.g. from FEM discretisation)
+    xt::xtensor<double,4> Eps = xt::empty<double>({nelem, nip, 2ul, 2ul});
+    ... 
+
+    // compute stress [allocate result]
+    xt::xtensor<double,4> Sig = matrix.Stress(Eps);
+    ...
+
+    // compute stress [no allocation]
+    matrix.stress(Eps, Sig); 
+    ...
+
+    return 0;
+}
+```
 
 ## Debugging
 
@@ -223,7 +247,7 @@ The following targets are available:
 
 ### Optimization
 
-It is advised to think about compiler optimization and about enabling *xsimd. In *CMake* this can be done using the `xtensor::optimize` and `xtensor::use_xsimd` targets. The above example then becomes:
+It is advised to think about compiler optimization and about enabling *xsimd*. In *CMake* this can be done using the `xtensor::optimize` and `xtensor::use_xsimd` targets. The above example then becomes:
 
 ```cmake
 cmake_minimum_required(VERSION 3.1)

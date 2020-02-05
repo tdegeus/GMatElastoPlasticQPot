@@ -28,10 +28,6 @@ EQ(Sig[1,1], K * epsm)
 EQ(Sig[0,1], G * gamma)
 EQ(Sig[1,0], G * gamma)
 
-EQ(mat.epsp(Eps), 0.0)
-
-EQ(mat.find(Eps), 0)
-
 # Cusp
 
 mat = GMat.Cusp(K, G, [0.01, 0.03, 0.10])
@@ -84,10 +80,9 @@ I[2,:] = 1
 mat.setSmooth(I, K, G, [0.01, 0.03, 0.10])
 
 eps = np.zeros((nelem, nip, 2, 2))
-eps[:,:,0,0] = Eps[0,0]
-eps[:,:,1,1] = Eps[1,1]
-eps[:,:,0,1] = Eps[0,1]
-eps[:,:,1,0] = Eps[1,0]
+for i in range(2):
+    for j in range(2):
+        eps[:, :, i, j] = Eps[i, j]
 
 sig = mat.Stress(eps)
 epsp = mat.Epsp(eps)
