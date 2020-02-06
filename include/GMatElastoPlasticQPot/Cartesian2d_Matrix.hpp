@@ -50,15 +50,15 @@ inline xt::xtensor<double,2> Matrix::K() const
         for (size_t q = 0; q < m_nip; ++q) {
 
             switch (m_type(e, q)) {
-                case Type::Elastic:
-                    out(e, q) = m_Elastic[m_index(e, q)].K();
-                    break;
-                case Type::Cusp:
-                    out(e, q) = m_Cusp[m_index(e, q)].K();
-                    break;
-                case Type::Smooth:
-                    out(e, q) = m_Smooth[m_index(e, q)].K();
-                    break;
+            case Type::Elastic:
+                out(e, q) = m_Elastic[m_index(e, q)].K();
+                break;
+            case Type::Cusp:
+                out(e, q) = m_Cusp[m_index(e, q)].K();
+                break;
+            case Type::Smooth:
+                out(e, q) = m_Smooth[m_index(e, q)].K();
+                break;
             }
         }
     }
@@ -77,15 +77,15 @@ inline xt::xtensor<double,2> Matrix::G() const
         for (size_t q = 0; q < m_nip; ++q) {
 
             switch (m_type(e, q)) {
-                case Type::Elastic:
-                    out(e, q) = m_Elastic[m_index(e, q)].G();
-                    break;
-                case Type::Cusp:
-                    out(e, q) = m_Cusp[m_index(e, q)].G();
-                    break;
-                case Type::Smooth:
-                    out(e, q) = m_Smooth[m_index(e, q)].G();
-                    break;
+            case Type::Elastic:
+                out(e, q) = m_Elastic[m_index(e, q)].G();
+                break;
+            case Type::Cusp:
+                out(e, q) = m_Cusp[m_index(e, q)].G();
+                break;
+            case Type::Smooth:
+                out(e, q) = m_Smooth[m_index(e, q)].G();
+                break;
             }
         }
     }
@@ -260,15 +260,15 @@ inline void Matrix::stress(const xt::xtensor<double,4>& a_Eps, xt::xtensor<doubl
             auto Sig = xt::adapt(&a_Sig(e, q, 0, 0), xt::xshape<m_ndim, m_ndim>());
 
             switch (m_type(e, q)) {
-                case Type::Elastic:
-                    m_Elastic[m_index(e, q)].stress(Eps, Sig);
-                    break;
-                case Type::Cusp:
-                    m_Cusp[m_index(e, q)].stress(Eps, Sig);
-                    break;
-                case Type::Smooth:
-                    m_Smooth[m_index(e, q)].stress(Eps, Sig);
-                    break;
+            case Type::Elastic:
+                m_Elastic[m_index(e, q)].stress(Eps, Sig);
+                break;
+            case Type::Cusp:
+                m_Cusp[m_index(e, q)].stress(Eps, Sig);
+                break;
+            case Type::Smooth:
+                m_Smooth[m_index(e, q)].stress(Eps, Sig);
+                break;
             }
         }
     }
@@ -290,15 +290,15 @@ Matrix::energy(const xt::xtensor<double,4>& a_Eps, xt::xtensor<double,2>& a_ener
             auto Eps = xt::adapt(&a_Eps(e, q, 0, 0), xt::xshape<m_ndim, m_ndim>());
 
             switch (m_type(e, q)) {
-                case Type::Elastic:
-                    a_energy(e, q) = m_Elastic[m_index(e, q)].energy(Eps);
-                    break;
-                case Type::Cusp:
-                    a_energy(e, q) = m_Cusp[m_index(e, q)].energy(Eps);
-                    break;
-                case Type::Smooth:
-                    a_energy(e, q) = m_Smooth[m_index(e, q)].energy(Eps);
-                    break;
+            case Type::Elastic:
+                a_energy(e, q) = m_Elastic[m_index(e, q)].energy(Eps);
+                break;
+            case Type::Cusp:
+                a_energy(e, q) = m_Cusp[m_index(e, q)].energy(Eps);
+                break;
+            case Type::Smooth:
+                a_energy(e, q) = m_Smooth[m_index(e, q)].energy(Eps);
+                break;
             }
         }
     }
@@ -319,15 +319,15 @@ inline void Matrix::find(const xt::xtensor<double,4>& a_Eps, xt::xtensor<size_t,
             auto Eps = xt::adapt(&a_Eps(e, q, 0, 0), xt::xshape<m_ndim, m_ndim>());
 
             switch (m_type(e, q)) {
-                case Type::Elastic:
-                    a_idx(e, q) = 0;
-                    break;
-                case Type::Cusp:
-                    a_idx(e, q) = m_Cusp[m_index(e, q)].find(Eps);
-                    break;
-                case Type::Smooth:
-                    a_idx(e, q) = m_Smooth[m_index(e, q)].find(Eps);
-                    break;
+            case Type::Elastic:
+                a_idx(e, q) = 0;
+                break;
+            case Type::Cusp:
+                a_idx(e, q) = m_Cusp[m_index(e, q)].find(Eps);
+                break;
+            case Type::Smooth:
+                a_idx(e, q) = m_Smooth[m_index(e, q)].find(Eps);
+                break;
             }
         }
     }
@@ -344,15 +344,15 @@ inline void Matrix::epsy(const xt::xtensor<size_t,2>& a_idx, xt::xtensor<double,
         for (size_t q = 0; q < m_nip; ++q) {
 
             switch (m_type(e, q)) {
-                case Type::Elastic:
-                    a_epsy(e, q) = std::numeric_limits<double>::infinity();
-                    break;
-                case Type::Cusp:
-                    a_epsy(e, q) = m_Cusp[m_index(e, q)].epsy(a_idx(e, q));
-                    break;
-                case Type::Smooth:
-                    a_epsy(e, q) = m_Smooth[m_index(e, q)].epsy(a_idx(e, q));
-                    break;
+            case Type::Elastic:
+                a_epsy(e, q) = std::numeric_limits<double>::infinity();
+                break;
+            case Type::Cusp:
+                a_epsy(e, q) = m_Cusp[m_index(e, q)].epsy(a_idx(e, q));
+                break;
+            case Type::Smooth:
+                a_epsy(e, q) = m_Smooth[m_index(e, q)].epsy(a_idx(e, q));
+                break;
             }
         }
     }
@@ -373,15 +373,15 @@ inline void Matrix::epsp(const xt::xtensor<double,4>& a_Eps, xt::xtensor<double,
             auto Eps = xt::adapt(&a_Eps(e, q, 0, 0), xt::xshape<m_ndim, m_ndim>());
 
             switch (m_type(e, q)) {
-                case Type::Elastic:
-                    a_epsp(e, q) = 0.0;
-                    break;
-                case Type::Cusp:
-                    a_epsp(e, q) = m_Cusp[m_index(e, q)].epsp(Eps);
-                    break;
-                case Type::Smooth:
-                    a_epsp(e, q) = m_Smooth[m_index(e, q)].epsp(Eps);
-                    break;
+            case Type::Elastic:
+                a_epsp(e, q) = 0.0;
+                break;
+            case Type::Cusp:
+                a_epsp(e, q) = m_Cusp[m_index(e, q)].epsp(Eps);
+                break;
+            case Type::Smooth:
+                a_epsp(e, q) = m_Smooth[m_index(e, q)].epsp(Eps);
+                break;
             }
         }
     }

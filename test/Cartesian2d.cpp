@@ -26,7 +26,6 @@ Eps(0,1) = Eps(1,0) = gamma;
 
 SECTION("Elastic: simple shear + volumetric deformation")
 {
-
     GM::Elastic mat(K, G);
 
     Sig = mat.Stress(Eps);
