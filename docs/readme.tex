@@ -1,21 +1,21 @@
 \documentclass[namecite, fleqn]{goose-article}
 
 \title{%
-  GMatElastoPlasticQPot --
-  An implementation for an elasto-plastic continuum model
-  based on a manifold of quadratic potentials
+    GMatElastoPlasticQPot --
+    An implementation for an elasto-plastic continuum model
+    based on a manifold of quadratic potentials
 }
 
 \author{T.W.J.~de~Geus}
 
 \contact{%
-  $^*$Contact: %
-  \href{mailto:tom@geus.me}{tom@geus.me} %
-  \hspace{1mm}--\hspace{1mm} %
-  \href{http://www.geus.me}{www.geus.me}%
-  \hspace{1mm}--\hspace{1mm} %
-  \href{https://github.com/tdegeus/GMatElastoPlasticQPot}
-  {https://github.com/tdegeus/GMatElastoPlasticQPot}%
+    $^*$Contact: %
+    \href{mailto:tom@geus.me}{tom@geus.me} %
+    \hspace{1mm}--\hspace{1mm} %
+    \href{http://www.geus.me}{www.geus.me}%
+    \hspace{1mm}--\hspace{1mm} %
+    \href{https://github.com/tdegeus/GMatElastoPlasticQPot}
+    {https://github.com/tdegeus/GMatElastoPlasticQPot}%
 }
 
 \hypersetup{pdfauthor={T.W.J. de Geus}}
@@ -201,15 +201,15 @@ The shear strain energy is then composed of a manifold of quadratic contribution
 \begin{equation}
     \label{eq:V-plas}
     V \big(
-      \varepsilon_\mathrm{y}^{(i)} \leq \varepsilon_\mathrm{d} < \varepsilon_\mathrm{y}^{(i+1)}
+        \varepsilon_\mathrm{y}^{(i)} \leq \varepsilon_\mathrm{d} < \varepsilon_\mathrm{y}^{(i+1)}
     \big)
     =
     V^{(i)}
     =
     G \, \bigg[\,
-      \Big[\, \varepsilon_\mathrm{d} - \varepsilon_\mathrm{min}^{(i)} \,\Big]^2
-      -
-      \Big[\, \Delta \varepsilon_\mathrm{y}^{(i)} \,\Big]^2
+        \Big[\, \varepsilon_\mathrm{d} - \varepsilon_\mathrm{min}^{(i)} \,\Big]^2
+        -
+        \Big[\, \Delta \varepsilon_\mathrm{y}^{(i)} \,\Big]^2
     \,\bigg]
 \end{equation}
 where the mean of $\varepsilon_\mathrm{y}^{(i)}$ and $\varepsilon_\mathrm{y}^{(i+1)}$ is
@@ -266,7 +266,7 @@ The remedy the discontinuity in the second derivative of the potential, it is sm
 \begin{equation}
     \label{eq:V-plas-smooth}
     V \big(
-      \varepsilon_\mathrm{y}^{(i)} \leq \varepsilon_\mathrm{d} < \varepsilon_\mathrm{y}^{(i+1)}
+        \varepsilon_\mathrm{y}^{(i)} \leq \varepsilon_\mathrm{d} < \varepsilon_\mathrm{y}^{(i+1)}
     \big)
     =
     V^{(i)}
@@ -274,12 +274,10 @@ The remedy the discontinuity in the second derivative of the potential, it is sm
     - 2 \, G \,
     \left[ \frac{\Delta \varepsilon_\mathrm{y}^{(i)}}{\pi} \right]^2
     \left[
-      1
-      +
-      \cos \left(
-        \frac{ \pi }{ \Delta \varepsilon_\mathrm{y}^{(i)} }
-        \Big[\, \varepsilon_\mathrm{d} - \varepsilon_\mathrm{min}^{(i)} \,\Big]
-      \right)
+        1 + \cos \left(
+          \frac{ \pi }{ \Delta \varepsilon_\mathrm{y}^{(i)} }
+          \Big[\, \varepsilon_\mathrm{d} - \varepsilon_\mathrm{min}^{(i)} \,\Big]
+        \right)
     \right]
 \end{equation}
 which is plotted in \cref{fig:V:plas}(b).
@@ -291,8 +289,8 @@ In this case the stress is obtained from
     2 \, G \,
     \left[ \frac{\Delta \varepsilon_\mathrm{y}^{(i)}}{\pi} \right]
     \sin \left(
-      \frac{ \pi }{ \Delta \varepsilon_\mathrm{y}^{(i)} }
-      \Big[\, \varepsilon_\mathrm{d} - \varepsilon_\mathrm{min}^{(i)} \,\Big]
+        \frac{ \pi }{ \Delta \varepsilon_\mathrm{y}^{(i)} }
+        \Big[\, \varepsilon_\mathrm{d} - \varepsilon_\mathrm{min}^{(i)} \,\Big]
     \right)
 \end{equation}
 (see \cref{fig:dV:plas}(b)).
@@ -316,8 +314,8 @@ For completeness, also in case the expression for the entire stress tensor
     G \,
     \left[ \frac{\Delta \varepsilon_\mathrm{y}^{(i)}}{\pi} \right]
     \sin \left(
-      \frac{ \pi }{ \Delta \varepsilon_\mathrm{y}^{(i)} }
-      \Big[\, \varepsilon_\mathrm{d} - \varepsilon_\mathrm{min}^{(i)} \,\Big]
+        \frac{ \pi }{ \Delta \varepsilon_\mathrm{y}^{(i)} }
+        \Big[\, \varepsilon_\mathrm{d} - \varepsilon_\mathrm{min}^{(i)} \,\Big]
     \right)
     \T{N}_\mathrm{d}
     \qquad
@@ -431,8 +429,9 @@ while $\varepsilon_\mathrm{d}$ it is oblivious to this rotation.
         $\varepsilon_\mathrm{n}^\prime
         = \varepsilon_{xx}^\prime
         = \vec{e}_x \cdot \T{\varepsilon}^\prime \cdot \vec{e}_x$.
-For a 2-d simple shear strain tensor that is rotated by $\theta$ with respect to the $x$-axis,
-and normal $\vec{n} = \vec{e}_y$.}
+        For a 2-d simple shear strain tensor that is rotated by $\theta$ with respect
+        to the $x$-axis,
+        and normal $\vec{n} = \vec{e}_y$.}
     \label{fig:shear-modes:epseq}
 \end{figure}
 
@@ -534,8 +533,8 @@ following expression for the stress is obtained
     G \,
     \left[ \frac{\Delta \varepsilon_\mathrm{y}^{(i)}}{\pi} \right]
     \sin \left(
-      \frac{ \pi }{ \Delta \varepsilon_\mathrm{y}^{(i)} }
-      \Big[\, \varepsilon_\mathrm{s} - \varepsilon_\mathrm{min}^{(i)} \,\Big]
+        \frac{ \pi }{ \Delta \varepsilon_\mathrm{y}^{(i)} }
+        \Big[\, \varepsilon_\mathrm{s} - \varepsilon_\mathrm{min}^{(i)} \,\Big]
     \right)
     \frac{\T{\varepsilon}_\mathrm{s}}{\varepsilon_\mathrm{s}}
     \quad
@@ -552,25 +551,25 @@ following expression for the stress is obtained
 \label{sec:nomenclature:tensor}
 
 \begin{itemize}
-%
-\item Second order tensor
-\begin{equation}
-    \T{A} = A_{ij} \vec{e}_i \vec{e}_j
-\end{equation}
-%
-\item Dyadic tensor product
-\begin{align}
-    \T{C} &= \vec{a} \otimes \vec{b} \\
-    C_{ij} &= a_{i} \, b_{j}
-\end{align}
-%
-\item Double tensor contraction
-\begin{align}
-    C
-    &= \T{A} : \T{B} = \mathrm{tr} \left( \T{A} \cdot \T{B} \right) \\
-    &= A_{ij} \, B_{ji}
-\end{align}
-%
+
+    \item Second order tensor
+    \begin{equation}
+        \T{A} = A_{ij} \vec{e}_i \vec{e}_j
+    \end{equation}
+
+    \item Dyadic tensor product
+    \begin{align}
+        \T{C} &= \vec{a} \otimes \vec{b} \\
+        C_{ij} &= a_{i} \, b_{j}
+    \end{align}
+
+    \item Double tensor contraction
+    \begin{align}
+        C
+        &= \T{A} : \T{B} = \mathrm{tr} \left( \T{A} \cdot \T{B} \right) \\
+        &= A_{ij} \, B_{ji}
+    \end{align}
+
 \end{itemize}
 
 \section{Unit tensors}

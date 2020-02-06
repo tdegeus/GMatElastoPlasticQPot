@@ -2,10 +2,8 @@
 import GMatElastoPlasticQPot.Cartesian2d as GMat
 import numpy as np
 
-
 def EQ(a, b):
   assert np.abs(a-b) < 1.e-12
-
 
 K = 12.3
 G = 45.6
