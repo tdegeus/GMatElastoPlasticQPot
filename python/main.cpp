@@ -94,7 +94,11 @@ sm.def("Sigd",
 
 py::class_<SM::Elastic>(sm, "Elastic")
 
-    .def(py::init<double, double>(), "Elastic material point", py::arg("K"), py::arg("G"))
+    .def(py::init<double, double>(), "Linear elastic material point.", py::arg("K"), py::arg("G"))
+
+    .def("K", &SM::Elastic::K, "Returns the bulk modulus.")
+
+    .def("G", &SM::Elastic::G, "Returns the shear modulus.")
 
     .def("Stress",
         &SM::Elastic::Stress,
@@ -115,11 +119,15 @@ py::class_<SM::Elastic>(sm, "Elastic")
 py::class_<SM::Cusp>(sm, "Cusp")
 
     .def(py::init<double, double, const xt::xtensor<double,1>&, bool>(),
-        "Elasto-plastic material point, with 'cusp' potentials",
+        "Elasto-plastic material point, with 'cusp' potentials.",
         py::arg("K"),
         py::arg("G"),
         py::arg("epsy"),
         py::arg("init_elastic") = true)
+
+    .def("K", &SM::Cusp::K, "Returns the bulk modulus.")
+
+    .def("G", &SM::Cusp::G, "Returns the shear modulus.")
 
     .def("Stress",
         &SM::Cusp::Stress,
@@ -165,11 +173,15 @@ py::class_<SM::Cusp>(sm, "Cusp")
 py::class_<SM::Smooth>(sm, "Smooth")
 
     .def(py::init<double, double, const xt::xtensor<double,1>&, bool>(),
-      "Elasto-plastic material point, with 'smooth' potentials",
+      "Elasto-plastic material point, with 'smooth' potentials.",
       py::arg("K"),
       py::arg("G"),
       py::arg("epsy"),
       py::arg("init_elastic") = true)
+
+    .def("K", &SM::Smooth::K, "Returns the bulk modulus.")
+
+    .def("G", &SM::Smooth::G, "Returns the shear modulus.")
 
     .def("Stress",
         &SM::Smooth::Stress,
