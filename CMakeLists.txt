@@ -12,21 +12,20 @@ option(BUILD_TESTS "${PROJECT_NAME} Build tests" OFF)
 # =======
 
 file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/include/GMatElastoPlasticQPot/config.h"
-             GMatElastoPlasticQPot_version_defines
+             _GMAT_version_defines
      REGEX "#define GMATELASTOPLASTICQPOT_VERSION_(MAJOR|MINOR|PATCH)")
 
-foreach(ver ${GMatElastoPlasticQPot_version_defines})
+foreach(ver ${_GMAT_version_defines})
     if(ver MATCHES "#define GMATELASTOPLASTICQPOT_VERSION_(MAJOR|MINOR|PATCH) +([^ ]+)$")
-        set(GMATELASTOPLASTICQPOT_VERSION_${CMAKE_MATCH_1}
+        set(_GMAT_VERSION_${CMAKE_MATCH_1}
             "${CMAKE_MATCH_2}"
             CACHE INTERNAL "")
     endif()
 endforeach()
 
-set(GMATELASTOPLASTICQPOT_VERSION
-    ${GMATELASTOPLASTICQPOT_VERSION_MAJOR}.${GMATELASTOPLASTICQPOT_VERSION_MINOR}.${GMATELASTOPLASTICQPOT_VERSION_PATCH})
+set(_GMAT_VERSION ${_GMAT_VERSION_MAJOR}.${_GMAT_VERSION_MINOR}.${_GMAT_VERSION_PATCH})
 
-message(STATUS "Building GMatElastoPlasticQPot v${GMATELASTOPLASTICQPOT_VERSION}")
+message(STATUS "Building GMatElastoPlasticQPot v${_GMAT_VERSION}")
 
 # Set target
 # ==========
@@ -56,18 +55,18 @@ install(
     FILE GMatElastoPlasticQPotTargets.cmake
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/GMatElastoPlasticQPot")
 
-set(_GMATELASTOPLASTICQPOT ${CMAKE_SIZEOF_VOID_P})
+set(_GMAT ${CMAKE_SIZEOF_VOID_P})
 unset(CMAKE_SIZEOF_VOID_P)
 
 write_basic_package_version_file(
     "${CMAKE_CURRENT_BINARY_DIR}/GMatElastoPlasticQPotConfigVersion.cmake"
-    VERSION ${GMATELASTOPLASTICQPOT_VERSION}
+    VERSION ${_GMAT_VERSION}
     COMPATIBILITY AnyNewerVersion)
 
-set(CMAKE_SIZEOF_VOID_P ${_GMATELASTOPLASTICQPOT})
+set(CMAKE_SIZEOF_VOID_P ${_GMAT})
 
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/GMatElastoPlasticQPotConfig.cmake"
-        "${CMAKE_CURRENT_BINARY_DIR}/GMatElastoPlasticQPotConfigVersion.cmake"
+              "${CMAKE_CURRENT_BINARY_DIR}/GMatElastoPlasticQPotConfigVersion.cmake"
         DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/GMatElastoPlasticQPot")
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/GMatElastoPlasticQPot.pc.in"

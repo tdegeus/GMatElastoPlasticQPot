@@ -36,6 +36,16 @@ inline double Smooth::G() const
     return m_G;
 }
 
+inline xt::xtensor<double,1> Smooth::epsy() const
+{
+    return m_epsy;
+}
+
+inline double Smooth::epsy(size_t i) const
+{
+    return m_epsy(i);
+}
+
 inline double Smooth::epsp(const Tensor2& Eps) const
 {
     return this->epsp(Cartesian2d::Epsd(Eps));
@@ -45,11 +55,6 @@ inline double Smooth::epsp(double epsd) const
 {
     size_t i = this->find(epsd);
     return 0.5 * (m_epsy(i + 1) + m_epsy(i));
-}
-
-inline double Smooth::epsy(size_t i) const
-{
-    return m_epsy(i);
 }
 
 inline size_t Smooth::find(const Tensor2& Eps) const
@@ -114,7 +119,7 @@ inline double Smooth::energy(const Tensor2& Eps) const
     double deps_y = 0.5 * (m_epsy(i + 1) - m_epsy(i));
 
     // deviatoric part of the energy
-    double V 
+    double V
         = -2.0 * m_G * std::pow(deps_y / M_PI, 2.0)
         * (1.0 + cos(M_PI / deps_y * (epsd - eps_min)));
 

@@ -105,6 +105,8 @@ public:
     // Parameters
     double K() const;
     double G() const;
+    xt::xtensor<double,1> epsy() const;
+    double epsy(size_t idx) const;
 
     // Stress (no allocation, overwrites "Sig")
     template <class U>
@@ -119,9 +121,6 @@ public:
     // Index of the current yield strain
     size_t find(const Tensor2& Eps) const; // strain tensor
     size_t find(double epsd) const; // equivalent deviatoric strain (epsd == Deviatoric(Eps))
-
-    // Certain yield strain
-    double epsy(size_t idx) const;
 
     // Equivalent plastic strain
     double epsp(const Tensor2& Eps) const; // strain tensor
@@ -147,6 +146,8 @@ public:
     // Parameters
     double K() const;
     double G() const;
+    xt::xtensor<double,1> epsy() const;
+    double epsy(size_t idx) const;
 
     // Stress (no allocation, overwrites "Sig")
     template <class U>
@@ -161,9 +162,6 @@ public:
     // Index of the current yield strain
     size_t find(const Tensor2& Eps) const; // strain tensor
     size_t find(double epsd) const; // equivalent deviatoric strain (epsd == Deviatoric(Eps))
-
-    // Certain yield strain
-    double epsy(size_t idx) const;
 
     // Equivalent plastic strain
     double epsp(const Tensor2& Eps) const; // strain tensor
