@@ -216,7 +216,6 @@ inline void Matrix::setCusp(
     }
 }
 
-
 inline void Matrix::setSmooth(
         const xt::xtensor<size_t,2>& I,
         const xt::xtensor<size_t,2>& idx,
@@ -242,7 +241,6 @@ inline void Matrix::setSmooth(
         m_Smooth.push_back(Smooth(K(i), G(i), xt::view(epsy, i, xt::all()), init_elastic));
     }
 }
-
 
 inline void Matrix::stress(const xt::xtensor<double,4>& a_Eps, xt::xtensor<double,4>& a_Sig) const
 {

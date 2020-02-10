@@ -104,5 +104,4 @@ for q in range(nip):
     EQ(epsp[1,q], gamma)
     EQ(epsp[2,q], gamma)
 
-
 print('All checks passed')

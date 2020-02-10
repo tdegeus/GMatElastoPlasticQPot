@@ -7,7 +7,6 @@
 
 namespace GM = GMatElastoPlasticQPot::Cartesian2d;
 
-
 TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
 {
 
@@ -23,7 +22,6 @@ double epsm = 0.12;
 Eps(0,0) = Eps(1,1) = epsm;
 Eps(0,1) = Eps(1,0) = gamma;
 
-
 SECTION("Elastic: simple shear + volumetric deformation")
 {
     GM::Elastic mat(K, G);
@@ -35,7 +33,6 @@ SECTION("Elastic: simple shear + volumetric deformation")
     EQ(Sig(0,1), G * gamma);
     EQ(Sig(1,0), G * gamma);
 }
-
 
 SECTION("Cusp: simple shear + volumetric deformation")
 {
@@ -53,7 +50,6 @@ SECTION("Cusp: simple shear + volumetric deformation")
     REQUIRE(mat.find(Eps) == 1);
 }
 
-
 SECTION("Smooth: simple shear + volumetric deformation")
 {
     GM::Smooth mat(K, G, {0.01, 0.03, 0.10});
@@ -69,7 +65,6 @@ SECTION("Smooth: simple shear + volumetric deformation")
 
     REQUIRE(mat.find(Eps) == 1);
 }
-
 
 SECTION("Matrix")
 {
@@ -131,6 +126,5 @@ SECTION("Matrix")
         EQ(epsp(2,q), gamma);
     }
 }
-
 
 }
