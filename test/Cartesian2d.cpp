@@ -22,10 +22,9 @@ double epsm = 0.12;
 Eps(0,0) = Eps(1,1) = epsm;
 Eps(0,1) = Eps(1,0) = gamma;
 
-SECTION("Elastic: simple shear + volumetric deformation")
+SECTION("Elastic")
 {
     GM::Elastic mat(K, G);
-
     Sig = mat.Stress(Eps);
 
     EQ(Sig(0,0), K * epsm);
@@ -34,35 +33,29 @@ SECTION("Elastic: simple shear + volumetric deformation")
     EQ(Sig(1,0), G * gamma);
 }
 
-SECTION("Cusp: simple shear + volumetric deformation")
+SECTION("Cusp")
 {
     GM::Cusp mat(K, G, {0.01, 0.03, 0.10});
-
     Sig = mat.Stress(Eps);
 
     EQ(Sig(0,0), K * epsm);
     EQ(Sig(1,1), K * epsm);
     EQ(Sig(0,1), 0.0);
     EQ(Sig(1,0), 0.0);
-
     EQ(mat.epsp(Eps), 0.02);
-
     REQUIRE(mat.find(Eps) == 1);
 }
 
-SECTION("Smooth: simple shear + volumetric deformation")
+SECTION("Smooth")
 {
     GM::Smooth mat(K, G, {0.01, 0.03, 0.10});
-
     Sig = mat.Stress(Eps);
 
     EQ(Sig(0,0), K * epsm);
     EQ(Sig(1,1), K * epsm);
     EQ(Sig(0,1), 0.0);
     EQ(Sig(1,0), 0.0);
-
     EQ(mat.epsp(Eps), 0.02);
-
     REQUIRE(mat.find(Eps) == 1);
 }
 
@@ -73,14 +66,12 @@ SECTION("Matrix")
 
     GM::Matrix mat(nelem, nip);
 
-    // row 0: elastic
     {
       xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
       xt::view(I, 0, xt::all()) = 1;
       mat.setElastic(I, K, G);
     }
 
-    // row 1: cups
     {
       xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
       xt::xtensor<double,1> epsy = {0.01, 0.03, 0.10};
@@ -88,7 +79,6 @@ SECTION("Matrix")
       mat.setCusp(I, K, G, epsy);
     }
 
-    // row 2: smooth
     {
       xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
       xt::xtensor<double,1> epsy = {0.01, 0.03, 0.10};
@@ -108,21 +98,23 @@ SECTION("Matrix")
     auto epsp = mat.Epsp(eps);
 
     for (size_t q = 0; q < nip; ++q) {
+
         EQ(sig(0,q,0,0), K * epsm);
         EQ(sig(0,q,1,1), K * epsm);
         EQ(sig(0,q,0,1), G * gamma);
         EQ(sig(0,q,1,0), G * gamma);
+        EQ(epsp(0,q), 0.0);
+
         EQ(sig(1,q,0,0), K * epsm);
         EQ(sig(1,q,1,1), K * epsm);
         EQ(sig(1,q,0,1), 0.0);
         EQ(sig(1,q,1,0), 0.0);
+        EQ(epsp(1,q), gamma);
+
         EQ(sig(2,q,0,0), K * epsm);
         EQ(sig(2,q,1,1), K * epsm);
         EQ(sig(2,q,0,1), 0.0);
         EQ(sig(2,q,1,0), 0.0);
-
-        EQ(epsp(0,q), 0.0);
-        EQ(epsp(1,q), gamma);
         EQ(epsp(2,q), gamma);
     }
 }

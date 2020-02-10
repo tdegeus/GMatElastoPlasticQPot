@@ -262,9 +262,21 @@ py::class_<SM::Matrix>(sm, "Matrix")
 
     .def("type", &SM::Matrix::type, "Return matrix with material types.")
 
+    .def("isElastic",
+        &SM::Matrix::isElastic,
+        "Return matrix with boolean: Elastic (1) or not (0).")
+
     .def("isPlastic",
         &SM::Matrix::isPlastic,
-        "Return matrix with boolean: elastic (0) or plastic (1).")
+        "Return matrix with boolean: Elastic (0) or plastic (Cusp/Smooth) (1).")
+
+    .def("isCusp",
+        &SM::Matrix::isCusp,
+        "Return matrix with boolean: Cusp (1) or not (0).")
+
+    .def("isSmooth",
+        &SM::Matrix::isSmooth,
+        "Return matrix with boolean: Smooth (1) or not (0).")
 
     .def("check",
         &SM::Matrix::check,

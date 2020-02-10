@@ -205,7 +205,10 @@ public:
     // Type
 
     xt::xtensor<size_t,2> type() const;
+    xt::xtensor<size_t,2> isElastic() const;
     xt::xtensor<size_t,2> isPlastic() const;
+    xt::xtensor<size_t,2> isCusp() const;
+    xt::xtensor<size_t,2> isSmooth() const;
 
     // Parameters
 
@@ -217,8 +220,12 @@ public:
     void check() const;
 
     // Set parameters for a batch of points
+    // (uniform for all points specified: that have "I(i,j) == 1")
 
-    void setElastic(const xt::xtensor<size_t,2>& I, double K, double G);
+    void setElastic(
+        const xt::xtensor<size_t,2>& I,
+        double K,
+        double G);
 
     void setCusp(
         const xt::xtensor<size_t,2>& I,
@@ -234,8 +241,9 @@ public:
         const xt::xtensor<double,1>& epsy,
         bool init_elastic = true);
 
-    // Set parameters for a batch of points
-    // the matrix "idx" refers to a which entry "K[idx]", "G[idx]", or "epsy[idx,:]" to use
+    // Set parameters for a batch of points:
+    // each to the same material, but with different parameters:
+    // the matrix "idx" refers to a which entry to use: "K[idx]", "G[idx]", or "epsy[idx,:]"
 
     void setElastic(
         const xt::xtensor<size_t,2>& I,
@@ -292,8 +300,8 @@ private:
     static const size_t m_ndim = 2;
 
     // Internal check
-    bool m_allSet = false;
-    void checkAllSet();
+    bool m_allSet = false; // true if all points have a material assigned
+    void checkAllSet(); // check if all points have a material assigned (modifies "m_allSet")
 };
 
 
