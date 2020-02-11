@@ -67,23 +67,23 @@ SECTION("Matrix")
     GM::Matrix mat(nelem, nip);
 
     {
-      xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
-      xt::view(I, 0, xt::all()) = 1;
-      mat.setElastic(I, K, G);
+        xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
+        xt::view(I, 0, xt::all()) = 1;
+        mat.setElastic(I, K, G);
     }
 
     {
-      xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
-      xt::xtensor<double,1> epsy = {0.01, 0.03, 0.10};
-      xt::view(I, 1, xt::all()) = 1;
-      mat.setCusp(I, K, G, epsy);
+        xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
+        xt::xtensor<double,1> epsy = {0.01, 0.03, 0.10};
+        xt::view(I, 1, xt::all()) = 1;
+        mat.setCusp(I, K, G, epsy);
     }
 
     {
-      xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
-      xt::xtensor<double,1> epsy = {0.01, 0.03, 0.10};
-      xt::view(I, 2, xt::all()) = 1;
-      mat.setCusp(I, K, G, epsy);
+        xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
+        xt::xtensor<double,1> epsy = {0.01, 0.03, 0.10};
+        xt::view(I, 2, xt::all()) = 1;
+        mat.setCusp(I, K, G, epsy);
     }
 
     xt::xtensor<double,4> eps = xt::empty<double>({nelem, nip, 2ul, 2ul});
