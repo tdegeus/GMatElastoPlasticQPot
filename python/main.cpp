@@ -129,6 +129,15 @@ py::class_<SM::Cusp>(sm, "Cusp")
 
     .def("G", &SM::Cusp::G, "Returns the shear modulus.")
 
+    .def("epsy",
+        py::overload_cast<>(&SM::Cusp::epsy, py::const_),
+        "Returns the yield strains.")
+
+    .def("epsy",
+        py::overload_cast<size_t>(&SM::Cusp::epsy, py::const_),
+        "Returns yield strain for a given potential index.",
+        py::arg("idx"))
+
     .def("Stress",
         &SM::Cusp::Stress,
         "Returns stress tensor, for a given strain tensor.",
@@ -138,11 +147,6 @@ py::class_<SM::Cusp>(sm, "Cusp")
         &SM::Cusp::energy,
         "Returns the energy, for a given strain tensor.",
         py::arg("Eps"))
-
-    .def("epsy",
-        &SM::Cusp::epsy,
-        "Returns yield strain for a given potential index.",
-        py::arg("idx"))
 
     .def("epsp",
         py::overload_cast<const SM::Tensor2&>(&SM::Cusp::epsp, py::const_),
@@ -183,6 +187,15 @@ py::class_<SM::Smooth>(sm, "Smooth")
 
     .def("G", &SM::Smooth::G, "Returns the shear modulus.")
 
+    .def("epsy",
+        py::overload_cast<>(&SM::Smooth::epsy, py::const_),
+        "Returns the yield strains.")
+
+    .def("epsy",
+        py::overload_cast<size_t>(&SM::Smooth::epsy, py::const_),
+        "Returns yield strain for a given potential index.",
+        py::arg("idx"))
+
     .def("Stress",
         &SM::Smooth::Stress,
         "Returns stress tensor, for a given strain tensor.",
@@ -192,11 +205,6 @@ py::class_<SM::Smooth>(sm, "Smooth")
         &SM::Smooth::energy,
         "Returns the energy, for a given strain tensor.",
         py::arg("Eps"))
-
-    .def("epsy",
-        &SM::Smooth::epsy,
-        "Returns yield strain for a given potential index.",
-        py::arg("idx"))
 
     .def("epsp",
         py::overload_cast<const SM::Tensor2&>(&SM::Smooth::epsp, py::const_),
@@ -254,9 +262,21 @@ py::class_<SM::Matrix>(sm, "Matrix")
 
     .def("type", &SM::Matrix::type, "Return matrix with material types.")
 
+    .def("isElastic",
+        &SM::Matrix::isElastic,
+        "Return matrix with boolean: Elastic (1) or not (0).")
+
     .def("isPlastic",
         &SM::Matrix::isPlastic,
-        "Return matrix with boolean: elastic (0) or plastic (1).")
+        "Return matrix with boolean: Elastic (0) or plastic (Cusp/Smooth) (1).")
+
+    .def("isCusp",
+        &SM::Matrix::isCusp,
+        "Return matrix with boolean: Cusp (1) or not (0).")
+
+    .def("isSmooth",
+        &SM::Matrix::isSmooth,
+        "Return matrix with boolean: Smooth (1) or not (0).")
 
     .def("check",
         &SM::Matrix::check,

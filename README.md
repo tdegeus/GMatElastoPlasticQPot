@@ -8,18 +8,29 @@ conveniently compiled to this [PDF](docs/readme.pdf).
 
 # Contents
 
-<!-- MarkdownTOC levels="1,2" -->
+<!-- MarkdownTOC levels="1,2,3" -->
 
 - [Disclaimer](#disclaimer)
 - [Implementation](#implementation)
     - [C++ and Python](#c-and-python)
     - [Cartesian2d](#cartesian2d)
+        - [Overview](#overview)
+        - [Function names](#function-names)
+        - [Storage](#storage)
+        - [Example](#example)
     - [Debugging](#debugging)
 - [Installation](#installation)
     - [C++ headers](#c-headers)
+        - [Using conda](#using-conda)
+        - [From source](#from-source)
     - [Python module](#python-module)
+        - [Using conda](#using-conda-1)
+        - [From source](#from-source-1)
 - [Compiling](#compiling)
     - [Using CMake](#using-cmake)
+        - [Example](#example-1)
+        - [Targets](#targets)
+        - [Optimisation](#optimisation)
     - [By hand](#by-hand)
     - [Using pkg-config](#using-pkg-config)
 - [References / Credits](#references--credits)
@@ -28,19 +39,21 @@ conveniently compiled to this [PDF](docs/readme.pdf).
 
 # Disclaimer
 
-This library is free to use under the [MIT license](https://github.com/tdegeus/GMatElastoPlasticQPot/blob/master/LICENSE).
-Any additions are very much appreciated, in terms of suggested functionality, code, 
+This library is free to use under the
+[MIT license](https://github.com/tdegeus/GMatElastoPlasticQPot/blob/master/LICENSE).
+Any additions are very much appreciated, in terms of suggested functionality, code,
 documentation, testimonials, word-of-mouth advertisement, etc.
-Bug reports or feature requests can be filed on [GitHub](https://github.com/tdegeus/GMatElastoPlasticQPot).
+Bug reports or feature requests can be filed on
+[GitHub](https://github.com/tdegeus/GMatElastoPlasticQPot).
 As always, the code comes with no guarantee.
 None of the developers can be held responsible for possible mistakes.
 
 Download: 
-[.zip file](https://github.com/tdegeus/GMatElastoPlasticQPot/zipball/master) | 
+[.zip file](https://github.com/tdegeus/GMatElastoPlasticQPot/zipball/master) |
 [.tar.gz file](https://github.com/tdegeus/GMatElastoPlasticQPot/tarball/master).
 
-(c - [MIT](https://github.com/tdegeus/GMatElastoPlasticQPot/blob/master/LICENSE)) 
-T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me | 
+(c - [MIT](https://github.com/tdegeus/GMatElastoPlasticQPot/blob/master/LICENSE))
+T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me |
 [github.com/tdegeus/GMatElastoPlasticQPot](https://github.com/tdegeus/GMatElastoPlasticQPot)
 
 # Implementation
@@ -70,8 +83,8 @@ At the material point level different models are implemented with different clas
 +   `Cusp`: the elasto-plastic material model defined by cusp potentials.
 +   `Smooth`: the elasto-plastic material model defined by smoothed potentials. 
 
-There is a `Matrix` class that allows you to combine all these material models 
-and have a single API for a matrix of material points. 
+There is a `Matrix` class that allows you to combine all these material models and 
+have a single API for a matrix of material points. 
 
 ### Function names
 
@@ -90,7 +103,7 @@ and have a single API for a matrix of material points.
 
 +   2nd-order tensor
     ```cpp
-    xt::xtensor_fixed<double, xt::xshape<2,2>> = 
+    xt::xtensor_fixed<double, xt::xshape<2, 2>> = 
     GMatElastoPlasticQPot::Cartesian2d::Tensor2
     ```
 
@@ -149,19 +162,20 @@ namespace GMat = GMatElastoPlasticQPot::Cartesian2d;
 int main()
 {
     // a matrix, of shape [nelem, nip], of material points
-    GMatElastoPlasticQPot::Cartesian2d::Elastic matrix(nelem, nip);
+    GMat::Elastic matrix(nelem, nip);
 
     // set materials:
     // points where I(x,y) == 1 are assigned, points where I(x,y) == 0 are skipped
     // all points can only be assigned once
     matrix.setElastic(I, K, G);
     matrix.setCusp(I, K, G, epsy);
+    ...
 
-    // compute stress (including allocation of the result)
+    // set strain tensor (follows e.g. from FEM discretisation)
     xt::xtensor<double,4> eps = xt::empty<double>({nelem, nip, 2ul, 2ul});
     ... 
 
-    // compute stress [allocate result]
+    // compute stress (allocate result)
     xt::xtensor<double,4> sig = matrix.Stress(eps);
     // OR compute stress without (re)allocating the results
     // in this case "sig" has to be of the correct type and shape
@@ -177,13 +191,13 @@ int main()
 To enable assertions define `GMATELASTOPLASTICQPOT_ENABLE_ASSERT` 
 **before** including *GMatElastoPlasticQPot* for the first time. 
 
-Using *CMake* this can be done using the `GMatElastoPlasticQPot::assert` target 
+Using *CMake* this can be done using the `GMatElastoPlasticQPot::assert` target
 (see [below](#using-cmake)).
 
->   To also enable assertions of *xtensor* also define `XTENSOR_ENABLE_ASSERT` 
+>   To also enable assertions of *xtensor* also define `XTENSOR_ENABLE_ASSERT`
 >   **before** including *xtensor* (and *GMatElastoPlasticQPot*) for the first time. 
 >   
->   Using *CMake* all assertions are enabled using the `GMatElastoPlasticQPot::debug` target 
+>   Using *CMake* all assertions are enabled using the `GMatElastoPlasticQPot::debug` target
 >   (see [below](#using-cmake)).
 
 # Installation
@@ -274,15 +288,16 @@ The following targets are available:
     Enables assertions by defining `GMATELASTOPLASTICQPOT_ENABLE_ASSERT`.
 
 *   `GMatElastoPlasticQPot::debug`
-    Enables all assertions by defining `GMATELASTOPLASTICQPOT_ENABLE_ASSERT` and `XTENSOR_ENABLE_ASSERT`.
+    Enables all assertions by defining 
+    `GMATELASTOPLASTICQPOT_ENABLE_ASSERT` and `XTENSOR_ENABLE_ASSERT`.
 
 *   `GMatElastoPlasticQPot::compiler_warings`
     Enables compiler warnings (generic).
 
 ### Optimisation
 
-It is advised to think about compiler optimization and enabling *xsimd*. 
-Using *CMake* this can be done using the `xtensor::optimize` and `xtensor::use_xsimd` targets. 
+It is advised to think about compiler optimization and enabling *xsimd*.
+Using *CMake* this can be done using the `xtensor::optimize` and `xtensor::use_xsimd` targets.
 The above example then becomes:
 
 ```cmake
@@ -306,7 +321,8 @@ Presuming that the compiler is `c++`, compile using:
 c++ -I/path/to/GMatElastoPlasticQPot/include ...
 ```
 
-Note that you have to take care of the *xtensor* dependency, the C++ version, optimization, enabling *xsimd*, ...
+Note that you have to take care of the *xtensor* dependency, the C++ version, optimization, 
+enabling *xsimd*, ...
 
 ## Using pkg-config
 
@@ -316,7 +332,8 @@ Presuming that the compiler is `c++`, compile using:
 c++ `pkg-config --cflags GMatElastoPlasticQPot` ...
 ```
 
-Note that you have to take care of the *xtensor* dependency, the C++ version, optimization, enabling *xsimd*, ...
+Note that you have to take care of the *xtensor* dependency, the C++ version, optimization, 
+enabling *xsimd*, ...
 
 # References / Credits
 

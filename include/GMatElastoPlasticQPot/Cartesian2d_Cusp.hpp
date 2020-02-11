@@ -13,7 +13,7 @@ namespace GMatElastoPlasticQPot {
 namespace Cartesian2d {
 
 inline Cusp::Cusp(double K, double G, const xt::xtensor<double,1>& epsy, bool init_elastic)
-        : m_K(K), m_G(G)
+    : m_K(K), m_G(G)
 {
     m_epsy = xt::sort(epsy);
 
@@ -36,6 +36,16 @@ inline double Cusp::G() const
     return m_G;
 }
 
+inline xt::xtensor<double,1> Cusp::epsy() const
+{
+    return m_epsy;
+}
+
+inline double Cusp::epsy(size_t i) const
+{
+    return m_epsy(i);
+}
+
 inline double Cusp::epsp(const Tensor2& Eps) const
 {
     return this->epsp(Cartesian2d::Epsd(Eps));
@@ -45,11 +55,6 @@ inline double Cusp::epsp(double epsd) const
 {
     size_t i = this->find(epsd);
     return 0.5 * (m_epsy(i + 1) + m_epsy(i));
-}
-
-inline double Cusp::epsy(size_t i) const
-{
-    return m_epsy(i);
 }
 
 inline size_t Cusp::find(const Tensor2& Eps) const
