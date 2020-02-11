@@ -182,7 +182,7 @@ struct Type {
         Elastic,
         Cusp,
         Smooth,
-  };
+    };
 };
 
 // Matrix of material points

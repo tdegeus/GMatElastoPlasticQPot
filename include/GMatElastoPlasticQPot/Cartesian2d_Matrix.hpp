@@ -156,11 +156,11 @@ inline void Matrix::setElastic(const xt::xtensor<size_t,2>& I, double K, double 
 }
 
 inline void Matrix::setCusp(
-        const xt::xtensor<size_t,2>& I,
-        double K,
-        double G,
-        const xt::xtensor<double,1>& epsy,
-        bool init_elastic)
+    const xt::xtensor<size_t,2>& I,
+    double K,
+    double G,
+    const xt::xtensor<double,1>& epsy,
+    bool init_elastic)
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_type.shape() == I.shape());
     GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(I, 0ul) || xt::equal(I, 1ul)));
@@ -174,11 +174,11 @@ inline void Matrix::setCusp(
 }
 
 inline void Matrix::setSmooth(
-        const xt::xtensor<size_t,2>& I,
-        double K,
-        double G,
-        const xt::xtensor<double,1>& epsy,
-        bool init_elastic)
+    const xt::xtensor<size_t,2>& I,
+    double K,
+    double G,
+    const xt::xtensor<double,1>& epsy,
+    bool init_elastic)
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_type.shape() == I.shape());
     GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(I, 0ul) || xt::equal(I, 1ul)));
@@ -192,10 +192,10 @@ inline void Matrix::setSmooth(
 }
 
 inline void Matrix::setElastic(
-        const xt::xtensor<size_t,2>& I,
-        const xt::xtensor<size_t,2>& idx,
-        const xt::xtensor<double,1>& K,
-        const xt::xtensor<double,1>& G)
+    const xt::xtensor<size_t,2>& I,
+    const xt::xtensor<size_t,2>& idx,
+    const xt::xtensor<double,1>& K,
+    const xt::xtensor<double,1>& G)
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::amax(idx)[0] == K.size() - 1);
     GMATELASTOPLASTICQPOT_ASSERT(K.size() == G.size());
@@ -215,12 +215,12 @@ inline void Matrix::setElastic(
 }
 
 inline void Matrix::setCusp(
-        const xt::xtensor<size_t,2>& I,
-        const xt::xtensor<size_t,2>& idx,
-        const xt::xtensor<double,1>& K,
-        const xt::xtensor<double,1>& G,
-        const xt::xtensor<double,2>& epsy,
-        bool init_elastic)
+    const xt::xtensor<size_t,2>& I,
+    const xt::xtensor<size_t,2>& idx,
+    const xt::xtensor<double,1>& K,
+    const xt::xtensor<double,1>& G,
+    const xt::xtensor<double,2>& epsy,
+    bool init_elastic)
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::amax(idx)[0] == K.size() - 1);
     GMATELASTOPLASTICQPOT_ASSERT(K.size() == G.size());
@@ -241,12 +241,12 @@ inline void Matrix::setCusp(
 }
 
 inline void Matrix::setSmooth(
-        const xt::xtensor<size_t,2>& I,
-        const xt::xtensor<size_t,2>& idx,
-        const xt::xtensor<double,1>& K,
-        const xt::xtensor<double,1>& G,
-        const xt::xtensor<double,2>& epsy,
-        bool init_elastic)
+    const xt::xtensor<size_t,2>& I,
+    const xt::xtensor<size_t,2>& idx,
+    const xt::xtensor<double,1>& K,
+    const xt::xtensor<double,1>& G,
+    const xt::xtensor<double,2>& epsy,
+    bool init_elastic)
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::amax(idx)[0] == K.size() - 1);
     GMATELASTOPLASTICQPOT_ASSERT(K.size() == G.size());
