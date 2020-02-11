@@ -8,18 +8,29 @@ conveniently compiled to this [PDF](docs/readme.pdf).
 
 # Contents
 
-<!-- MarkdownTOC levels="1,2" -->
+<!-- MarkdownTOC levels="1,2,3" -->
 
 - [Disclaimer](#disclaimer)
 - [Implementation](#implementation)
     - [C++ and Python](#c-and-python)
     - [Cartesian2d](#cartesian2d)
+        - [Overview](#overview)
+        - [Function names](#function-names)
+        - [Storage](#storage)
+        - [Example](#example)
     - [Debugging](#debugging)
 - [Installation](#installation)
     - [C++ headers](#c-headers)
+        - [Using conda](#using-conda)
+        - [From source](#from-source)
     - [Python module](#python-module)
+        - [Using conda](#using-conda-1)
+        - [From source](#from-source-1)
 - [Compiling](#compiling)
     - [Using CMake](#using-cmake)
+        - [Example](#example-1)
+        - [Targets](#targets)
+        - [Optimisation](#optimisation)
     - [By hand](#by-hand)
     - [Using pkg-config](#using-pkg-config)
 - [References / Credits](#references--credits)
