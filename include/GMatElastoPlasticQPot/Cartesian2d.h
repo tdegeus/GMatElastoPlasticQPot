@@ -15,10 +15,16 @@ namespace Cartesian2d {
 // Alias
 
 using Tensor2 = xt::xtensor_fixed<double, xt::xshape<2, 2>>;
+using Tensor4 = xt::xtensor_fixed<double, xt::xshape<2, 2, 2, 2>>;
 
 // Unit tensors
 
 inline Tensor2 I2();
+inline Tensor4 II();
+inline Tensor4 I4();
+inline Tensor4 I4rt();
+inline Tensor4 I4s();
+inline Tensor4 I4d();
 
 // Hydrostatic part of a tensor
 
@@ -82,6 +88,13 @@ public:
     // Stress (auto allocation)
     Tensor2 Stress(const Tensor2& Eps) const;
 
+    // Stress & Tangent (no allocation, overwrites "Sig" and "C")
+    template <class U, class V>
+    void tangent(const Tensor2& Eps, U&& Sig, V&& C) const;
+
+    // Stress & Tangent (auto allocation)
+    std::tuple<Tensor2, Tensor4> Tangent(const Tensor2& Eps) const;
+
     // Energy
     double energy(const Tensor2& Eps) const;
 
@@ -114,6 +127,13 @@ public:
 
     // Stress (auto allocation)
     Tensor2 Stress(const Tensor2& Eps) const;
+
+    // Stress & Tangent (no allocation, overwrites "Sig" and "C")
+    template <class U, class V>
+    void tangent(const Tensor2& Eps, U&& Sig, V&& C) const;
+
+    // Stress & Tangent (auto allocation)
+    std::tuple<Tensor2, Tensor4> Tangent(const Tensor2& Eps) const;
 
     // Energy
     double energy(const Tensor2& Eps) const;
@@ -155,6 +175,13 @@ public:
 
     // Stress (auto allocation)
     Tensor2 Stress(const Tensor2& Eps) const;
+
+    // Stress & Tangent (no allocation, overwrites "Sig" and "C")
+    template <class U, class V>
+    void tangent(const Tensor2& Eps, U&& Sig, V&& C) const;
+
+    // Stress & Tangent (auto allocation)
+    std::tuple<Tensor2, Tensor4> Tangent(const Tensor2& Eps) const;
 
     // Energy
     double energy(const Tensor2& Eps) const;
@@ -215,6 +242,15 @@ public:
     xt::xtensor<double,2> K() const;
     xt::xtensor<double,2> G() const;
 
+    // Matrix of unit tensors
+
+    xt::xtensor<double,4> I2() const;
+    xt::xtensor<double,6> II() const;
+    xt::xtensor<double,6> I4() const;
+    xt::xtensor<double,6> I4rt() const;
+    xt::xtensor<double,6> I4s() const;
+    xt::xtensor<double,6> I4d() const;
+
     // Check that a type has been set everywhere (throws if unset points are found)
 
     void check() const;
@@ -269,11 +305,31 @@ public:
 
     // Compute (no allocation, overwrites last argument)
 
-    void stress(const xt::xtensor<double,4>& Eps, xt::xtensor<double,4>& Sig) const;
-    void energy(const xt::xtensor<double,4>& Eps, xt::xtensor<double,2>& energy) const;
-    void find(const xt::xtensor<double,4>& Eps, xt::xtensor<size_t,2>& find) const;
-    void epsy(const xt::xtensor<size_t,2>& idx, xt::xtensor<double,2>& epsy) const;
-    void epsp(const xt::xtensor<double,4>& Eps, xt::xtensor<double,2>& epsp) const;
+    void stress(
+        const xt::xtensor<double,4>& Eps,
+              xt::xtensor<double,4>& Sig) const;
+
+    void tangent(
+        const xt::xtensor<double,4>& Eps,
+              xt::xtensor<double,4>& Sig,
+              xt::xtensor<double,6>& C) const;
+
+    void energy(
+        const xt::xtensor<double,4>& Eps,
+              xt::xtensor<double,2>& energy) const;
+
+    void find(
+        const xt::xtensor<double,4>& Eps,
+              xt::xtensor<size_t,2>& idx) const;
+
+    void epsy(
+        const xt::xtensor<size_t,2>& idx,
+              xt::xtensor<double,2>& epsy) const;
+
+    void epsp(
+        const xt::xtensor<double,4>& Eps,
+              xt::xtensor<double,2>& epsp) const;
+
 
     // Auto-allocation of the functions above
 
@@ -282,6 +338,9 @@ public:
     xt::xtensor<size_t,2> Find(const xt::xtensor<double,4>& Eps) const;
     xt::xtensor<double,2> Epsy(const xt::xtensor<size_t,2>& idx) const;
     xt::xtensor<double,2> Epsp(const xt::xtensor<double,4>& Eps) const;
+
+    std::tuple<xt::xtensor<double,4>, xt::xtensor<double,6>>
+    Tangent(const xt::xtensor<double,4>& Eps) const;
 
 private:
 
@@ -303,7 +362,6 @@ private:
     bool m_allSet = false; // true if all points have a material assigned
     void checkAllSet(); // check if all points have a material assigned (modifies "m_allSet")
 };
-
 
 // Internal support functions
 
