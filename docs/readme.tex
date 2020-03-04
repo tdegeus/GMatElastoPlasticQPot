@@ -25,6 +25,11 @@ A microscopic continuum model of plasticity in amorphous solids is proposed.
 This model uses a strain energy with multiple minima to capture the effect of plasticity.
 This model was used for the first time in \citet{DeGeus2019}
 and was partly inspired on the work of \citet{Jagla2017}.
+\\
+
+\noindent
+\emph{If you use this model, you are kindly requested to cite \cite{DeGeus2019}.}
+\\
 
 \keywords{elasto-plasticity; linear elasticity}
 \end{abstract}
@@ -165,14 +170,14 @@ Note that
     \label{fig:dU-dV:elas}
 \end{figure}
 
-Note that a tangent or stiffness tensor can be also easily defined:
+Note that a tangent or stiffness tensor can also be defined:
 \begin{equation}
     \delta \bm{\sigma} \equiv \mathbb{C} : \delta \bm{\varepsilon}
 \end{equation}
-(which for the linear model is valid independent of the size of the variation),
-for which trivially
+which for the linear model is valid independent of the size of the variation.
+It is trivial to show that
 \begin{equation}
-    \mathbb{C} = \frac{K}{d} \bm{I} \bm{I} + G \mathbb{I}_d
+    \mathbb{C} = \frac{K}{d} \bm{I} \bm{I} + G \, \mathbb{I}_d
 \end{equation}
 
 \subsection{Plastic potential -- Parabolic potential with multiple minima}
