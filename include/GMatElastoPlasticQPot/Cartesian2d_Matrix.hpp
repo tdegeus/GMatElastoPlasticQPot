@@ -93,6 +93,146 @@ inline xt::xtensor<double,2> Matrix::G() const
     return out;
 }
 
+inline xt::xtensor<double,4> Matrix::I2() const
+{
+    xt::xtensor<double,4> out = xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim});
+
+    #pragma omp parallel
+    {
+        Tensor2 unit = Cartesian2d::I2();
+
+        #pragma omp for
+        for (size_t e = 0; e < m_nelem; ++e) {
+            for (size_t q = 0; q < m_nip; ++q) {
+                auto view = xt::adapt(&out(e, q, 0, 0), xt::xshape<m_ndim, m_ndim>());
+                xt::noalias(view) = unit;
+            }
+        }
+    }
+
+    return out;
+}
+
+inline xt::xtensor<double,6> Matrix::II() const
+{
+    xt::xtensor<double,6> out =
+        xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim, m_ndim, m_ndim});
+
+    #pragma omp parallel
+    {
+        Tensor4 unit = Cartesian2d::II();
+
+        #pragma omp for
+        for (size_t e = 0; e < m_nelem; ++e) {
+            for (size_t q = 0; q < m_nip; ++q) {
+
+                auto view =
+                    xt::adapt(&out(e, q, 0, 0, 0, 0), xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
+
+                xt::noalias(view) = unit;
+            }
+        }
+    }
+
+    return out;
+}
+
+inline xt::xtensor<double,6> Matrix::I4() const
+{
+    xt::xtensor<double,6> out =
+        xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim, m_ndim, m_ndim});
+
+    #pragma omp parallel
+    {
+        Tensor4 unit = Cartesian2d::I4();
+
+        #pragma omp for
+        for (size_t e = 0; e < m_nelem; ++e) {
+            for (size_t q = 0; q < m_nip; ++q) {
+
+                auto view =
+                    xt::adapt(&out(e, q, 0, 0, 0, 0), xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
+
+                xt::noalias(view) = unit;
+            }
+        }
+    }
+
+    return out;
+}
+
+inline xt::xtensor<double,6> Matrix::I4rt() const
+{
+    xt::xtensor<double,6> out =
+        xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim, m_ndim, m_ndim});
+
+    #pragma omp parallel
+    {
+        Tensor4 unit = Cartesian2d::I4rt();
+
+        #pragma omp for
+        for (size_t e = 0; e < m_nelem; ++e) {
+            for (size_t q = 0; q < m_nip; ++q) {
+
+                auto view =
+                    xt::adapt(&out(e, q, 0, 0, 0, 0), xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
+
+                xt::noalias(view) = unit;
+            }
+        }
+    }
+
+    return out;
+}
+
+inline xt::xtensor<double,6> Matrix::I4s() const
+{
+    xt::xtensor<double,6> out =
+        xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim, m_ndim, m_ndim});
+
+    #pragma omp parallel
+    {
+        Tensor4 unit = Cartesian2d::I4s();
+
+        #pragma omp for
+        for (size_t e = 0; e < m_nelem; ++e) {
+            for (size_t q = 0; q < m_nip; ++q) {
+
+                auto view =
+                    xt::adapt(&out(e, q, 0, 0, 0, 0), xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
+
+                xt::noalias(view) = unit;
+            }
+        }
+    }
+
+    return out;
+}
+
+inline xt::xtensor<double,6> Matrix::I4d() const
+{
+    xt::xtensor<double,6> out =
+        xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim, m_ndim, m_ndim});
+
+    #pragma omp parallel
+    {
+        Tensor4 unit = Cartesian2d::I4d();
+
+        #pragma omp for
+        for (size_t e = 0; e < m_nelem; ++e) {
+            for (size_t q = 0; q < m_nip; ++q) {
+
+                auto view =
+                    xt::adapt(&out(e, q, 0, 0, 0, 0), xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
+
+                xt::noalias(view) = unit;
+            }
+        }
+    }
+
+    return out;
+}
+
 inline xt::xtensor<size_t,2> Matrix::isElastic() const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
@@ -296,6 +436,45 @@ inline void Matrix::stress(const xt::xtensor<double,4>& a_Eps, xt::xtensor<doubl
     }
 }
 
+inline void Matrix::tangent(
+    const xt::xtensor<double,4>& a_Eps,
+          xt::xtensor<double,4>& a_Sig,
+          xt::xtensor<double,6>& a_C) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
+    GMATELASTOPLASTICQPOT_ASSERT(
+        a_Eps.shape() ==
+        std::decay_t<decltype(a_Eps)>::shape_type({m_nelem, m_nip, m_ndim, m_ndim}));
+    GMATELASTOPLASTICQPOT_ASSERT(a_Eps.shape() == a_Sig.shape());
+    GMATELASTOPLASTICQPOT_ASSERT(
+        a_C.shape() ==
+        std::decay_t<decltype(a_C)>::shape_type({m_nelem, m_nip, m_ndim, m_ndim, m_ndim, m_ndim}));
+
+    #pragma omp parallel for
+    for (size_t e = 0; e < m_nelem; ++e) {
+        for (size_t q = 0; q < m_nip; ++q) {
+
+            auto Eps = xt::adapt(&a_Eps(e, q, 0, 0), xt::xshape<m_ndim, m_ndim>());
+            auto Sig = xt::adapt(&a_Sig(e, q, 0, 0), xt::xshape<m_ndim, m_ndim>());
+
+            auto C =
+                xt::adapt(&a_C(e, q, 0, 0, 0, 0), xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
+
+            switch (m_type(e, q)) {
+            case Type::Elastic:
+                m_Elastic[m_index(e, q)].tangent(Eps, Sig, C);
+                break;
+            case Type::Cusp:
+                m_Cusp[m_index(e, q)].tangent(Eps, Sig, C);
+                break;
+            case Type::Smooth:
+                m_Smooth[m_index(e, q)].tangent(Eps, Sig, C);
+                break;
+            }
+        }
+    }
+}
+
 inline void
 Matrix::energy(const xt::xtensor<double,4>& a_Eps, xt::xtensor<double,2>& a_energy) const
 {
@@ -442,6 +621,15 @@ inline xt::xtensor<double,2> Matrix::Epsp(const xt::xtensor<double,4>& Eps) cons
     xt::xtensor<double,2> out = xt::empty<double>({m_nelem, m_nip});
     this->epsp(Eps, out);
     return out;
+}
+
+inline std::tuple<xt::xtensor<double,4>, xt::xtensor<double,6>>
+Matrix::Tangent(const xt::xtensor<double,4>& Eps) const
+{
+    xt::xtensor<double,4> Sig = xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim});
+    xt::xtensor<double,6> C = xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim, m_ndim, m_ndim});
+    this->tangent(Eps, Sig, C);
+    return std::make_tuple(Sig, C);
 }
 
 } // namespace Cartesian2d

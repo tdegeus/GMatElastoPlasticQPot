@@ -25,6 +25,11 @@ A microscopic continuum model of plasticity in amorphous solids is proposed.
 This model uses a strain energy with multiple minima to capture the effect of plasticity.
 This model was used for the first time in \citet{DeGeus2019}
 and was partly inspired on the work of \citet{Jagla2017}.
+\\
+
+\noindent
+\emph{If you use this model, you are kindly requested to cite \cite{DeGeus2019}.}
+\\
 
 \keywords{elasto-plasticity; linear elasticity}
 \end{abstract}
@@ -165,6 +170,16 @@ Note that
     \label{fig:dU-dV:elas}
 \end{figure}
 
+Note that a tangent or stiffness tensor can also be defined:
+\begin{equation}
+    \delta \bm{\sigma} \equiv \mathbb{C} : \delta \bm{\varepsilon}
+\end{equation}
+which for the linear model is valid independent of the size of the variation.
+It is trivial to show that
+\begin{equation}
+    \mathbb{C} = \frac{K}{d} \bm{I} \bm{I} + G \, \mathbb{I}_d
+\end{equation}
+
 \subsection{Plastic potential -- Parabolic potential with multiple minima}
 
 The model is now extended to account for plasticity.
@@ -249,6 +264,9 @@ from which it is observed that it exhibits stress jumps between different parabo
 because of the discontinuity in the second derivative of the elastic potential.
 This can be remedied, such as in the model presented below.
 
+Note that within (and only within) the elastic regime the
+elastic tangent or stiffness tensor holds.
+
 \subsection{Plastic potential -- Smooth parabolic potential with multiple minima}
 
 The remedy the discontinuity in the second derivative of the potential, it is smoothed as follows:
@@ -314,6 +332,9 @@ For completeness, also in case the expression for the entire stress tensor
 \end{equation}
 whereby, again, one has to assume that when $\varepsilon_\mathrm{d} = 0$ also
 $\T{\sigma}_\mathrm{d} = \T{0}$ in order to avoid zero division.
+
+Note that within (and only within) the elastic regime the
+elastic tangent or stiffness tensor holds.
 
 \begin{figure}[htp]
     \centering

@@ -99,6 +99,23 @@ inline Tensor2 Cusp::Stress(const Tensor2& Eps) const
     return Sig;
 }
 
+template <class T, class S>
+inline void Cusp::tangent(const Tensor2& Eps, T&& Sig, S&& C) const
+{
+    auto II = Cartesian2d::II();
+    auto I4d = Cartesian2d::I4d();
+    this->stress(Eps, Sig);
+    xt::noalias(C) = 0.5 * m_K * II + m_G * I4d;
+}
+
+inline std::tuple<Tensor2, Tensor4> Cusp::Tangent(const Tensor2& Eps) const
+{
+    Tensor2 Sig;
+    Tensor4 C;
+    this->tangent(Eps, Sig, C);
+    return std::make_tuple(Sig, C);
+}
+
 inline double Cusp::energy(const Tensor2& Eps) const
 {
     // decompose strain: hydrostatic part, deviatoric part

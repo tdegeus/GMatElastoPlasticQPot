@@ -28,6 +28,20 @@ py::module sm = m.def_submodule("Cartesian2d", "2d Cartesian coordinates");
 
 namespace SM = GMatElastoPlasticQPot::Cartesian2d;
 
+// Unit tensors
+
+sm.def("I2", &SM::I2, "Second order unit tensor.");
+
+sm.def("II", &SM::II, "Fourth order tensor with the result of the dyadic product II.");
+
+sm.def("I4", &SM::I4, "Fourth order unit tensor.");
+
+sm.def("I4rt", &SM::I4rt, "Fourth right-transposed order unit tensor.");
+
+sm.def("I4s", &SM::I4s, "Fourth order symmetric projection tensor.");
+
+sm.def("I4d", &SM::I4d, "Fourth order deviatoric projection tensor.");
+
 // Tensor algebra
 
 sm.def("Hydrostatic",
@@ -105,6 +119,11 @@ py::class_<SM::Elastic>(sm, "Elastic")
         "Returns stress tensor, for a given strain tensor.",
         py::arg("Eps"))
 
+    .def("Tangent",
+        &SM::Elastic::Tangent,
+        "Returns stress and tangent stiffness tensors, for a given strain tensor.",
+        py::arg("Eps"))
+
     .def("energy",
         &SM::Elastic::energy,
         "Returns the energy, for a given strain tensor.",
@@ -141,6 +160,11 @@ py::class_<SM::Cusp>(sm, "Cusp")
     .def("Stress",
         &SM::Cusp::Stress,
         "Returns stress tensor, for a given strain tensor.",
+        py::arg("Eps"))
+
+    .def("Tangent",
+        &SM::Cusp::Tangent,
+        "Returns stress and tangent stiffness tensors, for a given strain tensor.",
         py::arg("Eps"))
 
     .def("energy",
@@ -201,6 +225,11 @@ py::class_<SM::Smooth>(sm, "Smooth")
         "Returns stress tensor, for a given strain tensor.",
         py::arg("Eps"))
 
+    .def("Tangent",
+        &SM::Smooth::Tangent,
+        "Returns stress and tangent stiffness tensors, for a given strain tensor.",
+        py::arg("Eps"))
+
     .def("energy",
         &SM::Smooth::energy,
         "Returns the energy, for a given strain tensor.",
@@ -259,6 +288,26 @@ py::class_<SM::Matrix>(sm, "Matrix")
     .def("K", &SM::Matrix::K, "Return matrix with bulk moduli.")
 
     .def("G", &SM::Matrix::G, "Return matrix with shear moduli.")
+
+    .def("I2", &SM::Matrix::I2, "Return matrix with second order unit tensors.")
+
+    .def("II",
+        &SM::Matrix::II,
+        "Return matrix with fourth order tensors with the result of the dyadic product II.")
+
+    .def("I4", &SM::Matrix::I4, "Return matrix with fourth order unit tensors.")
+
+    .def("I4rt",
+        &SM::Matrix::I4rt,
+        "Return matrix with fourth right-transposed order unit tensors.")
+
+    .def("I4s",
+        &SM::Matrix::I4s,
+        "Return matrix with fourth order symmetric projection tensors.")
+
+    .def("I4d",
+        &SM::Matrix::I4d,
+        "Return matrix with fourth order deviatoric projection tensors.")
 
     .def("type", &SM::Matrix::type, "Return matrix with material types.")
 
@@ -365,6 +414,12 @@ py::class_<SM::Matrix>(sm, "Matrix")
     .def("Stress",
         &SM::Matrix::Stress,
         "Returns matrix of stress tensors, given matrix of strain tensors.",
+        py::arg("Eps"))
+
+    .def("Tangent",
+        &SM::Matrix::Tangent,
+        "Returns matrices of stress tangent stiffness tensors, "
+        "for a given matrix of strain tensors.",
         py::arg("Eps"))
 
     .def("Energy",
