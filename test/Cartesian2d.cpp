@@ -27,7 +27,6 @@ S A4_ddot_B2(const T& A, const S& B)
     return C;
 }
 
-
 TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
 {
 
