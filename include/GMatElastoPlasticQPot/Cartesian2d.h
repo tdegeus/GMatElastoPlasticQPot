@@ -330,7 +330,6 @@ public:
         const xt::xtensor<double,4>& Eps,
               xt::xtensor<double,2>& epsp) const;
 
-
     // Auto-allocation of the functions above
 
     xt::xtensor<double,4> Stress(const xt::xtensor<double,4>& Eps) const;
