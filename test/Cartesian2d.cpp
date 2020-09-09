@@ -151,7 +151,7 @@ SECTION("Elasto-plastic response")
             mat.setCusp(I, K, G, epsy);
         }
 
-        xt::xtensor<double,4> eps = xt::empty<double>({nelem, nip, 2ul, 2ul});
+        auto eps = xt::xtensor<double,4>::form_shape({nelem, nip, 2ul, 2ul});
 
         for (size_t e = 0; e < nelem; ++e) {
             for (size_t q = 0; q < nip; ++q) {
