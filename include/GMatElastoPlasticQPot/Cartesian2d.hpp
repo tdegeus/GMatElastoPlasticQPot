@@ -20,7 +20,7 @@ inline Tensor2 I2()
 
 inline Tensor4 II()
 {
-    Tensor4 out;
+    Tensor4 out = Tensor4::from_shape({2, 2, 2, 2});
     out.fill(0.0);
 
     for (size_t i = 0; i < 2; ++i) {
@@ -40,7 +40,7 @@ inline Tensor4 II()
 
 inline Tensor4 I4()
 {
-    Tensor4 out;
+    Tensor4 out = Tensor4::from_shape({2, 2, 2, 2});
     out.fill(0.0);
 
     for (size_t i = 0; i < 2; ++i) {
@@ -60,7 +60,7 @@ inline Tensor4 I4()
 
 inline Tensor4 I4rt()
 {
-    Tensor4 out;
+    Tensor4 out = Tensor4::from_shape({2, 2, 2, 2});
     out.fill(0.0);
 
     for (size_t i = 0; i < 2; ++i) {
