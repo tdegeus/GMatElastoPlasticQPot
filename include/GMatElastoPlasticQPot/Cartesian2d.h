@@ -151,6 +151,7 @@ private:
     double m_K; // bulk modulus
     double m_G; // shear modulus
     xt::xtensor<double,1> m_epsy; // yield strains
+    Tensor2 m_I; // unit tensor
 };
 
 // Material point
