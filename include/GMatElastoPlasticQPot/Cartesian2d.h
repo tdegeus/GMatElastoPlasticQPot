@@ -14,8 +14,13 @@ namespace Cartesian2d {
 
 // Alias
 
-using Tensor2 = xt::xtensor_fixed<double, xt::xshape<2, 2>>;
-using Tensor4 = xt::xtensor_fixed<double, xt::xshape<2, 2, 2, 2>>;
+#if defined(_WIN32) || defined(_WIN64)
+    using Tensor2 = xt::xtensor<double, 2>;
+    using Tensor4 = xt::xtensor<double, 4>;
+#else
+    using Tensor2 = xt::xtensor_fixed<double, xt::xshape<2, 2>>;
+    using Tensor4 = xt::xtensor_fixed<double, xt::xshape<2, 2, 2, 2>>;
+#endif
 
 // Unit tensors
 

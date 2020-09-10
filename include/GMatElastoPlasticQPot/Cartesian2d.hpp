@@ -20,14 +20,14 @@ inline Tensor2 I2()
 
 inline Tensor4 II()
 {
-    Tensor4 out;
+    Tensor4 out = Tensor4::from_shape({2, 2, 2, 2});
     out.fill(0.0);
 
     for (size_t i = 0; i < 2; ++i) {
         for (size_t j = 0; j < 2; ++j) {
             for (size_t k = 0; k < 2; ++k) {
                 for (size_t l = 0; l < 2; ++l) {
-                    if (i == j and k == l) {
+                    if (i == j && k == l) {
                         out(i, j, k, l) = 1.0;
                     }
                 }
@@ -40,14 +40,14 @@ inline Tensor4 II()
 
 inline Tensor4 I4()
 {
-    Tensor4 out;
+    Tensor4 out = Tensor4::from_shape({2, 2, 2, 2});
     out.fill(0.0);
 
     for (size_t i = 0; i < 2; ++i) {
         for (size_t j = 0; j < 2; ++j) {
             for (size_t k = 0; k < 2; ++k) {
                 for (size_t l = 0; l < 2; ++l) {
-                    if (i == l and j == k) {
+                    if (i == l && j == k) {
                         out(i, j, k, l) = 1.0;
                     }
                 }
@@ -60,14 +60,14 @@ inline Tensor4 I4()
 
 inline Tensor4 I4rt()
 {
-    Tensor4 out;
+    Tensor4 out = Tensor4::from_shape({2, 2, 2, 2});
     out.fill(0.0);
 
     for (size_t i = 0; i < 2; ++i) {
         for (size_t j = 0; j < 2; ++j) {
             for (size_t k = 0; k < 2; ++k) {
                 for (size_t l = 0; l < 2; ++l) {
-                    if (i == k and j == l) {
+                    if (i == k && j == l) {
                         out(i, j, k, l) = 1.0;
                     }
                 }
@@ -85,7 +85,7 @@ inline Tensor4 I4s()
 
 inline Tensor4 I4d()
 {
-    return I4s() - II() / 2.0;
+    return I4s() - 0.5 * II();
 }
 
 inline double Hydrostatic(const Tensor2& A)
