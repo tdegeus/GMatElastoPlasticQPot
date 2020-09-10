@@ -11,7 +11,7 @@ namespace GM = GMatElastoPlasticQPot::Cartesian2d;
 template <class T, class S>
 S A4_ddot_B2(const T& A, const S& B)
 {
-    S C;
+    S C = xt::empty<double>({2, 2});
     C.fill(0.0);
 
     for (size_t i = 0; i < 2; i++) {
@@ -78,8 +78,8 @@ SECTION("Elasto-plastic response")
     double K = 12.3;
     double G = 45.6;
 
-    GM::Tensor2 Eps;
-    GM::Tensor2 Sig;
+    auto Eps = GM::Tensor2::from_shape({2, 2});
+    auto Sig = GM::Tensor2::from_shape({2, 2});
 
     double gamma = 0.02;
     double epsm = 0.12;

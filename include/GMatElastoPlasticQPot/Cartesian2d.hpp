@@ -85,7 +85,7 @@ inline Tensor4 I4s()
 
 inline Tensor4 I4d()
 {
-    return I4s() - II() / 2.0;
+    return I4s() - 0.5 * II();
 }
 
 inline double Hydrostatic(const Tensor2& A)
