@@ -112,7 +112,7 @@ private:
 
 // Material point
 
-class Cusp
+class alignas(XTENSOR_SELECT_ALIGN(double)) Cusp
 {
 public:
 
