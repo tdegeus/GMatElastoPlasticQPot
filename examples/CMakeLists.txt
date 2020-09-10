@@ -9,6 +9,7 @@ endif()
 
 option(WARNINGS "Show build warnings" ON)
 option(ASSERT "Enable assertions" ON)
+option(XSIMD "Use xsimd and 'march=native' optimisations" OFF)
 
 file(GLOB APP_SOURCES *.cpp)
 
@@ -30,6 +31,10 @@ foreach(testsourcefile ${APP_SOURCES})
 
     if(ASSERT)
         target_link_libraries(${testname} PRIVATE GMatElastoPlasticQPot::debug)
+    endif()
+
+    if(XSIMD)
+        target_link_libraries(${testname} PRIVATE xtensor::optimize xtensor::use_xsimd)
     endif()
 
 endforeach()

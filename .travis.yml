@@ -10,16 +10,8 @@ matrix:
                 sources:
                     - ubuntu-toolchain-r-test
                 packages:
-                    - g++-5
-        env: COMPILER=gcc GCC=5
-      - os: linux
-        addons:
-            apt:
-                sources:
-                    - ubuntu-toolchain-r-test
-                packages:
                     - g++-6
-        env: COMPILER=gcc GCC=6
+        env: COMPILER=gcc GCC=6 XSIMD=ON
       - os: linux
         addons:
             apt:
@@ -27,7 +19,15 @@ matrix:
                     - ubuntu-toolchain-r-test
                 packages:
                     - g++-7
-        env: COMPILER=gcc GCC=7
+        env: COMPILER=gcc GCC=7 XSIMD=ON
+      - os: linux
+        addons:
+            apt:
+                sources:
+                    - ubuntu-toolchain-r-test
+                packages:
+                    - g++-8
+        env: COMPILER=gcc GCC=8 XSIMD=ON
       - os: linux
         addons:
             apt:
@@ -36,10 +36,37 @@ matrix:
                     - llvm-toolchain-xenial-6.0
                 packages:
                     - clang-6.0
-        env: COMPILER=clang CLANG=6.0
+        env: COMPILER=clang CLANG=6.0 XSIMD=ON
+      - os: linux
+        addons:
+            apt:
+                sources:
+                    - ubuntu-toolchain-r-test
+                    - llvm-toolchain-xenial-7.0
+                packages:
+                    - clang-7.0
+        env: COMPILER=clang CLANG=7.0 XSIMD=ON
+      - os: linux
+        addons:
+            apt:
+                sources:
+                    - ubuntu-toolchain-r-test
+                    - llvm-toolchain-xenial-8.0
+                packages:
+                    - clang-8.0
+        env: COMPILER=clang CLANG=8.0 XSIMD=ON
       - os: osx
-        osx_image: xcode8
+        osx_image: xcode9
         compiler: clang
+        env: XSIMD=ON
+      - os: osx
+        osx_image: xcode10
+        compiler: clang
+        env: XSIMD=ON
+      - os: osx
+        osx_image: xcode11
+        compiler: clang
+        env: XSIMD=ON
 env:
     global:
         - MINCONDA_VERSION="latest"
@@ -74,12 +101,13 @@ install:
     - conda install -c conda-forge mamba
     - mamba install -c conda-forge cmake xsimd xtensor python numpy pyxtensor catch2
     # Build/install the library
-    - cmake . -DBUILD_TESTS=ON
+    - cmake . -DBUILD_TESTS=ON -DBUILD_EXAMPLES=ON -DXSIMD=$XSIMD
     - make
     - sudo make install
     - python setup.py build
     - python setup.py install
 script:
-    # Run tests
+    # Run tests and examples
     - ./test/main
+    - ./examples/benchmark
     - python test/Cartesian2d.py

@@ -15,6 +15,7 @@ namespace Cartesian2d {
 inline Cusp::Cusp(double K, double G, const xt::xtensor<double,1>& epsy, bool init_elastic)
     : m_K(K), m_G(G)
 {
+    m_I = Cartesian2d::I2();
     m_epsy = xt::sort(epsy);
 
     if (init_elastic) {
@@ -72,16 +73,14 @@ inline size_t Cusp::find(double epsd) const
 template <class T>
 inline void Cusp::stress(const Tensor2& Eps, T&& Sig) const
 {
-    auto I = Cartesian2d::I2();
-
     // decompose strain: hydrostatic part, deviatoric part
     auto epsm = 0.5 * trace(Eps);
-    auto Epsd = Eps - epsm * I;
+    auto Epsd = Eps - epsm * m_I;
     auto epsd = std::sqrt(0.5 * A2_ddot_B2(Epsd, Epsd));
 
     // no deviatoric strain -> only hydrostatic stress
     if (epsd <= 0.0) {
-        xt::noalias(Sig) = m_K * epsm * I;
+        xt::noalias(Sig) = m_K * epsm * m_I;
         return;
     }
 
@@ -90,7 +89,7 @@ inline void Cusp::stress(const Tensor2& Eps, T&& Sig) const
     double eps_min = 0.5 * (m_epsy(i + 1) + m_epsy(i));
 
     // return stress tensor
-    xt::noalias(Sig) = m_K * epsm * I + m_G * (1.0 - eps_min / epsd) * Epsd;
+    xt::noalias(Sig) = m_K * epsm * m_I + m_G * (1.0 - eps_min / epsd) * Epsd;
 }
 
 inline Tensor2 Cusp::Stress(const Tensor2& Eps) const
@@ -120,9 +119,8 @@ inline std::tuple<Tensor2, Tensor4> Cusp::Tangent(const Tensor2& Eps) const
 inline double Cusp::energy(const Tensor2& Eps) const
 {
     // decompose strain: hydrostatic part, deviatoric part
-    auto I = Cartesian2d::I2();
     auto epsm = 0.5 * trace(Eps);
-    auto Epsd = Eps - epsm * I;
+    auto Epsd = Eps - epsm * m_I;
     auto epsd = std::sqrt(0.5 * A2_ddot_B2(Epsd, Epsd));
 
     // hydrostatic part of the energy

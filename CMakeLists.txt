@@ -39,6 +39,8 @@ target_include_directories(GMatElastoPlasticQPot INTERFACE
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 
+target_compile_features(GMatElastoPlasticQPot INTERFACE cxx_std_17)
+
 target_link_libraries(GMatElastoPlasticQPot INTERFACE xtensor)
 
 # Installation
