@@ -4,7 +4,7 @@ namespace GMat = GMatElastoPlasticQPot::Cartesian2d;
 
 int main()
 {
-    xt::xtensor<double,1> epsy = xt::linspace(0, 1, 10001);
+    xt::xtensor<double,1> epsy = xt::linspace(0, 1, 20001);
     GMat::Tensor2 Eps = xt::zeros<double>({2, 2});
     GMat::Tensor2 Sig = xt::zeros<double>({2, 2});
 
