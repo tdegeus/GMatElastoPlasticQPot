@@ -116,6 +116,10 @@ class Cusp
 {
 public:
 
+    using allocator_type = std::conditional_t<XTENSOR_SELECT_ALIGN(double) != 0,
+                                              xt_simd::aligned_allocator<double, XTENSOR_SELECT_ALIGN(double)>,
+                                              std::allocator<double>>;
+
     // Constructors
     Cusp() = default;
     Cusp(double K, double G, const xt::xtensor<double,1>& epsy, bool init_elastic = true);
@@ -153,10 +157,10 @@ public:
 
 private:
 
+    Tensor2 m_I; // unit tensor
     double m_K; // bulk modulus
     double m_G; // shear modulus
     xt::xtensor<double,1> m_epsy; // yield strains
-    // Tensor2 m_I; // unit tensor
 };
 
 // Material point

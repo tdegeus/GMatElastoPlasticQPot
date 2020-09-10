@@ -27,6 +27,9 @@
 #include <xtensor/xsort.hpp>
 #include <xtensor/xmath.hpp>
 
+#ifndef XTENSOR_SELECT_ALIGN
+#define XTENSOR_SELECT_ALIGN(T) (XTENSOR_DEFAULT_ALIGNMENT != 0 ? XTENSOR_DEFAULT_ALIGNMENT : alignof(T))
+#endif
 
 #ifdef GMATELASTOPLASTICQPOT_ENABLE_ASSERT
 
