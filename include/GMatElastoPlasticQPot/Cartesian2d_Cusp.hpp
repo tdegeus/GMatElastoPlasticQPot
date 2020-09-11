@@ -70,18 +70,21 @@ inline size_t Cusp::find(double epsd) const
 }
 
 template <class T>
-inline void Cusp::stress(const Tensor2& Eps, T&& Sig) const
+inline void Cusp::stress(const Tensor2& Eps_in, T&& Sig_out) const
 {
-    auto I = Cartesian2d::I2();
-
-    // decompose strain: hydrostatic part, deviatoric part
-    auto epsm = 0.5 * trace(Eps);
-    auto Epsd = Eps - epsm * I;
-    auto epsd = std::sqrt(0.5 * A2_ddot_B2(Epsd, Epsd));
+    std::array<double,4> Eps;
+    std::array<double,4> Epsd;
+    std::array<double,4> Sig;
+    std::copy(Eps_in.begin(), Eps_in.end(), Eps.begin());
+    double epsm = 0.5 * trace_new(Eps);
+    deviator(Eps, epsm, Epsd);
+    double epsd = std::sqrt(0.5 * A2_ddot_B2_sym(Epsd, Epsd));
+    Sig[0] = Sig[3] = m_K * epsm;
 
     // no deviatoric strain -> only hydrostatic stress
     if (epsd <= 0.0) {
-        xt::noalias(Sig) = m_K * epsm * I;
+        Sig[1] = Sig[2] = 0.0;
+        std::copy(Sig.begin(), Sig.end(), Sig_out.begin());
         return;
     }
 
@@ -90,7 +93,12 @@ inline void Cusp::stress(const Tensor2& Eps, T&& Sig) const
     double eps_min = 0.5 * (m_epsy(i + 1) + m_epsy(i));
 
     // return stress tensor
-    xt::noalias(Sig) = m_K * epsm * I + m_G * (1.0 - eps_min / epsd) * Epsd;
+    // xt::noalias(Sig) = m_K * epsm * I + m_G * (1.0 - eps_min / epsd) * Epsd;
+    Sig[0] += m_G * (1.0 - eps_min / epsd) * Epsd[0];
+    Sig[1] = m_G * (1.0 - eps_min / epsd) * Epsd[1];
+    Sig[2] = m_G * (1.0 - eps_min / epsd) * Epsd[2];
+    Sig[3] += m_G * (1.0 - eps_min / epsd) * Epsd[3];
+    std::copy(Sig.begin(), Sig.end(), Sig_out.begin());
 }
 
 inline Tensor2 Cusp::Stress(const Tensor2& Eps) const

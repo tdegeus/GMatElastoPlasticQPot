@@ -324,6 +324,24 @@ inline double A2_ddot_B2(const U& A, const V& B)
     return A(0,0) * B(0,0) + 2.0 * A(0,1) * B(0,1) + A(1,1) * B(1,1);
 }
 
+inline double trace_new(const std::array<double,4>& A)
+{
+    return A[0] + A[3];
+}
+
+inline double A2_ddot_B2_sym(const std::array<double,4>& A, const std::array<double,4>& B)
+{
+    return A[0] * B[0] + 2.0 * A[1] * B[1] + A[3] * B[3];
+}
+
+inline void deviator(const std::array<double,4>& A, double Am, std::array<double,4>& Ad)
+{
+    Ad[0] = A[0] - Am;
+    Ad[1] = A[1];
+    Ad[2] = A[2];
+    Ad[3] = A[3] - Am;
+}
+
 } // namespace Cartesian2d
 } // namespace GMatElastoPlasticQPot
 
