@@ -67,6 +67,12 @@ namespace detail
     } // namespace pointer
 
     template <class T>
+    inline T trace(const std::array<T,4>& A)
+    {
+        return A[0] + A[3];
+    }
+
+    template <class T>
     inline T hydrostatic_deviator(const std::array<T,4>& A, std::array<T,4>& Ad)
     {
         T Am = 0.5 * (A[0] + A[3]);

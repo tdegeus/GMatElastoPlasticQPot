@@ -25,7 +25,6 @@ inline Cusp::Cusp(double K, double G, const xt::xtensor<double,1>& epsy, bool in
         }
     }
 
-
     m_yield = QPot::Static(0.0, y);
 }
 
@@ -90,10 +89,11 @@ inline void Cusp::setStrainIterator(const T&& begin)
 
     double eps_min = 0.5 * (m_yield.currentYieldRight() + m_yield.currentYieldLeft());
 
-    m_Sig[0] += m_G * (1.0 - eps_min / epsd) * Epsd[0];
-    m_Sig[1] = m_G * (1.0 - eps_min / epsd) * Epsd[1];
-    m_Sig[2] = m_G * (1.0 - eps_min / epsd) * Epsd[2];
-    m_Sig[3] += m_G * (1.0 - eps_min / epsd) * Epsd[3];
+    double g = m_G * (1.0 - eps_min / epsd);
+    m_Sig[0] += g * Epsd[0];
+    m_Sig[1] = g * Epsd[1];
+    m_Sig[2] = g * Epsd[2];
+    m_Sig[3] += g * Epsd[3];
 }
 
 template <class T>
