@@ -27,46 +27,67 @@ inline double Elastic::G() const
 }
 
 template <class T>
-inline void Elastic::stress(const Tensor2& Eps, T&& Sig) const
+inline void Elastic::setStrain(const T& a)
 {
-    auto I = Cartesian2d::I2();
-    auto epsm = 0.5 * trace(Eps);
-    auto Epsd = Eps - epsm * I;
-    xt::noalias(Sig) = m_K * epsm * I + m_G * Epsd;
+    GMATELASTOPLASTICQPOT_ASSERT(detail::xtensor::shape(a) == std::vector<size_t>({2, 2}));
+    return this->setStrainIterator(a.cbegin());
 }
 
-inline Tensor2 Elastic::Stress(const Tensor2& Eps) const
+template <class T>
+inline void Elastic::setStrainIterator(const T&& begin)
 {
-    Tensor2 Sig;
-    this->stress(Eps, Sig);
-    return Sig;
+    std::copy(begin, begin + 4, m_Eps.begin());
+
+    double epsm = 0.5 * detail::trace(m_Eps);
+
+    m_Sig[0] = (m_K - m_G) * epsm + m_G * m_Eps[0];
+    m_Sig[1] = m_G * m_Eps[1];
+    m_Sig[2] = m_G * m_Eps[2];
+    m_Sig[3] = (m_K - m_G) * epsm + m_G * m_Eps[3];
 }
 
-template <class T, class S>
-inline void Elastic::tangent(const Tensor2& Eps, T&& Sig, S&& C) const
+template <class T>
+inline void Elastic::stress(T& a) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(detail::xtensor::shape(a) == std::vector<size_t>({2, 2}));
+    return this->stressIterator(a.begin());
+}
+
+template <class T>
+inline void Elastic::stressIterator(T&& begin) const
+{
+    std::copy(m_Sig.begin(), m_Sig.end(), begin);
+}
+
+inline Tensor2 Elastic::Stress() const
+{
+    auto ret = Tensor2::from_shape({2, 2});
+    this->stressIterator(ret.begin());
+    return ret;
+}
+
+template <class T>
+inline void Elastic::tangent(T& C) const
 {
     auto II = Cartesian2d::II();
     auto I4d = Cartesian2d::I4d();
-    this->stress(Eps, Sig);
     xt::noalias(C) = 0.5 * m_K * II + m_G * I4d;
 }
 
-inline std::tuple<Tensor2, Tensor4> Elastic::Tangent(const Tensor2& Eps) const
+inline Tensor4 Elastic::Tangent() const
 {
-    Tensor2 Sig;
-    Tensor4 C;
-    this->tangent(Eps, Sig, C);
-    return std::make_tuple(Sig, C);
+    auto ret = Tensor4::from_shape({2, 2, 2, 2});
+    this->tangent(ret);
+    return ret;
 }
 
-inline double Elastic::energy(const Tensor2& Eps) const
+inline double Elastic::energy() const
 {
-    auto I = Cartesian2d::I2();
-    auto epsm = 0.5 * trace(Eps);
-    auto Epsd = Eps - epsm * I;
-    auto epsd = std::sqrt(0.5 * A2_ddot_B2(Epsd, Epsd));
-    auto U = m_K * std::pow(epsm, 2.0);
-    auto V = m_G * std::pow(epsd, 2.0);
+    std::array<double,4> Epsd;
+    double epsm = detail::hydrostatic_deviator(m_Eps, Epsd);
+    double epsd = std::sqrt(0.5 * detail::A2_ddot_B2(Epsd, Epsd));
+    double U = m_K * std::pow(epsm, 2.0);
+    double V = m_G * std::pow(epsd, 2.0);
     return U + V;
 }
 
