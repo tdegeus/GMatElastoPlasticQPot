@@ -34,6 +34,7 @@ get_target_property(
 # Find dependencies
 
 find_dependency(xtensor)
+find_dependency(QPot)
 
 # Define support target "GMatElastoPlasticQPot::compiler_warnings"
 
