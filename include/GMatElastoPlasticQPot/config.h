@@ -26,6 +26,8 @@
 #include <xtensor/xoperation.hpp>
 #include <xtensor/xsort.hpp>
 #include <xtensor/xmath.hpp>
+#include <xtensor/xutils.hpp>
+#include <QPot/Static.hpp>
 
 
 #ifdef GMATELASTOPLASTICQPOT_ENABLE_ASSERT
