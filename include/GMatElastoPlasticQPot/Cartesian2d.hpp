@@ -169,186 +169,124 @@ inline Tensor4 I4d()
 
 namespace detail
 {
-    template <class T, typename = void>
+    template <class T>
     struct equiv_impl
     {
-    };
-
-    // rank 2 tensor
-
-    template <class T>
-    struct equiv_impl<T, typename std::enable_if_t<xt::has_rank_t<T, 2>::value>>
-    {
-        using value_type = typename T::value_type;
-
-        static Tensor2 deviatoric_alloc(const T& A)
-        {
-            return A - 0.5 * detail::xtensor::trace(A) * I2();
-        }
-
-        static value_type hydrostatic_alloc(const T& A)
-        {
-            return 0.5 * detail::xtensor::trace(A);
-        }
-
-        static value_type epsd_alloc(const T& A)
-        {
-            T Ad = A - 0.5 * detail::xtensor::trace(A) * I2();
-            return std::sqrt(0.5 * detail::xtensor::A2_ddot_B2(Ad, Ad));
-        }
-
-        static value_type sigd_alloc(const T& A)
-        {
-            T Ad = A - 0.5 * detail::xtensor::trace(A) * I2();
-            return std::sqrt(2.0 * detail::xtensor::A2_ddot_B2(Ad, Ad));
-        }
-    };
-
-    // list of rank 2 tensors
-
-    template <class T>
-    struct equiv_impl<T, typename std::enable_if_t<xt::has_rank_t<T, 3>::value>>
-    {
         using value_type = typename T::value_type;
         using shape_type = typename T::shape_type;
+        static const size_t rank = T::rank;
+        static const size_t scalar_rank = T::rank - 2;
+        static const size_t ndim = 2;
+        static const size_t stride = ndim * ndim;
+        static_assert(rank >= 2, "Rank too low.");
+        static_assert(rank < SIZE_MAX, "Only fixed rank allowed.");
 
-        static void deviatoric_no_alloc(const T& A, xt::xtensor<value_type,3>& B)
+        template <class S>
+        static size_t getMatrixSize(const S& arg)
         {
-            GMATELASTOPLASTICQPOT_ASSERT(A.shape() == B.shape());
+            size_t ret = 1;
+            for (size_t i = 0; i < scalar_rank; ++i) {
+                ret *= arg[i];
+            }
+            return ret;
+        }
+
+        template <class S>
+        static std::array<size_t, scalar_rank> getShapeScalar(const S& arg)
+        {
+            std::array<size_t, scalar_rank> ret;
+            for (size_t i = 0; i < scalar_rank; ++i) {
+                ret[i] = arg[i];
+            }
+            return ret;
+        }
+
+        template <class S>
+        static std::array<size_t, rank> getShapeTensor(const S& arg)
+        {
+            std::array<size_t, rank> ret;
+            for (size_t i = 0; i < scalar_rank; ++i) {
+                ret[i] = arg[i];
+            }
+            for (size_t i = scalar_rank; i < rank; ++i) {
+                ret[i] = ndim;
+            }
+            return ret;
+        }
+
+        template <class S>
+        static std::array<size_t, rank> getShape(const S& arg)
+        {
+            std::array<size_t, rank> ret;
+            for (size_t i = 0; i < rank; ++i) {
+                ret[i] = arg[i];
+            }
+            return ret;
+        }
+
+        static void deviatoric_no_alloc(const T& A, xt::xtensor<value_type, rank>& B)
+        {
+            GMATELASTOPLASTICQPOT_ASSERT(getShape(A.shape()) == getShapeTensor(B.shape()));
+            GMATELASTOPLASTICQPOT_ASSERT(getShape(A.shape()) == getShape(B.shape()));
             #pragma omp parallel for
-            for (size_t i = 0; i < A.shape(0); ++i) {
-                detail::pointer::deviatoric(&A.data()[i * 2 * 2], &B.data()[i * 2 * 2]);
+            for (size_t i = 0; i < getMatrixSize(A.shape()); ++i) {
+                detail::pointer::deviatoric(&A.data()[i * stride], &B.data()[i * stride]);
             }
         }
 
-        static void hydrostatic_no_alloc(const T& A, xt::xtensor<value_type,1>& B)
+        static void hydrostatic_no_alloc(const T& A, xt::xtensor<value_type, scalar_rank>& B)
         {
-            GMATELASTOPLASTICQPOT_ASSERT(A.shape() == shape_type({B.shape(0), 2, 2}));
+            GMATELASTOPLASTICQPOT_ASSERT(getShape(A.shape()) == getShapeTensor(B.shape()));
             #pragma omp parallel for
-            for (size_t i = 0; i < A.shape(0); ++i) {
-                B.data()[i] = 0.5 * detail::pointer::trace(&A.data()[i * 2 * 2]);
+            for (size_t i = 0; i < getMatrixSize(A.shape()); ++i) {
+                B.data()[i] = 0.5 * detail::pointer::trace(&A.data()[i * stride]);
             }
         }
 
-        static void epsd_no_alloc(const T& A, xt::xtensor<value_type,1>& B)
+        static void epsd_no_alloc(const T& A, xt::xtensor<value_type, scalar_rank>& B)
         {
-            GMATELASTOPLASTICQPOT_ASSERT(A.shape() == shape_type({B.shape(0), 2, 2}));
+            GMATELASTOPLASTICQPOT_ASSERT(getShape(A.shape()) == getShapeTensor(B.shape()));
             #pragma omp parallel for
-            for (size_t i = 0; i < A.shape(0); ++i) {
-                auto b = detail::pointer::deviatoric_ddot_deviatoric(&A.data()[i * 2 * 2]);
+            for (size_t i = 0; i < getMatrixSize(A.shape()); ++i) {
+                auto b = detail::pointer::deviatoric_ddot_deviatoric(&A.data()[i * stride]);
                 B.data()[i] = std::sqrt(0.5 * b);
             }
         }
 
-        static void sigd_no_alloc(const T& A, xt::xtensor<value_type,1>& B)
+        static void sigd_no_alloc(const T& A, xt::xtensor<value_type, scalar_rank>& B)
         {
-            GMATELASTOPLASTICQPOT_ASSERT(A.shape() == shape_type({B.shape(0), 2, 2}));
+            GMATELASTOPLASTICQPOT_ASSERT(getShape(A.shape()) == getShapeTensor(B.shape()));
             #pragma omp parallel for
-            for (size_t i = 0; i < A.shape(0); ++i) {
-                auto b = detail::pointer::deviatoric_ddot_deviatoric(&A.data()[i * 2 * 2]);
+            for (size_t i = 0; i < getMatrixSize(A.shape()); ++i) {
+                auto b = detail::pointer::deviatoric_ddot_deviatoric(&A.data()[i * stride]);
                 B.data()[i] = std::sqrt(2.0 * b);
             }
         }
 
         static auto deviatoric_alloc(const T& A)
         {
-            xt::xtensor<value_type,3> B = xt::empty<value_type>(A.shape());
+            xt::xtensor<value_type, rank> B = xt::empty<value_type>(A.shape());
             deviatoric_no_alloc(A, B);
             return B;
         }
 
         static auto hydrostatic_alloc(const T& A)
         {
-            xt::xtensor<value_type,1> B = xt::empty<value_type>({A.shape(0)});
+            xt::xtensor<value_type, scalar_rank> B = xt::empty<value_type>(getShapeScalar(A.shape()));
             hydrostatic_no_alloc(A, B);
             return B;
         }
 
         static auto epsd_alloc(const T& A)
         {
-            xt::xtensor<value_type,1> B = xt::empty<value_type>({A.shape(0)});
+            xt::xtensor<value_type, scalar_rank> B = xt::empty<value_type>(getShapeScalar(A.shape()));
             epsd_no_alloc(A, B);
             return B;
         }
 
         static auto sigd_alloc(const T& A)
         {
-            xt::xtensor<value_type,1> B = xt::empty<value_type>({A.shape(0)});
-            sigd_no_alloc(A, B);
-            return B;
-        }
-    };
-
-    // matrix of rank 2 tensors
-
-    template <class T>
-    struct equiv_impl<T, typename std::enable_if_t<xt::has_rank_t<T, 4>::value>>
-    {
-        using value_type = typename T::value_type;
-        using shape_type = typename T::shape_type;
-
-        static void deviatoric_no_alloc(const T& A, xt::xtensor<value_type,4>& B)
-        {
-            GMATELASTOPLASTICQPOT_ASSERT(A.shape() == B.shape());
-            #pragma omp parallel for
-            for (size_t i = 0; i < A.shape(0) * A.shape(1); ++i) {
-                detail::pointer::deviatoric(&A.data()[i * 2 * 2], &B.data()[i * 2 * 2]);
-            }
-        }
-
-        static void hydrostatic_no_alloc(const T& A, xt::xtensor<value_type,2>& B)
-        {
-            GMATELASTOPLASTICQPOT_ASSERT(A.shape() == shape_type({B.shape(0), B.shape(1), 2, 2}));
-            #pragma omp parallel for
-            for (size_t i = 0; i < A.shape(0) * A.shape(1); ++i) {
-                B.data()[i] = 0.5 * detail::pointer::trace(&A.data()[i * 2 * 2]);
-            }
-        }
-
-        static void epsd_no_alloc(const T& A, xt::xtensor<value_type,2>& B)
-        {
-            GMATELASTOPLASTICQPOT_ASSERT(A.shape() == shape_type({B.shape(0), B.shape(1), 2, 2}));
-            #pragma omp parallel for
-            for (size_t i = 0; i < A.shape(0) * A.shape(1); ++i) {
-                auto b = detail::pointer::deviatoric_ddot_deviatoric(&A.data()[i * 2 * 2]);
-                B.data()[i] = std::sqrt(0.5 * b);
-            }
-        }
-
-        static void sigd_no_alloc(const T& A, xt::xtensor<value_type,2>& B)
-        {
-            GMATELASTOPLASTICQPOT_ASSERT(A.shape() == shape_type({B.shape(0), B.shape(1), 2, 2}));
-            #pragma omp parallel for
-            for (size_t i = 0; i < A.shape(0) * A.shape(1); ++i) {
-                auto b = detail::pointer::deviatoric_ddot_deviatoric(&A.data()[i * 2 * 2]);
-                B.data()[i] = std::sqrt(2.0 * b);
-            }
-        }
-
-        static auto deviatoric_alloc(const T& A)
-        {
-            xt::xtensor<value_type,4> B = xt::empty<value_type>(A.shape());
-            deviatoric_no_alloc(A, B);
-            return B;
-        }
-
-        static auto hydrostatic_alloc(const T& A)
-        {
-            xt::xtensor<value_type,2> B = xt::empty<value_type>({A.shape(0), A.shape(1)});
-            hydrostatic_no_alloc(A, B);
-            return B;
-        }
-
-        static auto epsd_alloc(const T& A)
-        {
-            xt::xtensor<value_type,2> B = xt::empty<value_type>({A.shape(0), A.shape(1)});
-            epsd_no_alloc(A, B);
-            return B;
-        }
-
-        static auto sigd_alloc(const T& A)
-        {
-            xt::xtensor<value_type,2> B = xt::empty<value_type>({A.shape(0), A.shape(1)});
+            xt::xtensor<value_type, scalar_rank> B = xt::empty<value_type>(getShapeScalar(A.shape()));
             sigd_no_alloc(A, B);
             return B;
         }
