@@ -35,6 +35,8 @@ conveniently compiled to this [PDF](docs/readme.pdf).
     - [By hand](#by-hand)
     - [Using pkg-config](#using-pkg-config)
 - [References / Credits](#references--credits)
+- [Change-log](#change-log)
+- [Upgrading to v0.6.0](#upgrading-to-v060)
 
 <!-- /MarkdownTOC -->
 
@@ -107,6 +109,10 @@ have a single API for a matrix of material points.
     xt::xtensor_fixed<double, xt::xshape<2, 2>> = 
     GMatElastoPlasticQPot::Cartesian2d::Tensor2
     ```
+    or 
+    ```cpp
+    xt:xtensor<double,2>
+    ```
 
 +   List *(i)* of second order tensors *(x,y)* : *A(i,x,y)*
     ```cpp
@@ -119,6 +125,8 @@ have a single API for a matrix of material points.
     xt::xtensor<double,4>
     ```
     Note that the shape is `[I, J, 2, 2]`.
+
++   Etc.
 
 ### Example
 
@@ -141,19 +149,21 @@ int main()
     // set strain (follows e.g. from FEM discretisation)
     GMat::Tensor2 Eps;
     ...
+    elastic.setStrain(Eps);
+    ...
     
     // compute stress (including allocation of the result)
-    GMat::Tensor2 Sig = elastic.Stress(Eps);
+    GMat::Tensor2 Sig = elastic.Stress();
     // OR compute stress without (re)allocating the results
     // in this case "Sig" has to be of the correct type and shape
-    elastic.stress(Eps, Sig); 
+    elastic.stress(Sig); 
     ...
 
     return 0;
 }
 ```
 
-#### Matrix of material points
+#### Array of material points
 
 ```cpp
 #include <GMatElastoPlasticQPot/Cartesian2d.h>
@@ -162,25 +172,26 @@ namespace GMat = GMatElastoPlasticQPot::Cartesian2d;
 
 int main()
 {
-    // a matrix, of shape [nelem, nip], of material points
-    GMat::Elastic matrix(nelem, nip);
+    // a array, of shape [nelem, nip], of material points
+    GMat::Array<2> array({nelem, nip});
 
     // set materials:
     // points where I(x,y) == 1 are assigned, points where I(x,y) == 0 are skipped
     // all points can only be assigned once
-    matrix.setElastic(I, K, G);
-    matrix.setCusp(I, K, G, epsy);
+    array.setElastic(I, K, G);
+    array.setCusp(I, K, G, epsy);
     ...
 
     // set strain tensor (follows e.g. from FEM discretisation)
     xt::xtensor<double,4> eps = xt::empty<double>({nelem, nip, 2ul, 2ul});
     ... 
+    array.setStrain(eps);
 
     // compute stress (allocate result)
-    xt::xtensor<double,4> sig = matrix.Stress(eps);
+    xt::xtensor<double,4> sig = array.Stress();
     // OR compute stress without (re)allocating the results
     // in this case "sig" has to be of the correct type and shape
-    matrix.stress(eps, sig); 
+    array.stress(sig); 
     ...
 
     return 0;
@@ -349,3 +360,28 @@ enabling *xsimd*, ...
     [arXiv: 1904.07635](http://arxiv.org/abs/1904.07635)*.
 
 *   [xtensor](https://github.com/QuantStack/xtensor) is used under the hood.
+
+# Change-log
+
+# Upgrading to v0.6.0
+
+Compared to v0.5.0, v0.6.0 has some generalisations and efficiency updates. 
+This requires the following changes:
+
+*   `Matrix` has been generalised to `Array<rank>`. Practically this requires changing:
+    -   `Matrix` to `Array<2>` in C++.
+    -   `Matrix` to `Array2d` in Python. 
+        Note that `Array1d`, `Array3d`, etc. are for the moment not compiled, 
+        but can be made available upon request.
+
+*   Strain is now stored as a member. 
+    Functions like `stress` now return the state based on the last specified strain, 
+    specified using `setStrain(Esp)`. This leads to the following changes:
+    - `stress`: no argument.
+    - `tangent`: no argument, single return value (no longer returns stress).
+    - `find`: no argument, renamed to `currentIndex`.
+    - `epsy`: replaced by `currentYieldLeft` and `currentYieldRight`.
+
+*   By storing strain as a member, 
+    efficiency upgrades have been made to find the position in the potential energy landscape. 
+    The library therefore now depends on [QPot](https://www.github.com/tdegeus/QPot).
