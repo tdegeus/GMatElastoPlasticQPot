@@ -40,62 +40,62 @@ sm.def("I4d", &SM::I4d, "Fourth order deviatoric projection tensor.");
 // Tensor algebra
 
 sm.def("Deviatoric",
-    py::overload_cast<const xt::xtensor<double,4>&>(&SM::Deviatoric<xt::xtensor<double,4>>),
+    static_cast<xt::xtensor<double,4> (*) (const xt::xtensor<double,4>&)>(&SM::Deviatoric<xt::xtensor<double,4>>),
     "Deviatoric part of a 2nd-order tensor. Returns matrix of 2nd-order tensors.",
     py::arg("A"));
 
 sm.def("Deviatoric",
-    py::overload_cast<const xt::xtensor<double,3>&>(&SM::Deviatoric<xt::xtensor<double,3>>),
+    static_cast<xt::xtensor<double,3> (*) (const xt::xtensor<double,3>&)>(&SM::Deviatoric<xt::xtensor<double,3>>),
     "Deviatoric part of a 2nd-order tensor. Returns list of 2nd-order tensors.",
     py::arg("A"));
 
 sm.def("Deviatoric",
-    py::overload_cast<const SM::Tensor2&>(&SM::Deviatoric<SM::Tensor2>),
+    static_cast<SM::Tensor2 (*) (const SM::Tensor2&)>(&SM::Deviatoric<SM::Tensor2>),
     "Deviatoric part of a 2nd-order tensor. Returns 2nd-order tensor.",
     py::arg("A"));
 
 sm.def("Hydrostatic",
-    py::overload_cast<const xt::xtensor<double,4>&>(&SM::Hydrostatic<xt::xtensor<double,4>>),
+    static_cast<xt::xtensor<double,2> (*) (const xt::xtensor<double,4>&)>(&SM::Hydrostatic<xt::xtensor<double,4>>),
     "Hydrostatic part of a 2nd-order tensor. Returns matrix (of scalars).",
     py::arg("A"));
 
 sm.def("Hydrostatic",
-    py::overload_cast<const xt::xtensor<double,3>&>(&SM::Hydrostatic<xt::xtensor<double,3>>),
+    static_cast<xt::xtensor<double,1> (*) (const xt::xtensor<double,3>&)>(&SM::Hydrostatic<xt::xtensor<double,3>>),
     "Hydrostatic part of a 2nd-order tensor. Returns list (of scalars).",
     py::arg("A"));
 
 sm.def("Hydrostatic",
-    py::overload_cast<const SM::Tensor2&>(&SM::Hydrostatic<SM::Tensor2>),
+    static_cast<double (*) (const SM::Tensor2&)>(&SM::Hydrostatic<SM::Tensor2>),
     "Hydrostatic part of a 2nd-order tensor. Returns scalar.",
     py::arg("A"));
 
 sm.def("Epsd",
-    py::overload_cast<const xt::xtensor<double,4>&>(&SM::Epsd<xt::xtensor<double,4>>),
+    static_cast<xt::xtensor<double,2> (*) (const xt::xtensor<double,4>&)>(&SM::Epsd<xt::xtensor<double,4>>),
     "Equivalent strain. Returns matrix (of scalars).",
     py::arg("A"));
 
 sm.def("Epsd",
-    py::overload_cast<const xt::xtensor<double,3>&>(&SM::Epsd<xt::xtensor<double,3>>),
+    static_cast<xt::xtensor<double,1> (*) (const xt::xtensor<double,3>&)>(&SM::Epsd<xt::xtensor<double,3>>),
     "Equivalent strain. Returns list (of scalars).",
     py::arg("A"));
 
 sm.def("Epsd",
-    py::overload_cast<const SM::Tensor2&>(&SM::Epsd<SM::Tensor2>),
+    static_cast<double (*) (const SM::Tensor2&)>(&SM::Epsd<SM::Tensor2>),
     "Equivalent strain. Returns scalar.",
     py::arg("A"));
 
 sm.def("Sigd",
-    py::overload_cast<const xt::xtensor<double,4>&>(&SM::Sigd<xt::xtensor<double,4>>),
+    static_cast<xt::xtensor<double,2> (*) (const xt::xtensor<double,4>&)>(&SM::Sigd<xt::xtensor<double,4>>),
     "Equivalent stress. Returns matrix (of scalars).",
     py::arg("A"));
 
 sm.def("Sigd",
-    py::overload_cast<const xt::xtensor<double,3>&>(&SM::Sigd<xt::xtensor<double,3>>),
+    static_cast<xt::xtensor<double,1> (*) (const xt::xtensor<double,3>&)>(&SM::Sigd<xt::xtensor<double,3>>),
     "Equivalent stress. Returns list (of scalars).",
     py::arg("A"));
 
 sm.def("Sigd",
-    py::overload_cast<const SM::Tensor2&>(&SM::Sigd<SM::Tensor2>),
+    static_cast<double (*) (const SM::Tensor2&)>(&SM::Sigd<SM::Tensor2>),
     "Equivalent stress. Returns scalar.",
     py::arg("A"));
 
