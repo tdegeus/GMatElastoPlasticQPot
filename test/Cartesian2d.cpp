@@ -216,7 +216,7 @@ SECTION("Elastic - stress")
     ISCLOSE(Sig(1, 1), K * epsm);
     ISCLOSE(Sig(0, 1), G * gamma);
     ISCLOSE(Sig(1, 0), G * gamma);
-    REQUIRE(mat.energy() == K * std::pow(epsm, 2.0) + G * std::pow(gamma, 2.0));
+    ISCLOSE(mat.energy(), K * std::pow(epsm, 2.0) + G * std::pow(gamma, 2.0));
 }
 
 SECTION("Cusp - stress")
@@ -239,7 +239,7 @@ SECTION("Cusp - stress")
     ISCLOSE(Sig(1, 0), 0.0);
     ISCLOSE(mat.epsp(), 0.02);
     REQUIRE(mat.currentIndex() == 1);
-    REQUIRE(mat.energy() == K * std::pow(epsm, 2.0) + G * (0.0 - std::pow(0.01, 2.0)));
+    ISCLOSE(mat.energy(), K * std::pow(epsm, 2.0) + G * (0.0 - std::pow(0.01, 2.0)));
 
     epsm *= 2.0;
     gamma *= 1.9;
@@ -256,7 +256,7 @@ SECTION("Cusp - stress")
     ISCLOSE(Sig(1, 0), G * (gamma - 0.04));
     ISCLOSE(mat.epsp(), 0.04);
     REQUIRE(mat.currentIndex() == 2);
-    REQUIRE(mat.energy() == K * std::pow(epsm, 2.0) + G * (std::pow(gamma - 0.04, 2.0) - std::pow(0.01, 2.0)));
+    ISCLOSE(mat.energy(), K * std::pow(epsm, 2.0) + G * (std::pow(gamma - 0.04, 2.0) - std::pow(0.01, 2.0)));
 }
 
 SECTION("Smooth - stress")
