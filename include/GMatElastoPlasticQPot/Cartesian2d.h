@@ -154,8 +154,8 @@ public:
 
     // Return current state
     size_t currentIndex() const; // yield index
-    size_t currentYieldLeft() const; // yield strain left epsy[index]
-    size_t currentYieldRight() const; // yield strain right epsy[index + 1]
+    double currentYieldLeft() const; // yield strain left epsy[index]
+    double currentYieldRight() const; // yield strain right epsy[index + 1]
     double epsp() const; // "plastic strain" (mean of currentYieldLeft and currentYieldRight)
     double energy() const; // potential energy
 
@@ -211,8 +211,8 @@ public:
 
     // Return current state
     size_t currentIndex() const; // yield index
-    size_t currentYieldLeft() const; // yield strain left epsy[index]
-    size_t currentYieldRight() const; // yield strain right epsy[index + 1]
+    double currentYieldLeft() const; // yield strain left epsy[index]
+    double currentYieldRight() const; // yield strain right epsy[index + 1]
     double epsp() const; // "plastic strain" (mean of currentYieldLeft and currentYieldRight)
     double energy() const; // potential energy
 
@@ -328,43 +328,26 @@ public:
         const xt::xtensor<double,2>& epsy,
         bool init_elastic = true);
 
-    // Compute (no allocation, overwrites last argument)
+    // Set strain tensor, get the response
 
-    void stress(
-        const xt::xtensor<double,4>& Eps,
-              xt::xtensor<double,4>& Sig) const;
-
-    void tangent(
-        const xt::xtensor<double,4>& Eps,
-              xt::xtensor<double,4>& Sig,
-              xt::xtensor<double,6>& C) const;
-
-    void energy(
-        const xt::xtensor<double,4>& Eps,
-              xt::xtensor<double,2>& energy) const;
-
-    void find(
-        const xt::xtensor<double,4>& Eps,
-              xt::xtensor<size_t,2>& idx) const;
-
-    void epsy(
-        const xt::xtensor<size_t,2>& idx,
-              xt::xtensor<double,2>& epsy) const;
-
-    void epsp(
-        const xt::xtensor<double,4>& Eps,
-              xt::xtensor<double,2>& epsp) const;
+    void setStrain(const xt::xtensor<double,4>& Eps);
+    void stress(xt::xtensor<double,4>& Sig) const;
+    void tangent(xt::xtensor<double,6>& C) const;
+    void currentIndex(xt::xtensor<size_t,2>& arg) const;
+    void currentYieldLeft(xt::xtensor<double,2>& arg) const;
+    void currentYieldRight(xt::xtensor<double,2>& arg) const;
+    void epsp(xt::xtensor<double,2>& arg) const;
+    void energy(xt::xtensor<double,2>& arg) const;
 
     // Auto-allocation of the functions above
 
-    xt::xtensor<double,4> Stress(const xt::xtensor<double,4>& Eps) const;
-    xt::xtensor<double,2> Energy(const xt::xtensor<double,4>& Eps) const;
-    xt::xtensor<size_t,2> Find(const xt::xtensor<double,4>& Eps) const;
-    xt::xtensor<double,2> Epsy(const xt::xtensor<size_t,2>& idx) const;
-    xt::xtensor<double,2> Epsp(const xt::xtensor<double,4>& Eps) const;
-
-    std::tuple<xt::xtensor<double,4>, xt::xtensor<double,6>>
-    Tangent(const xt::xtensor<double,4>& Eps) const;
+    xt::xtensor<double,4> Stress() const;
+    xt::xtensor<double,6> Tangent() const;
+    xt::xtensor<size_t,2> CurrentIndex() const;
+    xt::xtensor<double,2> CurrentYieldLeft() const;
+    xt::xtensor<double,2> CurrentYieldRight() const;
+    xt::xtensor<double,2> Epsp() const;
+    xt::xtensor<double,2> Energy() const;
 
 private:
 
@@ -380,23 +363,13 @@ private:
     // Shape
     size_t m_nelem;
     size_t m_nip;
+    size_t m_size;
     static const size_t m_ndim = 2;
 
     // Internal check
     bool m_allSet = false; // true if all points have a material assigned
     void checkAllSet(); // check if all points have a material assigned (modifies "m_allSet")
 };
-
-// Internal support functions
-
-// Trace: "c = A_ii"
-template <class U>
-inline double trace(const U& A);
-
-// Tensor contraction: "c = A_ij * B_ji"
-// Symmetric tensors only, no assertion
-template <class U, class V>
-inline double A2_ddot_B2(const U& A, const V& B);
 
 } // namespace Cartesian2d
 } // namespace GMatElastoPlasticQPot
@@ -406,6 +379,5 @@ inline double A2_ddot_B2(const U& A, const V& B);
 #include "Cartesian2d_Cusp.hpp"
 #include "Cartesian2d_Smooth.hpp"
 #include "Cartesian2d_Matrix.hpp"
-
 
 #endif

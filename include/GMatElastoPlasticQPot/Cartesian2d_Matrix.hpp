@@ -14,6 +14,7 @@ namespace Cartesian2d {
 
 inline Matrix::Matrix(size_t nelem, size_t nip) : m_nelem(nelem), m_nip(nip)
 {
+    m_size = m_nelem * m_nip;
     m_type = xt::ones<size_t>({m_nelem, m_nip}) * Type::Unset;
     m_index = xt::empty<size_t>({m_nelem, m_nip});
     m_allSet = false;
@@ -42,227 +43,194 @@ inline xt::xtensor<size_t,2> Matrix::type() const
 inline xt::xtensor<double,2> Matrix::K() const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
-
-    xt::xtensor<double,2> out = xt::empty<double>({m_nelem, m_nip});
+    xt::xtensor<double,2> ret = xt::empty<double>({m_nelem, m_nip});
 
     #pragma omp parallel for
-    for (size_t e = 0; e < m_nelem; ++e) {
-        for (size_t q = 0; q < m_nip; ++q) {
-
-            switch (m_type(e, q)) {
-            case Type::Elastic:
-                out(e, q) = m_Elastic[m_index(e, q)].K();
-                break;
-            case Type::Cusp:
-                out(e, q) = m_Cusp[m_index(e, q)].K();
-                break;
-            case Type::Smooth:
-                out(e, q) = m_Smooth[m_index(e, q)].K();
-                break;
-            }
+    for (size_t i = 0; i < m_size; ++i) {
+        switch (m_type.data()[i]) {
+        case Type::Elastic:
+            ret.data()[i] = m_Elastic[m_index.data()[i]].K();
+            break;
+        case Type::Cusp:
+            ret.data()[i] = m_Cusp[m_index.data()[i]].K();
+            break;
+        case Type::Smooth:
+            ret.data()[i] = m_Smooth[m_index.data()[i]].K();
+            break;
         }
     }
 
-    return out;
+    return ret;
 }
 
 inline xt::xtensor<double,2> Matrix::G() const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
-
-    xt::xtensor<double,2> out = xt::empty<double>({m_nelem, m_nip});
+    xt::xtensor<double,2> ret = xt::empty<double>({m_nelem, m_nip});
 
     #pragma omp parallel for
-    for (size_t e = 0; e < m_nelem; ++e) {
-        for (size_t q = 0; q < m_nip; ++q) {
-
-            switch (m_type(e, q)) {
-            case Type::Elastic:
-                out(e, q) = m_Elastic[m_index(e, q)].G();
-                break;
-            case Type::Cusp:
-                out(e, q) = m_Cusp[m_index(e, q)].G();
-                break;
-            case Type::Smooth:
-                out(e, q) = m_Smooth[m_index(e, q)].G();
-                break;
-            }
+    for (size_t i = 0; i < m_size; ++i) {
+        switch (m_type.data()[i]) {
+        case Type::Elastic:
+            ret.data()[i] = m_Elastic[m_index.data()[i]].G();
+            break;
+        case Type::Cusp:
+            ret.data()[i] = m_Cusp[m_index.data()[i]].G();
+            break;
+        case Type::Smooth:
+            ret.data()[i] = m_Smooth[m_index.data()[i]].G();
+            break;
         }
     }
 
-    return out;
+    return ret;
 }
 
 inline xt::xtensor<double,4> Matrix::I2() const
 {
-    xt::xtensor<double,4> out = xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim});
+    xt::xtensor<double,4> ret = xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim});
 
     #pragma omp parallel
     {
         Tensor2 unit = Cartesian2d::I2();
+        size_t stride = m_ndim * m_ndim;
 
         #pragma omp for
-        for (size_t e = 0; e < m_nelem; ++e) {
-            for (size_t q = 0; q < m_nip; ++q) {
-                auto view = xt::adapt(&out(e, q, 0, 0), xt::xshape<m_ndim, m_ndim>());
-                xt::noalias(view) = unit;
-            }
+        for (size_t i = 0; i < m_size; ++i) {
+            auto view = xt::adapt(&ret.data()[i * stride], xt::xshape<m_ndim, m_ndim>());
+            xt::noalias(view) = unit;
         }
     }
 
-    return out;
+    return ret;
 }
 
 inline xt::xtensor<double,6> Matrix::II() const
 {
-    xt::xtensor<double,6> out =
+    xt::xtensor<double,6> ret =
         xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim, m_ndim, m_ndim});
 
     #pragma omp parallel
     {
         Tensor4 unit = Cartesian2d::II();
+        size_t stride = m_ndim * m_ndim * m_ndim * m_ndim;
 
         #pragma omp for
-        for (size_t e = 0; e < m_nelem; ++e) {
-            for (size_t q = 0; q < m_nip; ++q) {
-
-                auto view =
-                    xt::adapt(&out(e, q, 0, 0, 0, 0), xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
-
-                xt::noalias(view) = unit;
-            }
+        for (size_t i = 0; i < m_size; ++i) {
+            auto view = xt::adapt(&ret.data()[i * stride], xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
+            xt::noalias(view) = unit;
         }
     }
 
-    return out;
+    return ret;
 }
 
 inline xt::xtensor<double,6> Matrix::I4() const
 {
-    xt::xtensor<double,6> out =
+    xt::xtensor<double,6> ret =
         xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim, m_ndim, m_ndim});
 
     #pragma omp parallel
     {
         Tensor4 unit = Cartesian2d::I4();
+        size_t stride = m_ndim * m_ndim * m_ndim * m_ndim;
 
         #pragma omp for
-        for (size_t e = 0; e < m_nelem; ++e) {
-            for (size_t q = 0; q < m_nip; ++q) {
-
-                auto view =
-                    xt::adapt(&out(e, q, 0, 0, 0, 0), xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
-
-                xt::noalias(view) = unit;
-            }
+        for (size_t i = 0; i < m_size; ++i) {
+            auto view = xt::adapt(&ret.data()[i * stride], xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
+            xt::noalias(view) = unit;
         }
     }
 
-    return out;
+    return ret;
 }
 
 inline xt::xtensor<double,6> Matrix::I4rt() const
 {
-    xt::xtensor<double,6> out =
+    xt::xtensor<double,6> ret =
         xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim, m_ndim, m_ndim});
 
     #pragma omp parallel
     {
         Tensor4 unit = Cartesian2d::I4rt();
+        size_t stride = m_ndim * m_ndim * m_ndim * m_ndim;
 
         #pragma omp for
-        for (size_t e = 0; e < m_nelem; ++e) {
-            for (size_t q = 0; q < m_nip; ++q) {
-
-                auto view =
-                    xt::adapt(&out(e, q, 0, 0, 0, 0), xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
-
-                xt::noalias(view) = unit;
-            }
+        for (size_t i = 0; i < m_size; ++i) {
+            auto view = xt::adapt(&ret.data()[i * stride], xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
+            xt::noalias(view) = unit;
         }
     }
 
-    return out;
+    return ret;
 }
 
 inline xt::xtensor<double,6> Matrix::I4s() const
 {
-    xt::xtensor<double,6> out =
+    xt::xtensor<double,6> ret =
         xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim, m_ndim, m_ndim});
 
     #pragma omp parallel
     {
         Tensor4 unit = Cartesian2d::I4s();
+        size_t stride = m_ndim * m_ndim * m_ndim * m_ndim;
 
         #pragma omp for
-        for (size_t e = 0; e < m_nelem; ++e) {
-            for (size_t q = 0; q < m_nip; ++q) {
-
-                auto view =
-                    xt::adapt(&out(e, q, 0, 0, 0, 0), xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
-
-                xt::noalias(view) = unit;
-            }
+        for (size_t i = 0; i < m_size; ++i) {
+            auto view = xt::adapt(&ret.data()[i * stride], xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
+            xt::noalias(view) = unit;
         }
     }
 
-    return out;
+    return ret;
 }
 
 inline xt::xtensor<double,6> Matrix::I4d() const
 {
-    xt::xtensor<double,6> out =
+    xt::xtensor<double,6> ret =
         xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim, m_ndim, m_ndim});
 
     #pragma omp parallel
     {
         Tensor4 unit = Cartesian2d::I4d();
+        size_t stride = m_ndim * m_ndim * m_ndim * m_ndim;
 
         #pragma omp for
-        for (size_t e = 0; e < m_nelem; ++e) {
-            for (size_t q = 0; q < m_nip; ++q) {
-
-                auto view =
-                    xt::adapt(&out(e, q, 0, 0, 0, 0), xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
-
-                xt::noalias(view) = unit;
-            }
+        for (size_t i = 0; i < m_size; ++i) {
+            auto view = xt::adapt(&ret.data()[i * stride], xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
+            xt::noalias(view) = unit;
         }
     }
 
-    return out;
+    return ret;
 }
 
 inline xt::xtensor<size_t,2> Matrix::isElastic() const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
-
-    xt::xtensor<size_t,2> out = xt::where(xt::equal(m_type, Type::Elastic), 1ul, 0ul);
-    return out;
+    xt::xtensor<size_t,2> ret = xt::where(xt::equal(m_type, Type::Elastic), 1ul, 0ul);
+    return ret;
 }
 
 inline xt::xtensor<size_t,2> Matrix::isPlastic() const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
-
-    xt::xtensor<size_t,2> out = xt::where(xt::not_equal(m_type, Type::Elastic), 1ul, 0ul);
-    return out;
+    xt::xtensor<size_t,2> ret = xt::where(xt::not_equal(m_type, Type::Elastic), 1ul, 0ul);
+    return ret;
 }
 
 inline xt::xtensor<size_t,2> Matrix::isCusp() const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
-
-    xt::xtensor<size_t,2> out = xt::where(xt::equal(m_type, Type::Cusp), 1ul, 0ul);
-    return out;
+    xt::xtensor<size_t,2> ret = xt::where(xt::equal(m_type, Type::Cusp), 1ul, 0ul);
+    return ret;
 }
 
 inline xt::xtensor<size_t,2> Matrix::isSmooth() const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
-
-    xt::xtensor<size_t,2> out = xt::where(xt::equal(m_type, Type::Cusp), 1ul, 0ul);
-    return out;
+    xt::xtensor<size_t,2> ret = xt::where(xt::equal(m_type, Type::Cusp), 1ul, 0ul);
+    return ret;
 }
 
 inline void Matrix::check() const
@@ -406,230 +374,226 @@ inline void Matrix::setSmooth(
     }
 }
 
-inline void Matrix::stress(const xt::xtensor<double,4>& a_Eps, xt::xtensor<double,4>& a_Sig) const
+inline void Matrix::setStrain(const xt::xtensor<double,4>& A)
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
     GMATELASTOPLASTICQPOT_ASSERT(
-        a_Eps.shape() ==
-        std::decay_t<decltype(a_Eps)>::shape_type({m_nelem, m_nip, m_ndim, m_ndim}));
-    GMATELASTOPLASTICQPOT_ASSERT(a_Eps.shape() == a_Sig.shape());
+        A.shape() == std::decay_t<decltype(A)>::shape_type({m_nelem, m_nip, m_ndim, m_ndim}));
 
     #pragma omp parallel for
-    for (size_t e = 0; e < m_nelem; ++e) {
-        for (size_t q = 0; q < m_nip; ++q) {
-
-            auto Eps = xt::adapt(&a_Eps(e, q, 0, 0), xt::xshape<m_ndim, m_ndim>());
-            auto Sig = xt::adapt(&a_Sig(e, q, 0, 0), xt::xshape<m_ndim, m_ndim>());
-
-            switch (m_type(e, q)) {
-            case Type::Elastic:
-                m_Elastic[m_index(e, q)].stress(Eps, Sig);
-                break;
-            case Type::Cusp:
-                m_Cusp[m_index(e, q)].stress(Eps, Sig);
-                break;
-            case Type::Smooth:
-                m_Smooth[m_index(e, q)].stress(Eps, Sig);
-                break;
-            }
+    for (size_t i = 0; i < m_size; ++i) {
+        switch (m_type.data()[i]) {
+        case Type::Elastic:
+            m_Elastic[m_index.data()[i]].setStrainIterator(&A.data()[i * m_ndim * m_ndim]);
+            break;
+        case Type::Cusp:
+            m_Cusp[m_index.data()[i]].setStrainIterator(&A.data()[i * m_ndim * m_ndim]);
+            break;
+        case Type::Smooth:
+            m_Smooth[m_index.data()[i]].setStrainIterator(&A.data()[i * m_ndim * m_ndim]);
+            break;
         }
     }
 }
 
-inline void Matrix::tangent(
-    const xt::xtensor<double,4>& a_Eps,
-          xt::xtensor<double,4>& a_Sig,
-          xt::xtensor<double,6>& a_C) const
+inline void Matrix::stress(xt::xtensor<double,4>& A) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
     GMATELASTOPLASTICQPOT_ASSERT(
-        a_Eps.shape() ==
-        std::decay_t<decltype(a_Eps)>::shape_type({m_nelem, m_nip, m_ndim, m_ndim}));
-    GMATELASTOPLASTICQPOT_ASSERT(a_Eps.shape() == a_Sig.shape());
-    GMATELASTOPLASTICQPOT_ASSERT(
-        a_C.shape() ==
-        std::decay_t<decltype(a_C)>::shape_type({m_nelem, m_nip, m_ndim, m_ndim, m_ndim, m_ndim}));
+        A.shape() == std::decay_t<decltype(A)>::shape_type({m_nelem, m_nip, m_ndim, m_ndim}));
 
     #pragma omp parallel for
-    for (size_t e = 0; e < m_nelem; ++e) {
-        for (size_t q = 0; q < m_nip; ++q) {
-
-            auto Eps = xt::adapt(&a_Eps(e, q, 0, 0), xt::xshape<m_ndim, m_ndim>());
-            auto Sig = xt::adapt(&a_Sig(e, q, 0, 0), xt::xshape<m_ndim, m_ndim>());
-
-            auto C =
-                xt::adapt(&a_C(e, q, 0, 0, 0, 0), xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
-
-            switch (m_type(e, q)) {
-            case Type::Elastic:
-                m_Elastic[m_index(e, q)].tangent(Eps, Sig, C);
-                break;
-            case Type::Cusp:
-                m_Cusp[m_index(e, q)].tangent(Eps, Sig, C);
-                break;
-            case Type::Smooth:
-                m_Smooth[m_index(e, q)].tangent(Eps, Sig, C);
-                break;
-            }
+    for (size_t i = 0; i < m_size; ++i) {
+        switch (m_type.data()[i]) {
+        case Type::Elastic:
+            m_Elastic[m_index.data()[i]].stressIterator(&A.data()[i * m_ndim * m_ndim]);
+            break;
+        case Type::Cusp:
+            m_Cusp[m_index.data()[i]].stressIterator(&A.data()[i * m_ndim * m_ndim]);
+            break;
+        case Type::Smooth:
+            m_Smooth[m_index.data()[i]].stressIterator(&A.data()[i * m_ndim * m_ndim]);
+            break;
         }
     }
 }
 
-inline void
-Matrix::energy(const xt::xtensor<double,4>& a_Eps, xt::xtensor<double,2>& a_energy) const
+inline void Matrix::tangent(xt::xtensor<double,6>& A) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
-    GMATELASTOPLASTICQPOT_ASSERT(
-        a_Eps.shape() ==
-        std::decay_t<decltype(a_Eps)>::shape_type({m_nelem, m_nip, m_ndim, m_ndim}));
-    GMATELASTOPLASTICQPOT_ASSERT(a_energy.shape() == m_type.shape());
+    GMATELASTOPLASTICQPOT_ASSERT(A.shape() ==
+        std::decay_t<decltype(A)>::shape_type({m_nelem, m_nip, m_ndim, m_ndim, m_ndim, m_ndim}));
+    size_t stride = m_ndim * m_ndim * m_ndim * m_ndim;
 
     #pragma omp parallel for
-    for (size_t e = 0; e < m_nelem; ++e) {
-        for (size_t q = 0; q < m_nip; ++q) {
-
-            auto Eps = xt::adapt(&a_Eps(e, q, 0, 0), xt::xshape<m_ndim, m_ndim>());
-
-            switch (m_type(e, q)) {
-            case Type::Elastic:
-                a_energy(e, q) = m_Elastic[m_index(e, q)].energy(Eps);
-                break;
-            case Type::Cusp:
-                a_energy(e, q) = m_Cusp[m_index(e, q)].energy(Eps);
-                break;
-            case Type::Smooth:
-                a_energy(e, q) = m_Smooth[m_index(e, q)].energy(Eps);
-                break;
-            }
+    for (size_t i = 0; i < m_size; ++i) {
+        auto c = xt::adapt(&A.data()[i * stride], xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
+        switch (m_type.data()[i]) {
+        case Type::Elastic:
+            m_Elastic[m_index.data()[i]].tangent(c);
+            break;
+        case Type::Cusp:
+            m_Cusp[m_index.data()[i]].tangent(c);
+            break;
+        case Type::Smooth:
+            m_Smooth[m_index.data()[i]].tangent(c);
+            break;
         }
     }
 }
 
-inline void Matrix::find(const xt::xtensor<double,4>& a_Eps, xt::xtensor<size_t,2>& a_idx) const
+inline void Matrix::currentIndex(xt::xtensor<size_t,2>& A) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
-    GMATELASTOPLASTICQPOT_ASSERT(
-        a_Eps.shape() ==
-        std::decay_t<decltype(a_Eps)>::shape_type({m_nelem, m_nip, m_ndim, m_ndim}));
-    GMATELASTOPLASTICQPOT_ASSERT(a_idx.shape() == m_type.shape());
+    GMATELASTOPLASTICQPOT_ASSERT(A.shape() == std::decay_t<decltype(A)>::shape_type({m_nelem, m_nip}));
 
     #pragma omp parallel for
-    for (size_t e = 0; e < m_nelem; ++e) {
-        for (size_t q = 0; q < m_nip; ++q) {
-
-            auto Eps = xt::adapt(&a_Eps(e, q, 0, 0), xt::xshape<m_ndim, m_ndim>());
-
-            switch (m_type(e, q)) {
-            case Type::Elastic:
-                a_idx(e, q) = 0;
-                break;
-            case Type::Cusp:
-                a_idx(e, q) = m_Cusp[m_index(e, q)].find(Eps);
-                break;
-            case Type::Smooth:
-                a_idx(e, q) = m_Smooth[m_index(e, q)].find(Eps);
-                break;
-            }
+    for (size_t i = 0; i < m_size; ++i) {
+        switch (m_type.data()[i]) {
+        case Type::Elastic:
+            A.data()[i] = 0;
+            break;
+        case Type::Cusp:
+            A.data()[i] = m_Cusp[m_index.data()[i]].currentIndex();
+            break;
+        case Type::Smooth:
+            A.data()[i] = m_Smooth[m_index.data()[i]].currentIndex();
+            break;
         }
     }
 }
 
-inline void Matrix::epsy(const xt::xtensor<size_t,2>& a_idx, xt::xtensor<double,2>& a_epsy) const
+inline void Matrix::currentYieldLeft(xt::xtensor<double,2>& A) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
-    GMATELASTOPLASTICQPOT_ASSERT(a_idx.shape() == m_type.shape());
-    GMATELASTOPLASTICQPOT_ASSERT(a_epsy.shape() == m_type.shape());
+    GMATELASTOPLASTICQPOT_ASSERT(A.shape() == std::decay_t<decltype(A)>::shape_type({m_nelem, m_nip}));
 
     #pragma omp parallel for
-    for (size_t e = 0; e < m_nelem; ++e) {
-        for (size_t q = 0; q < m_nip; ++q) {
-
-            switch (m_type(e, q)) {
-            case Type::Elastic:
-                a_epsy(e, q) = std::numeric_limits<double>::infinity();
-                break;
-            case Type::Cusp:
-                a_epsy(e, q) = m_Cusp[m_index(e, q)].epsy(a_idx(e, q));
-                break;
-            case Type::Smooth:
-                a_epsy(e, q) = m_Smooth[m_index(e, q)].epsy(a_idx(e, q));
-                break;
-            }
+    for (size_t i = 0; i < m_size; ++i) {
+        switch (m_type.data()[i]) {
+        case Type::Elastic:
+            A.data()[i] = std::numeric_limits<double>::infinity();
+            break;
+        case Type::Cusp:
+            A.data()[i] = m_Cusp[m_index.data()[i]].currentYieldLeft();
+            break;
+        case Type::Smooth:
+            A.data()[i] = m_Smooth[m_index.data()[i]].currentYieldLeft();
+            break;
         }
     }
 }
 
-inline void Matrix::epsp(const xt::xtensor<double,4>& a_Eps, xt::xtensor<double,2>& a_epsp) const
+inline void Matrix::currentYieldRight(xt::xtensor<double,2>& A) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
-    GMATELASTOPLASTICQPOT_ASSERT(
-        a_Eps.shape() ==
-        std::decay_t<decltype(a_Eps)>::shape_type({m_nelem, m_nip, m_ndim, m_ndim}));
-    GMATELASTOPLASTICQPOT_ASSERT(a_epsp.shape() == m_type.shape());
+    GMATELASTOPLASTICQPOT_ASSERT(A.shape() == std::decay_t<decltype(A)>::shape_type({m_nelem, m_nip}));
 
     #pragma omp parallel for
-    for (size_t e = 0; e < m_nelem; ++e) {
-        for (size_t q = 0; q < m_nip; ++q) {
-
-            auto Eps = xt::adapt(&a_Eps(e, q, 0, 0), xt::xshape<m_ndim, m_ndim>());
-
-            switch (m_type(e, q)) {
-            case Type::Elastic:
-                a_epsp(e, q) = 0.0;
-                break;
-            case Type::Cusp:
-                a_epsp(e, q) = m_Cusp[m_index(e, q)].epsp(Eps);
-                break;
-            case Type::Smooth:
-                a_epsp(e, q) = m_Smooth[m_index(e, q)].epsp(Eps);
-                break;
-            }
+    for (size_t i = 0; i < m_size; ++i) {
+        switch (m_type.data()[i]) {
+        case Type::Elastic:
+            A.data()[i] = std::numeric_limits<double>::infinity();
+            break;
+        case Type::Cusp:
+            A.data()[i] = m_Cusp[m_index.data()[i]].currentYieldRight();
+            break;
+        case Type::Smooth:
+            A.data()[i] = m_Smooth[m_index.data()[i]].currentYieldRight();
+            break;
         }
     }
 }
 
-inline xt::xtensor<double,4> Matrix::Stress(const xt::xtensor<double,4>& Eps) const
+inline void Matrix::epsp(xt::xtensor<double,2>& A) const
 {
-    xt::xtensor<double,4> Sig = xt::empty<double>(Eps.shape());
-    this->stress(Eps, Sig);
-    return Sig;
+    GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
+    GMATELASTOPLASTICQPOT_ASSERT(A.shape() == std::decay_t<decltype(A)>::shape_type({m_nelem, m_nip}));
+
+    #pragma omp parallel for
+    for (size_t i = 0; i < m_size; ++i) {
+        switch (m_type.data()[i]) {
+        case Type::Elastic:
+            A.data()[i] = 0.0;
+            break;
+        case Type::Cusp:
+            A.data()[i] = m_Cusp[m_index.data()[i]].epsp();
+            break;
+        case Type::Smooth:
+            A.data()[i] = m_Smooth[m_index.data()[i]].epsp();
+            break;
+        }
+    }
 }
 
-inline xt::xtensor<double,2> Matrix::Energy(const xt::xtensor<double,4>& Eps) const
+inline void Matrix::energy(xt::xtensor<double,2>& A) const
 {
-    xt::xtensor<double,2> out = xt::empty<double>({m_nelem, m_nip});
-    this->energy(Eps, out);
-    return out;
+    GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
+    GMATELASTOPLASTICQPOT_ASSERT(A.shape() == std::decay_t<decltype(A)>::shape_type({m_nelem, m_nip}));
+
+    #pragma omp parallel for
+    for (size_t i = 0; i < m_size; ++i) {
+        switch (m_type.data()[i]) {
+        case Type::Elastic:
+            A.data()[i] = m_Elastic[m_index.data()[i]].energy();
+            break;
+        case Type::Cusp:
+            A.data()[i] = m_Cusp[m_index.data()[i]].energy();
+            break;
+        case Type::Smooth:
+            A.data()[i] = m_Smooth[m_index.data()[i]].energy();
+            break;
+        }
+    }
 }
 
-inline xt::xtensor<size_t,2> Matrix::Find(const xt::xtensor<double,4>& Eps) const
+inline xt::xtensor<double,4> Matrix::Stress() const
 {
-    xt::xtensor<size_t,2> out = xt::empty<size_t>({m_nelem, m_nip});
-    this->find(Eps, out);
-    return out;
+    xt::xtensor<double,4> ret = xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim});
+    this->stress(ret);
+    return ret;
 }
 
-inline xt::xtensor<double,2> Matrix::Epsy(const xt::xtensor<size_t,2>& idx) const
+inline xt::xtensor<double,6> Matrix::Tangent() const
 {
-    xt::xtensor<double,2> out = xt::empty<double>({m_nelem, m_nip});
-    this->epsy(idx, out);
-    return out;
+    xt::xtensor<double,6> ret = xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim, m_ndim, m_ndim});
+    this->tangent(ret);
+    return ret;
 }
 
-inline xt::xtensor<double,2> Matrix::Epsp(const xt::xtensor<double,4>& Eps) const
+inline xt::xtensor<double,2> Matrix::Energy() const
 {
-    xt::xtensor<double,2> out = xt::empty<double>({m_nelem, m_nip});
-    this->epsp(Eps, out);
-    return out;
+    xt::xtensor<double,2> ret = xt::empty<double>({m_nelem, m_nip});
+    this->energy(ret);
+    return ret;
 }
 
-inline std::tuple<xt::xtensor<double,4>, xt::xtensor<double,6>>
-Matrix::Tangent(const xt::xtensor<double,4>& Eps) const
+inline xt::xtensor<size_t,2> Matrix::CurrentIndex() const
 {
-    xt::xtensor<double,4> Sig = xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim});
-    xt::xtensor<double,6> C = xt::empty<double>({m_nelem, m_nip, m_ndim, m_ndim, m_ndim, m_ndim});
-    this->tangent(Eps, Sig, C);
-    return std::make_tuple(Sig, C);
+    xt::xtensor<size_t,2> ret = xt::empty<size_t>({m_nelem, m_nip});
+    this->currentIndex(ret);
+    return ret;
+}
+
+inline xt::xtensor<double,2> Matrix::CurrentYieldLeft() const
+{
+    xt::xtensor<double,2> ret = xt::empty<double>({m_nelem, m_nip});
+    this->currentYieldLeft(ret);
+    return ret;
+}
+
+inline xt::xtensor<double,2> Matrix::CurrentYieldRight() const
+{
+    xt::xtensor<double,2> ret = xt::empty<double>({m_nelem, m_nip});
+    this->currentYieldRight(ret);
+    return ret;
+}
+
+inline xt::xtensor<double,2> Matrix::Epsp() const
+{
+    xt::xtensor<double,2> ret = xt::empty<double>({m_nelem, m_nip});
+    this->epsp(ret);
+    return ret;
 }
 
 } // namespace Cartesian2d
