@@ -214,9 +214,20 @@ namespace detail
             return ret;
         }
 
+        template <class S>
+        static std::array<size_t, rank> getShape(const S& arg)
+        {
+            std::array<size_t, rank> ret;
+            for (size_t i = 0; i < rank; ++i) {
+                ret[i] = arg[i];
+            }
+            return ret;
+        }
+
         static void deviatoric_no_alloc(const T& A, xt::xtensor<value_type, rank>& B)
         {
-            // GMATELASTOPLASTICQPOT_ASSERT(A.shape() == B.shape());
+            GMATELASTOPLASTICQPOT_ASSERT(getShape(A.shape()) == getShapeTensor(B.shape()));
+            GMATELASTOPLASTICQPOT_ASSERT(getShape(A.shape()) == getShape(B.shape()));
             #pragma omp parallel for
             for (size_t i = 0; i < getMatrixSize(A.shape()); ++i) {
                 detail::pointer::deviatoric(&A.data()[i * stride], &B.data()[i * stride]);
@@ -225,7 +236,7 @@ namespace detail
 
         static void hydrostatic_no_alloc(const T& A, xt::xtensor<value_type, scalar_rank>& B)
         {
-            // GMATELASTOPLASTICQPOT_ASSERT(A.shape() == getShapeTensor(B.shape()));
+            GMATELASTOPLASTICQPOT_ASSERT(getShape(A.shape()) == getShapeTensor(B.shape()));
             #pragma omp parallel for
             for (size_t i = 0; i < getMatrixSize(A.shape()); ++i) {
                 B.data()[i] = 0.5 * detail::pointer::trace(&A.data()[i * stride]);
@@ -234,7 +245,7 @@ namespace detail
 
         static void epsd_no_alloc(const T& A, xt::xtensor<value_type, scalar_rank>& B)
         {
-            // GMATELASTOPLASTICQPOT_ASSERT(A.shape() == getShapeTensor(B.shape()));
+            GMATELASTOPLASTICQPOT_ASSERT(getShape(A.shape()) == getShapeTensor(B.shape()));
             #pragma omp parallel for
             for (size_t i = 0; i < getMatrixSize(A.shape()); ++i) {
                 auto b = detail::pointer::deviatoric_ddot_deviatoric(&A.data()[i * stride]);
@@ -244,7 +255,7 @@ namespace detail
 
         static void sigd_no_alloc(const T& A, xt::xtensor<value_type, scalar_rank>& B)
         {
-            // GMATELASTOPLASTICQPOT_ASSERT(A.shape() == getShapeTensor(B.shape()));
+            GMATELASTOPLASTICQPOT_ASSERT(getShape(A.shape()) == getShapeTensor(B.shape()));
             #pragma omp parallel for
             for (size_t i = 0; i < getMatrixSize(A.shape()); ++i) {
                 auto b = detail::pointer::deviatoric_ddot_deviatoric(&A.data()[i * stride]);
