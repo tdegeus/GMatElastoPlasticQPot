@@ -318,7 +318,7 @@ SECTION("Tangent (purely elastic response only)")
     }
 }
 
-SECTION("Matrix")
+SECTION("Array")
 {
     double K = 12.3;
     double G = 45.6;
@@ -330,7 +330,7 @@ SECTION("Matrix")
     Eps(0, 0) = Eps(1, 1) = epsm;
     Eps(0, 1) = Eps(1, 0) = gamma;
 
-    GM::Matrix mat(nelem, nip);
+    GM::Array<2> mat({nelem, nip});
 
     {
         xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});

@@ -77,11 +77,11 @@ ISCLOSE(Sig[1,0], G * 0.0)
 ISCLOSE(mat.epsp(), 0.02)
 ISCLOSE(mat.currentIndex(), 1)
 
-# Matrix
+# Array2d
 
 nelem = 3
 nip = 2
-mat = GMat.Matrix(nelem, nip)
+mat = GMat.Array2d([nelem, nip])
 
 I = np.zeros([nelem, nip], dtype='int')
 I[0,:] = 1
