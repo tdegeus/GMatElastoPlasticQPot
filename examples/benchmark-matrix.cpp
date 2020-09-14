@@ -30,7 +30,8 @@ int main()
         double g = 0.5 / static_cast<double>(n) * static_cast<double>(i);
         xt::view(Eps, xt::all(), xt::all(), 0, 1) = g;
         xt::view(Eps, xt::all(), xt::all(), 1, 0) = g;
-        mat.stress(Eps, Sig);
+        mat.setStrain(Eps);
+        mat.stress(Sig);
     }
 
 
