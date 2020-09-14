@@ -14,8 +14,6 @@ namespace Cartesian2d {
 inline Smooth::Smooth(double K, double G, const xt::xtensor<double,1>& epsy, bool init_elastic)
     : m_K(K), m_G(G)
 {
-    GMATELASTOPLASTICQPOT_ASSERT(epsy.size() > 1);
-
     xt::xtensor<double,1> y = xt::sort(epsy);
 
     if (init_elastic) {
@@ -23,6 +21,8 @@ inline Smooth::Smooth(double K, double G, const xt::xtensor<double,1>& epsy, boo
             y = xt::concatenate(xt::xtuple(xt::xtensor<double,1>({-y(0)}), y));
         }
     }
+
+    GMATELASTOPLASTICQPOT_ASSERT(y.size() > 1);
 
     m_yield = QPot::Static(0.0, y);
 }
@@ -47,12 +47,12 @@ inline size_t Smooth::currentIndex() const
     return m_yield.currentIndex();
 }
 
-inline size_t Smooth::currentYieldLeft() const
+inline double Smooth::currentYieldLeft() const
 {
     return m_yield.currentYieldLeft();
 }
 
-inline size_t Smooth::currentYieldRight() const
+inline double Smooth::currentYieldRight() const
 {
     return m_yield.currentYieldRight();
 }
