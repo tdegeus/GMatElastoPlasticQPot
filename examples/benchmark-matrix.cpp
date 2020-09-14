@@ -10,10 +10,11 @@ int main()
 
     size_t nelem = 700;
     size_t nip = 8;
+    size_t ndim = 2;
 
     GMat::Matrix mat(nelem, nip);
-    xt::xtensor<double,4> Eps = xt::zeros<double>({nelem, nip, 2ul, 2ul});
-    xt::xtensor<double,4> Sig = xt::zeros<double>({nelem, nip, 2ul, 2ul});
+    xt::xtensor<double,4> Eps = xt::zeros<double>({nelem, nip, ndim, ndim});
+    xt::xtensor<double,4> Sig = xt::zeros<double>({nelem, nip, ndim, ndim});
 
     xt::xtensor<size_t,2> I = xt::empty<size_t>({nelem, nip});
 

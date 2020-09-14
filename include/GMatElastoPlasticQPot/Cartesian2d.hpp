@@ -181,23 +181,23 @@ namespace detail
     {
         using value_type = typename T::value_type;
 
-        static auto deviatoric_alloc(const T& A)
+        static Tensor2 deviatoric_alloc(const T& A)
         {
             return A - 0.5 * detail::xtensor::trace(A) * I2();
         }
 
-        static auto hydrostatic_alloc(const T& A)
+        static value_type hydrostatic_alloc(const T& A)
         {
             return 0.5 * detail::xtensor::trace(A);
         }
 
-        static auto epsd_alloc(const T& A)
+        static value_type epsd_alloc(const T& A)
         {
             T Ad = A - 0.5 * detail::xtensor::trace(A) * I2();
             return std::sqrt(0.5 * detail::xtensor::A2_ddot_B2(Ad, Ad));
         }
 
-        static auto sigd_alloc(const T& A)
+        static value_type sigd_alloc(const T& A)
         {
             T Ad = A - 0.5 * detail::xtensor::trace(A) * I2();
             return std::sqrt(2.0 * detail::xtensor::A2_ddot_B2(Ad, Ad));
@@ -296,7 +296,7 @@ namespace detail
             }
         }
 
-        static auto hydrostatic_no_alloc(const T& A, xt::xtensor<value_type,2>& B)
+        static void hydrostatic_no_alloc(const T& A, xt::xtensor<value_type,2>& B)
         {
             GMATELASTOPLASTICQPOT_ASSERT(A.shape() == shape_type({B.shape(0), B.shape(1), 2, 2}));
             #pragma omp parallel for

@@ -2,8 +2,31 @@
 import GMatElastoPlasticQPot.Cartesian2d as GMat
 import numpy as np
 
-def CLOSE(a, b):
+def ISCLOSE(a, b):
   assert np.abs(a-b) < 1.e-12
+
+def A4_ddot_B2(A, B):
+    return np.einsum('ijkl,lk->ij', A, B)
+
+# Id - Tensor2
+
+A = np.random.random([2, 2])
+I = GMat.I2()
+Id = GMat.I4d()
+Is = GMat.I4s()
+A = A4_ddot_B2(Is, A)
+assert np.allclose(A4_ddot_B2(Id, A), A - GMat.Hydrostatic(A) * I)
+
+# Deviatoric - Tensor2
+
+A = np.random.random([2, 2])
+B = np.array(A, copy=True)
+tr = B[0, 0] + B[1, 1]
+B[0, 0] -= 0.5 * tr
+B[1, 1] -= 0.5 * tr
+assert np.allclose(GMat.Deviatoric(A), B)
+
+# Material points
 
 K = 12.3
 G = 45.6
@@ -21,10 +44,10 @@ mat = GMat.Elastic(K, G)
 mat.setStrain(Eps)
 Sig = mat.Stress()
 
-CLOSE(Sig[0,0], K * epsm)
-CLOSE(Sig[1,1], K * epsm)
-CLOSE(Sig[0,1], G * gamma)
-CLOSE(Sig[1,0], G * gamma)
+ISCLOSE(Sig[0,0], K * epsm)
+ISCLOSE(Sig[1,1], K * epsm)
+ISCLOSE(Sig[0,1], G * gamma)
+ISCLOSE(Sig[1,0], G * gamma)
 
 # Cusp - stress
 
@@ -32,12 +55,12 @@ mat = GMat.Cusp(K, G, [0.01, 0.03, 0.10])
 mat.setStrain(Eps)
 Sig = mat.Stress()
 
-CLOSE(Sig[0,0], K * epsm)
-CLOSE(Sig[1,1], K * epsm)
-CLOSE(Sig[0,1], G * 0.0)
-CLOSE(Sig[1,0], G * 0.0)
-CLOSE(mat.epsp(Eps), 0.02)
-CLOSE(mat.find(Eps), 1)
+ISCLOSE(Sig[0,0], K * epsm)
+ISCLOSE(Sig[1,1], K * epsm)
+ISCLOSE(Sig[0,1], G * 0.0)
+ISCLOSE(Sig[1,0], G * 0.0)
+ISCLOSE(mat.epsp(), 0.02)
+ISCLOSE(mat.currentIndex(), 1)
 
 # Smooth - stress
 
@@ -45,12 +68,12 @@ mat = GMat.Smooth(K, G, [0.01, 0.03, 0.10])
 mat.setStrain(Eps)
 Sig = mat.Stress()
 
-CLOSE(Sig[0,0], K * epsm)
-CLOSE(Sig[1,1], K * epsm)
-CLOSE(Sig[0,1], G * 0.0)
-CLOSE(Sig[1,0], G * 0.0)
-CLOSE(mat.epsp(Eps), 0.02)
-CLOSE(mat.find(Eps), 1)
+ISCLOSE(Sig[0,0], K * epsm)
+ISCLOSE(Sig[1,1], K * epsm)
+ISCLOSE(Sig[0,1], G * 0.0)
+ISCLOSE(Sig[1,0], G * 0.0)
+ISCLOSE(mat.epsp(), 0.02)
+ISCLOSE(mat.currentIndex(), 1)
 
 # Matrix
 
@@ -81,22 +104,22 @@ epsp = mat.Epsp()
 
 for q in range(nip):
 
-    CLOSE(sig[0,q,0,0], K * epsm)
-    CLOSE(sig[0,q,1,1], K * epsm)
-    CLOSE(sig[0,q,0,1], G * gamma)
-    CLOSE(sig[0,q,0,1], G * gamma)
-    CLOSE(epsp[0,q], 0.0)
+    ISCLOSE(sig[0,q,0,0], K * epsm)
+    ISCLOSE(sig[0,q,1,1], K * epsm)
+    ISCLOSE(sig[0,q,0,1], G * gamma)
+    ISCLOSE(sig[0,q,0,1], G * gamma)
+    ISCLOSE(epsp[0,q], 0.0)
 
-    CLOSE(sig[1,q,0,0], K * epsm)
-    CLOSE(sig[1,q,1,1], K * epsm)
-    CLOSE(sig[1,q,0,1], G * 0.0)
-    CLOSE(sig[1,q,0,1], G * 0.0)
-    CLOSE(epsp[1,q], gamma)
+    ISCLOSE(sig[1,q,0,0], K * epsm)
+    ISCLOSE(sig[1,q,1,1], K * epsm)
+    ISCLOSE(sig[1,q,0,1], G * 0.0)
+    ISCLOSE(sig[1,q,0,1], G * 0.0)
+    ISCLOSE(epsp[1,q], gamma)
 
-    CLOSE(sig[2,q,0,0], K * epsm)
-    CLOSE(sig[2,q,1,1], K * epsm)
-    CLOSE(sig[2,q,0,1], G * 0.0)
-    CLOSE(sig[2,q,0,1], G * 0.0)
-    CLOSE(epsp[2,q], gamma)
+    ISCLOSE(sig[2,q,0,0], K * epsm)
+    ISCLOSE(sig[2,q,1,1], K * epsm)
+    ISCLOSE(sig[2,q,0,1], G * 0.0)
+    ISCLOSE(sig[2,q,0,1], G * 0.0)
+    ISCLOSE(epsp[2,q], gamma)
 
 print('All checks passed')
