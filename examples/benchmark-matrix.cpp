@@ -9,7 +9,7 @@ int main()
     xt::xtensor<double,1> epsy = xt::linspace<double>(1e-5, 1, 5001);
 
     size_t nelem = 700;
-    size_t nip = 9;
+    size_t nip = 8;
 
     GMat::Matrix mat(nelem, nip);
     xt::xtensor<double,4> Eps = xt::zeros<double>({nelem, nip, 2ul, 2ul});

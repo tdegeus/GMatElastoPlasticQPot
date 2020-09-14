@@ -72,7 +72,7 @@ install:
     - conda config --set always_yes yes --set changeps1 no
     - conda update -q conda
     - conda install -c conda-forge mamba
-    - mamba install -c conda-forge cmake xsimd xtensor python numpy pyxtensor catch2
+    - mamba install -c conda-forge cmake xtensor qpot python-qpot xsimd python numpy pyxtensor catch2
     # Build/install the library
     - cmake . -DBUILD_TESTS=ON
     - make

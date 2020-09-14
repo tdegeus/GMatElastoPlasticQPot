@@ -6,8 +6,6 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     find_package(GMatElastoPlasticQPot REQUIRED CONFIG)
 endif()
 
-option(WARNINGS "Show build warnings" ON)
-option(ASSERT "Enable assertions" ON)
 option(XSIMD "Use xsimd and 'march=native' optimisations" OFF)
 
 set(CMAKE_BUILD_TYPE Release)
@@ -16,14 +14,8 @@ find_package(Catch2 REQUIRED)
 find_package(xtensor REQUIRED)
 add_executable(main main.cpp Cartesian2d.cpp)
 target_link_libraries(main PRIVATE Catch2::Catch2 GMatElastoPlasticQPot)
-
-if(WARNINGS)
-    target_link_libraries(main PRIVATE GMatElastoPlasticQPot::compiler_warnings)
-endif()
-
-if(ASSERT)
-    target_link_libraries(main PRIVATE GMatElastoPlasticQPot::assert)
-endif()
+target_link_libraries(main PRIVATE GMatElastoPlasticQPot::compiler_warnings)
+target_link_libraries(main PRIVATE GMatElastoPlasticQPot::assert)
 
 if(XSIMD)
     target_link_libraries(main PRIVATE xtensor::optimize xtensor::use_xsimd)
