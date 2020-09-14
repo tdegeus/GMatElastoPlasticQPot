@@ -11,19 +11,20 @@
 
 namespace GMatElastoPlasticQPot {
 namespace Cartesian2d {
-
 inline Smooth::Smooth(double K, double G, const xt::xtensor<double,1>& epsy, bool init_elastic)
     : m_K(K), m_G(G)
 {
-    m_epsy = xt::sort(epsy);
+    xt::xtensor<double,1> y = xt::sort(epsy);
 
     if (init_elastic) {
-        if (m_epsy(0) != -m_epsy(1)) {
-            m_epsy = xt::concatenate(xt::xtuple(xt::xtensor<double,1>({-m_epsy(0)}), m_epsy));
+        if (y(0) != -y(1)) {
+            y = xt::concatenate(xt::xtuple(xt::xtensor<double,1>({-y(0)}), y));
         }
     }
 
-    GMATELASTOPLASTICQPOT_ASSERT(m_epsy.size() > 1);
+    GMATELASTOPLASTICQPOT_ASSERT(y.size() > 1);
+
+    m_yield = QPot::Static(0.0, y);
 }
 
 inline double Smooth::K() const
@@ -38,109 +39,113 @@ inline double Smooth::G() const
 
 inline xt::xtensor<double,1> Smooth::epsy() const
 {
-    return m_epsy;
+    return m_yield.yield();
 }
 
-inline double Smooth::epsy(size_t i) const
+inline size_t Smooth::currentIndex() const
 {
-    return m_epsy(i);
+    return m_yield.currentIndex();
 }
 
-inline double Smooth::epsp(const Tensor2& Eps) const
+inline double Smooth::currentYieldLeft() const
 {
-    return this->epsp(Cartesian2d::Epsd(Eps));
+    return m_yield.currentYieldLeft();
 }
 
-inline double Smooth::epsp(double epsd) const
+inline double Smooth::currentYieldRight() const
 {
-    size_t i = this->find(epsd);
-    return 0.5 * (m_epsy(i + 1) + m_epsy(i));
+    return m_yield.currentYieldRight();
 }
 
-inline size_t Smooth::find(const Tensor2& Eps) const
+inline double Smooth::epsp() const
 {
-    return this->find(Cartesian2d::Epsd(Eps));
-}
-
-inline size_t Smooth::find(double epsd) const
-{
-    GMATELASTOPLASTICQPOT_ASSERT(epsd > m_epsy(0) && epsd < m_epsy(m_epsy.size() - 1));
-
-    return std::lower_bound(m_epsy.begin(), m_epsy.end(), epsd) - m_epsy.begin() - 1;
+    return 0.5 * (m_yield.currentYieldLeft() + m_yield.currentYieldRight());
 }
 
 template <class T>
-inline void Smooth::stress(const Tensor2& Eps, T&& Sig) const
+inline void Smooth::setStrain(const T& a)
 {
-    // decompose strain: hydrostatic part, deviatoric part
-    auto I = Cartesian2d::I2();
-    auto epsm = 0.5 * trace(Eps);
-    auto Epsd = Eps - epsm * I;
-    auto epsd = std::sqrt(0.5 * A2_ddot_B2(Epsd, Epsd));
+    GMATELASTOPLASTICQPOT_ASSERT(detail::xtensor::shape(a) == std::vector<size_t>({2, 2}));
+    return this->setStrainIterator(a.cbegin());
+}
 
-    // no deviatoric strain -> only hydrostatic stress
+template <class T>
+inline void Smooth::setStrainIterator(const T&& begin)
+{
+    std::copy(begin, begin + 4, m_Eps.begin());
+
+    std::array<double,4> Epsd;
+    double epsm = detail::hydrostatic_deviator(m_Eps, Epsd);
+    double epsd = std::sqrt(0.5 * detail::A2_ddot_B2(Epsd, Epsd));
+    m_yield.setPosition(epsd);
+
+    m_Sig[0] = m_Sig[3] = m_K * epsm;
+
     if (epsd <= 0.0) {
-        xt::noalias(Sig) = m_K * epsm * I;
+        m_Sig[1] = m_Sig[2] = 0.0;
         return;
     }
 
-    // read current yield strains
-    size_t i = this->find(epsd);
-    double eps_min = 0.5 * (m_epsy(i + 1) + m_epsy(i));
-    double deps_y = 0.5 * (m_epsy(i + 1) - m_epsy(i));
+    double eps_min = 0.5 * (m_yield.currentYieldRight() + m_yield.currentYieldLeft());
+    double deps_y = 0.5 * (m_yield.currentYieldRight() - m_yield.currentYieldLeft());
 
-    // return stress tensor
-    xt::noalias(Sig)
-        = m_K * epsm * I
-        + (m_G / epsd) * (deps_y / M_PI) * sin(M_PI / deps_y * (epsd - eps_min)) * Epsd;
+    double g = (m_G / epsd) * (deps_y / M_PI) * sin(M_PI / deps_y * (epsd - eps_min));
+    m_Sig[0] += g * Epsd[0];
+    m_Sig[1] = g * Epsd[1];
+    m_Sig[2] = g * Epsd[2];
+    m_Sig[3] += g * Epsd[3];
 }
 
-inline Tensor2 Smooth::Stress(const Tensor2& Eps) const
+template <class T>
+inline void Smooth::stress(T& a) const
 {
-    Tensor2 Sig;
-    this->stress(Eps, Sig);
-    return Sig;
+    GMATELASTOPLASTICQPOT_ASSERT(detail::xtensor::shape(a) == std::vector<size_t>({2, 2}));
+    return this->stressIterator(a.begin());
 }
 
-template <class T, class S>
-inline void Smooth::tangent(const Tensor2& Eps, T&& Sig, S&& C) const
+template <class T>
+inline void Smooth::stressIterator(T&& begin) const
+{
+    std::copy(m_Sig.begin(), m_Sig.end(), begin);
+}
+
+inline Tensor2 Smooth::Stress() const
+{
+    auto ret = Tensor2::from_shape({2, 2});
+    this->stressIterator(ret.begin());
+    return ret;
+}
+
+template <class T>
+inline void Smooth::tangent(T& C) const
 {
     auto II = Cartesian2d::II();
     auto I4d = Cartesian2d::I4d();
-    this->stress(Eps, Sig);
     xt::noalias(C) = 0.5 * m_K * II + m_G * I4d;
 }
 
-inline std::tuple<Tensor2, Tensor4> Smooth::Tangent(const Tensor2& Eps) const
+inline Tensor4 Smooth::Tangent() const
 {
-    Tensor2 Sig;
-    Tensor4 C;
-    this->tangent(Eps, Sig, C);
-    return std::make_tuple(Sig, C);
+    auto ret = Tensor4::from_shape({2, 2, 2, 2});
+    this->tangent(ret);
+    return ret;
 }
 
-inline double Smooth::energy(const Tensor2& Eps) const
+inline double Smooth::energy() const
 {
-    // decompose strain: hydrostatic part, deviatoric part
-    auto I = Cartesian2d::I2();
-    auto epsm = 0.5 * trace(Eps);
-    auto Epsd = Eps - epsm * I;
-    auto epsd = std::sqrt(0.5 * A2_ddot_B2(Epsd, Epsd));
+    std::array<double,4> Epsd;
+    double epsm = detail::hydrostatic_deviator(m_Eps, Epsd);
+    double epsd = std::sqrt(0.5 * detail::A2_ddot_B2(Epsd, Epsd));
 
-    // hydrostatic part of the energy
     double U = m_K * std::pow(epsm, 2.0);
 
-    // read current yield strain
-    size_t i = this->find(epsd);
-    double eps_min = 0.5 * (m_epsy(i + 1) + m_epsy(i));
-    double deps_y = 0.5 * (m_epsy(i + 1) - m_epsy(i));
+    double eps_min = 0.5 * (m_yield.currentYieldRight() + m_yield.currentYieldLeft());
+    double deps_y = 0.5 * (m_yield.currentYieldRight() - m_yield.currentYieldLeft());
 
-    // deviatoric part of the energy
     double V
         = -2.0 * m_G * std::pow(deps_y / M_PI, 2.0)
         * (1.0 + cos(M_PI / deps_y * (epsd - eps_min)));
 
-    // return total energy
     return U + V;
 }
 

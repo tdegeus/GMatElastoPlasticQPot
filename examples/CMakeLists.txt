@@ -10,6 +10,8 @@ endif()
 option(WARNINGS "Show build warnings" ON)
 option(ASSERT "Enable assertions" OFF)
 
+set(CMAKE_BUILD_TYPE Release)
+
 file(GLOB APP_SOURCES *.cpp)
 
 set(CMAKE_BUILD_TYPE Release)

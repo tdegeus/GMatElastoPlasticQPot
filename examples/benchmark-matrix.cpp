@@ -10,10 +10,11 @@ int main()
 
     size_t nelem = 700;
     size_t nip = 8;
+    size_t ndim = 2;
 
     GMat::Matrix mat(nelem, nip);
-    xt::xtensor<double,4> Eps = xt::zeros<double>({nelem, nip, 2ul, 2ul});
-    xt::xtensor<double,4> Sig = xt::zeros<double>({nelem, nip, 2ul, 2ul});
+    xt::xtensor<double,4> Eps = xt::zeros<double>({nelem, nip, ndim, ndim});
+    xt::xtensor<double,4> Sig = xt::zeros<double>({nelem, nip, ndim, ndim});
 
     xt::xtensor<size_t,2> I = xt::empty<size_t>({nelem, nip});
 
@@ -30,7 +31,8 @@ int main()
         double g = 0.5 / static_cast<double>(n) * static_cast<double>(i);
         xt::view(Eps, xt::all(), xt::all(), 0, 1) = g;
         xt::view(Eps, xt::all(), xt::all(), 1, 0) = g;
-        mat.stress(Eps, Sig);
+        mat.setStrain(Eps);
+        mat.stress(Sig);
     }
 
 

@@ -2,7 +2,7 @@
 #include <catch2/catch.hpp>
 #include <xtensor/xrandom.hpp>
 
-#define EQ(a,b) REQUIRE_THAT((a), Catch::WithinAbs((b), 1.e-12));
+#define ISCLOSE(a,b) REQUIRE_THAT((a), Catch::WithinAbs((b), 1.e-12));
 
 #include <GMatElastoPlasticQPot/Cartesian2d.h>
 
@@ -30,7 +30,7 @@ S A4_ddot_B2(const T& A, const S& B)
 TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
 {
 
-SECTION("Identity tensor: Id")
+SECTION("Id")
 {
     GM::Tensor2 A = xt::random::randn<double>({2, 2});
     GM::Tensor2 I = GM::I2();
@@ -40,148 +40,349 @@ SECTION("Identity tensor: Id")
     REQUIRE(xt::allclose(A4_ddot_B2(Id, A), A - GM::Hydrostatic(A) * I));
 }
 
+SECTION("Deviatoric - Tensor2")
+{
+    GM::Tensor2 A = xt::random::randn<double>({2, 2});
+    GM::Tensor2 B = A;
+    double tr = B(0,0) + B(1,1);
+    B(0, 0) -= 0.5 * tr;
+    B(1, 1) -= 0.5 * tr;
+    REQUIRE(xt::allclose(GM::Deviatoric(A), B));
+}
+
+SECTION("Deviatoric - List")
+{
+    GM::Tensor2 A = xt::random::randn<double>({2, 2});
+    GM::Tensor2 B = A;
+    double tr = B(0,0) + B(1,1);
+    B(0, 0) -= 0.5 * tr;
+    B(1, 1) -= 0.5 * tr;
+    auto M = xt::xtensor<double,3>::from_shape({3, 2, 2});
+    auto R = xt::xtensor<double,3>::from_shape(M.shape());
+    for (size_t i = 0; i < M.shape(0); ++i) {
+        xt::view(M, i, xt::all(), xt::all()) = static_cast<double>(i) * A;
+        xt::view(R, i, xt::all(), xt::all()) = static_cast<double>(i) * B;
+    }
+    REQUIRE(xt::allclose(GM::Deviatoric(M), R));
+}
+
+SECTION("Deviatoric - Matrix")
+{
+    GM::Tensor2 A = xt::random::randn<double>({2, 2});
+    GM::Tensor2 B = A;
+    double tr = B(0,0) + B(1,1);
+    B(0, 0) -= 0.5 * tr;
+    B(1, 1) -= 0.5 * tr;
+    auto M = xt::xtensor<double,4>::from_shape({3, 4, 2, 2});
+    auto R = xt::xtensor<double,4>::from_shape(M.shape());
+    for (size_t i = 0; i < M.shape(0); ++i) {
+        for (size_t j = 0; j < M.shape(1); ++j) {
+            xt::view(M, i, j, xt::all(), xt::all()) = static_cast<double>(i * M.shape(1) + j) * A;
+            xt::view(R, i, j, xt::all(), xt::all()) = static_cast<double>(i * M.shape(1) + j) * B;
+        }
+    }
+    REQUIRE(xt::allclose(GM::Deviatoric(M), R));
+}
+
+SECTION("Hydrostatic - Tensor2")
+{
+    GM::Tensor2 A = xt::random::randn<double>({2, 2});
+    A(0, 0) = 1.0;
+    A(1, 1) = 1.0;
+    ISCLOSE(GM::Hydrostatic(A), 1.0);
+}
+
+SECTION("Hydrostatic - List")
+{
+    GM::Tensor2 A = xt::random::randn<double>({2, 2});
+    A(0, 0) = 1.0;
+    A(1, 1) = 1.0;
+    auto M = xt::xtensor<double,3>::from_shape({3, 2, 2});
+    auto R = xt::xtensor<double,1>::from_shape({M.shape(0)});
+    for (size_t i = 0; i < M.shape(0); ++i) {
+        xt::view(M, i, xt::all(), xt::all()) = static_cast<double>(i) * A;
+        R(i) = static_cast<double>(i);
+    }
+    REQUIRE(xt::allclose(GM::Hydrostatic(M), R));
+}
+
+SECTION("Hydrostatic - Matrix")
+{
+    GM::Tensor2 A = xt::random::randn<double>({2, 2});
+    A(0, 0) = 1.0;
+    A(1, 1) = 1.0;
+    auto M = xt::xtensor<double,4>::from_shape({3, 4, 2, 2});
+    auto R = xt::xtensor<double,2>::from_shape({M.shape(0), M.shape(1)});
+    for (size_t i = 0; i < M.shape(0); ++i) {
+        for (size_t j = 0; j < M.shape(1); ++j) {
+            xt::view(M, i, j, xt::all(), xt::all()) = static_cast<double>(i * M.shape(1) + j) * A;
+            R(i, j) = static_cast<double>(i * M.shape(1) + j);
+        }
+    }
+    REQUIRE(xt::allclose(GM::Hydrostatic(M), R));
+}
+
+SECTION("Epsd - Tensor2")
+{
+    GM::Tensor2 A = xt::zeros<double>({2, 2});
+    A(0, 1) = 1.0;
+    A(1, 0) = 1.0;
+    ISCLOSE(GM::Epsd(A), 1.0);
+}
+
+SECTION("Epsd - List")
+{
+    GM::Tensor2 A = xt::zeros<double>({2, 2});
+    A(0, 1) = 1.0;
+    A(1, 0) = 1.0;
+    auto M = xt::xtensor<double,3>::from_shape({3, 2, 2});
+    auto R = xt::xtensor<double,1>::from_shape({M.shape(0)});
+    for (size_t i = 0; i < M.shape(0); ++i) {
+        xt::view(M, i, xt::all(), xt::all()) = static_cast<double>(i) * A;
+        R(i) = static_cast<double>(i);
+    }
+    REQUIRE(xt::allclose(GM::Epsd(M), R));
+}
+
+SECTION("Epsd - Matrix")
+{
+    GM::Tensor2 A = xt::zeros<double>({2, 2});
+    A(0, 1) = 1.0;
+    A(1, 0) = 1.0;
+    auto M = xt::xtensor<double,4>::from_shape({3, 4, 2, 2});
+    auto R = xt::xtensor<double,2>::from_shape({M.shape(0), M.shape(1)});
+    for (size_t i = 0; i < M.shape(0); ++i) {
+        for (size_t j = 0; j < M.shape(1); ++j) {
+            xt::view(M, i, j, xt::all(), xt::all()) = static_cast<double>(i * M.shape(1) + j) * A;
+            R(i, j) = static_cast<double>(i * M.shape(1) + j);
+        }
+    }
+    REQUIRE(xt::allclose(GM::Epsd(M), R));
+}
+
+SECTION("Sigd - Tensor2")
+{
+    GM::Tensor2 A = xt::zeros<double>({2, 2});
+    A(0, 1) = 1.0;
+    A(1, 0) = 1.0;
+    ISCLOSE(GM::Sigd(A), 2.0);
+}
+
+SECTION("Sigd - List")
+{
+    GM::Tensor2 A = xt::zeros<double>({2, 2});
+    A(0, 1) = 1.0;
+    A(1, 0) = 1.0;
+    auto M = xt::xtensor<double,3>::from_shape({3, 2, 2});
+    auto R = xt::xtensor<double,1>::from_shape({M.shape(0)});
+    for (size_t i = 0; i < M.shape(0); ++i) {
+        xt::view(M, i, xt::all(), xt::all()) = static_cast<double>(i) * A;
+        R(i) = 2.0 * static_cast<double>(i);
+    }
+    REQUIRE(xt::allclose(GM::Sigd(M), R));
+}
+
+SECTION("Sigd - Matrix")
+{
+    GM::Tensor2 A = xt::zeros<double>({2, 2});
+    A(0, 1) = 1.0;
+    A(1, 0) = 1.0;
+    auto M = xt::xtensor<double,4>::from_shape({3, 4, 2, 2});
+    auto R = xt::xtensor<double,2>::from_shape({M.shape(0), M.shape(1)});
+    for (size_t i = 0; i < M.shape(0); ++i) {
+        for (size_t j = 0; j < M.shape(1); ++j) {
+            xt::view(M, i, j, xt::all(), xt::all()) = static_cast<double>(i * M.shape(1) + j) * A;
+            R(i, j) = 2.0 * static_cast<double>(i * M.shape(1) + j);
+        }
+    }
+    REQUIRE(xt::allclose(GM::Sigd(M), R));
+}
+
+SECTION("Elastic - stress")
+{
+    double K = 12.3;
+    double G = 45.6;
+    double gamma = 0.02;
+    double epsm = 0.12;
+    auto Eps = GM::Tensor2::from_shape({2, 2});
+    Eps(0, 0) = Eps(1, 1) = epsm;
+    Eps(0, 1) = Eps(1, 0) = gamma;
+
+    GM::Elastic mat(K, G);
+    mat.setStrain(Eps);
+    auto Sig = mat.Stress();
+
+    ISCLOSE(Sig(0, 0), K * epsm);
+    ISCLOSE(Sig(1, 1), K * epsm);
+    ISCLOSE(Sig(0, 1), G * gamma);
+    ISCLOSE(Sig(1, 0), G * gamma);
+    ISCLOSE(mat.energy(), K * std::pow(epsm, 2.0) + G * std::pow(gamma, 2.0));
+}
+
+SECTION("Cusp - stress")
+{
+    double K = 12.3;
+    double G = 45.6;
+    double gamma = 0.02;
+    double epsm = 0.12;
+    auto Eps = GM::Tensor2::from_shape({2, 2});
+    Eps(0, 0) = Eps(1, 1) = epsm;
+    Eps(0, 1) = Eps(1, 0) = gamma;
+
+    GM::Cusp mat(K, G, {0.01, 0.03, 0.05, 0.10});
+    mat.setStrain(Eps);
+    auto Sig = mat.Stress();
+
+    ISCLOSE(Sig(0, 0), K * epsm);
+    ISCLOSE(Sig(1, 1), K * epsm);
+    ISCLOSE(Sig(0, 1), 0.0);
+    ISCLOSE(Sig(1, 0), 0.0);
+    ISCLOSE(mat.epsp(), 0.02);
+    REQUIRE(mat.currentIndex() == 1);
+    ISCLOSE(mat.energy(), K * std::pow(epsm, 2.0) + G * (0.0 - std::pow(0.01, 2.0)));
+
+    epsm *= 2.0;
+    gamma *= 1.9;
+
+    Eps(0, 0) = Eps(1, 1) = epsm;
+    Eps(0, 1) = Eps(1, 0) = gamma;
+
+    mat.setStrain(Eps);
+    Sig = mat.Stress();
+
+    ISCLOSE(Sig(0, 0), K * epsm);
+    ISCLOSE(Sig(1, 1), K * epsm);
+    ISCLOSE(Sig(0, 1), G * (gamma - 0.04));
+    ISCLOSE(Sig(1, 0), G * (gamma - 0.04));
+    ISCLOSE(mat.epsp(), 0.04);
+    REQUIRE(mat.currentIndex() == 2);
+    ISCLOSE(mat.energy(), K * std::pow(epsm, 2.0) + G * (std::pow(gamma - 0.04, 2.0) - std::pow(0.01, 2.0)));
+}
+
+SECTION("Smooth - stress")
+{
+    double K = 12.3;
+    double G = 45.6;
+    double gamma = 0.02;
+    double epsm = 0.12;
+    auto Eps = GM::Tensor2::from_shape({2, 2});
+    Eps(0, 0) = Eps(1, 1) = epsm;
+    Eps(0, 1) = Eps(1, 0) = gamma;
+
+    GM::Smooth mat(K, G, {0.01, 0.03, 0.05, 0.10});
+    mat.setStrain(Eps);
+    auto Sig = mat.Stress();
+
+    ISCLOSE(Sig(0, 0), K * epsm);
+    ISCLOSE(Sig(1, 1), K * epsm);
+    ISCLOSE(Sig(0, 1), 0.0);
+    ISCLOSE(Sig(1, 0), 0.0);
+    ISCLOSE(mat.epsp(), 0.02);
+    REQUIRE(mat.currentIndex() == 1);
+}
+
 SECTION("Tangent (purely elastic response only)")
 {
     double K = 12.3;
     double G = 45.6;
 
     GM::Tensor2 Eps = xt::random::randn<double>({2, 2});
-    GM::Tensor2 Sig;
-    GM::Tensor4 C;
     GM::Tensor4 Is = GM::I4s();
     Eps = A4_ddot_B2(Is, Eps);
 
     // Elastic
     {
         GM::Elastic mat(K, G);
-        std::tie(Sig, C) = mat.Tangent(Eps);
+        mat.setStrain(Eps);
+        auto Sig = mat.Stress();
+        auto C = mat.Tangent();
         REQUIRE(xt::allclose(A4_ddot_B2(C, Eps), Sig));
     }
 
     // Cusp
     {
         GM::Cusp mat(K, G, {10000.0});
-        std::tie(Sig, C) = mat.Tangent(Eps);
+        mat.setStrain(Eps);
+        auto Sig = mat.Stress();
+        auto C = mat.Tangent();
         REQUIRE(xt::allclose(A4_ddot_B2(C, Eps), Sig));
     }
 
     // Smooth
     {
         GM::Smooth mat(K, G, {10000.0});
-        std::tie(Sig, C) = mat.Tangent(Eps);
+        mat.setStrain(Eps);
+        auto Sig = mat.Stress();
+        auto C = mat.Tangent();
         REQUIRE(xt::allclose(A4_ddot_B2(C, Eps), Sig));
     }
 }
 
-SECTION("Elasto-plastic response")
+SECTION("Matrix")
 {
     double K = 12.3;
     double G = 45.6;
-
-    auto Eps = GM::Tensor2::from_shape({2, 2});
-    auto Sig = GM::Tensor2::from_shape({2, 2});
-
     double gamma = 0.02;
     double epsm = 0.12;
+    size_t nelem = 3;
+    size_t nip = 2;
+    auto Eps = GM::Tensor2::from_shape({2, 2});
+    Eps(0, 0) = Eps(1, 1) = epsm;
+    Eps(0, 1) = Eps(1, 0) = gamma;
 
-    Eps(0,0) = Eps(1,1) = epsm;
-    Eps(0,1) = Eps(1,0) = gamma;
+    GM::Matrix mat(nelem, nip);
 
-    // Elastic
     {
-        GM::Elastic mat(K, G);
-        Sig = mat.Stress(Eps);
-
-        EQ(Sig(0,0), K * epsm);
-        EQ(Sig(1,1), K * epsm);
-        EQ(Sig(0,1), G * gamma);
-        EQ(Sig(1,0), G * gamma);
+        xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
+        xt::view(I, 0, xt::all()) = 1;
+        mat.setElastic(I, K, G);
     }
 
-    // Cusp
     {
-        GM::Cusp mat(K, G, {0.01, 0.03, 0.10});
-        Sig = mat.Stress(Eps);
-
-        EQ(Sig(0,0), K * epsm);
-        EQ(Sig(1,1), K * epsm);
-        EQ(Sig(0,1), 0.0);
-        EQ(Sig(1,0), 0.0);
-        EQ(mat.epsp(Eps), 0.02);
-        REQUIRE(mat.find(Eps) == 1);
+        xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
+        xt::xtensor<double,1> epsy = {0.01, 0.03, 0.10};
+        xt::view(I, 1, xt::all()) = 1;
+        mat.setCusp(I, K, G, epsy);
     }
 
-    // Smooth
     {
-        GM::Smooth mat(K, G, {0.01, 0.03, 0.10});
-        Sig = mat.Stress(Eps);
-
-        EQ(Sig(0,0), K * epsm);
-        EQ(Sig(1,1), K * epsm);
-        EQ(Sig(0,1), 0.0);
-        EQ(Sig(1,0), 0.0);
-        EQ(mat.epsp(Eps), 0.02);
-        REQUIRE(mat.find(Eps) == 1);
+        xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
+        xt::xtensor<double,1> epsy = {0.01, 0.03, 0.10};
+        xt::view(I, 2, xt::all()) = 1;
+        mat.setCusp(I, K, G, epsy);
     }
 
-    // Matrix
-    {
-        size_t nelem = 3;
-        size_t nip = 2;
+    auto eps = xt::xtensor<double,4>::from_shape({nelem, nip, 2ul, 2ul});
 
-        GM::Matrix mat(nelem, nip);
-
-        {
-            xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
-            xt::view(I, 0, xt::all()) = 1;
-            mat.setElastic(I, K, G);
-        }
-
-        {
-            xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
-            xt::xtensor<double,1> epsy = {0.01, 0.03, 0.10};
-            xt::view(I, 1, xt::all()) = 1;
-            mat.setCusp(I, K, G, epsy);
-        }
-
-        {
-            xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
-            xt::xtensor<double,1> epsy = {0.01, 0.03, 0.10};
-            xt::view(I, 2, xt::all()) = 1;
-            mat.setCusp(I, K, G, epsy);
-        }
-
-        auto eps = xt::xtensor<double,4>::from_shape({nelem, nip, 2ul, 2ul});
-
-        for (size_t e = 0; e < nelem; ++e) {
-            for (size_t q = 0; q < nip; ++q) {
-                xt::view(eps, e, q) = Eps;
-            }
-        }
-
-        auto sig = mat.Stress(eps);
-        auto epsp = mat.Epsp(eps);
-
+    for (size_t e = 0; e < nelem; ++e) {
         for (size_t q = 0; q < nip; ++q) {
-
-            EQ(sig(0,q,0,0), K * epsm);
-            EQ(sig(0,q,1,1), K * epsm);
-            EQ(sig(0,q,0,1), G * gamma);
-            EQ(sig(0,q,1,0), G * gamma);
-            EQ(epsp(0,q), 0.0);
-
-            EQ(sig(1,q,0,0), K * epsm);
-            EQ(sig(1,q,1,1), K * epsm);
-            EQ(sig(1,q,0,1), 0.0);
-            EQ(sig(1,q,1,0), 0.0);
-            EQ(epsp(1,q), gamma);
-
-            EQ(sig(2,q,0,0), K * epsm);
-            EQ(sig(2,q,1,1), K * epsm);
-            EQ(sig(2,q,0,1), 0.0);
-            EQ(sig(2,q,1,0), 0.0);
-            EQ(epsp(2,q), gamma);
+            xt::view(eps, e, q) = Eps;
         }
+    }
+
+    mat.setStrain(eps);
+    auto sig = mat.Stress();
+    auto epsp = mat.Epsp();
+
+    for (size_t q = 0; q < nip; ++q) {
+
+        ISCLOSE(sig(0,q,0,0), K * epsm);
+        ISCLOSE(sig(0,q,1,1), K * epsm);
+        ISCLOSE(sig(0,q,0,1), G * gamma);
+        ISCLOSE(sig(0,q,1,0), G * gamma);
+        ISCLOSE(epsp(0,q), 0.0);
+
+        ISCLOSE(sig(1,q,0,0), K * epsm);
+        ISCLOSE(sig(1,q,1,1), K * epsm);
+        ISCLOSE(sig(1,q,0,1), 0.0);
+        ISCLOSE(sig(1,q,1,0), 0.0);
+        ISCLOSE(epsp(1,q), gamma);
+
+        ISCLOSE(sig(2,q,0,0), K * epsm);
+        ISCLOSE(sig(2,q,1,1), K * epsm);
+        ISCLOSE(sig(2,q,0,1), 0.0);
+        ISCLOSE(sig(2,q,1,0), 0.0);
+        ISCLOSE(epsp(2,q), gamma);
     }
 }
 
