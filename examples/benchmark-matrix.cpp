@@ -12,7 +12,7 @@ int main()
     size_t nip = 8;
     size_t ndim = 2;
 
-    GMat::Matrix mat(nelem, nip);
+    GMat::Array<2> mat({nelem, nip});
     xt::xtensor<double,4> Eps = xt::zeros<double>({nelem, nip, ndim, ndim});
     xt::xtensor<double,4> Sig = xt::zeros<double>({nelem, nip, ndim, ndim});
 

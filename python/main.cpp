@@ -255,71 +255,66 @@ py::enum_<SM::Type::Value>(smm, "Type")
 
 // Matrix
 
-py::class_<SM::Matrix>(sm, "Matrix")
+py::class_<SM::Array<2>>(sm, "Array2d")
 
-    .def(py::init<size_t, size_t>(),
+    .def(py::init<std::array<size_t, 2>>(),
         "Matrix of material points.",
-        py::arg("nelem"),
-        py::arg("nip"))
+        py::arg("shape"))
 
-    .def("ndim", &SM::Matrix::ndim, "Return number of (tensor) dimensions.")
+    .def("shape", &SM::Array<2>::shape, "Return matrix shape.")
 
-    .def("nelem", &SM::Matrix::nelem, "Return number of elements (matrix rows).")
+    .def("K", &SM::Array<2>::K, "Return matrix with bulk moduli.")
 
-    .def("nip", &SM::Matrix::nip, "Return number of integration points (matrix columns).")
+    .def("G", &SM::Array<2>::G, "Return matrix with shear moduli.")
 
-    .def("K", &SM::Matrix::K, "Return matrix with bulk moduli.")
-
-    .def("G", &SM::Matrix::G, "Return matrix with shear moduli.")
-
-    .def("I2", &SM::Matrix::I2, "Return matrix with second order unit tensors.")
+    .def("I2", &SM::Array<2>::I2, "Return matrix with second order unit tensors.")
 
     .def("II",
-        &SM::Matrix::II,
+        &SM::Array<2>::II,
         "Return matrix with fourth order tensors with the result of the dyadic product II.")
 
-    .def("I4", &SM::Matrix::I4, "Return matrix with fourth order unit tensors.")
+    .def("I4", &SM::Array<2>::I4, "Return matrix with fourth order unit tensors.")
 
     .def("I4rt",
-        &SM::Matrix::I4rt,
+        &SM::Array<2>::I4rt,
         "Return matrix with fourth right-transposed order unit tensors.")
 
     .def("I4s",
-        &SM::Matrix::I4s,
+        &SM::Array<2>::I4s,
         "Return matrix with fourth order symmetric projection tensors.")
 
     .def("I4d",
-        &SM::Matrix::I4d,
+        &SM::Array<2>::I4d,
         "Return matrix with fourth order deviatoric projection tensors.")
 
-    .def("type", &SM::Matrix::type, "Return matrix with material types.")
+    .def("type", &SM::Array<2>::type, "Return matrix with material types.")
 
     .def("isElastic",
-        &SM::Matrix::isElastic,
+        &SM::Array<2>::isElastic,
         "Return matrix with boolean: Elastic (1) or not (0).")
 
     .def("isPlastic",
-        &SM::Matrix::isPlastic,
+        &SM::Array<2>::isPlastic,
         "Return matrix with boolean: Elastic (0) or plastic (Cusp/Smooth) (1).")
 
     .def("isCusp",
-        &SM::Matrix::isCusp,
+        &SM::Array<2>::isCusp,
         "Return matrix with boolean: Cusp (1) or not (0).")
 
     .def("isSmooth",
-        &SM::Matrix::isSmooth,
+        &SM::Array<2>::isSmooth,
         "Return matrix with boolean: Smooth (1) or not (0).")
 
     .def("check",
-        &SM::Matrix::check,
+        &SM::Array<2>::check,
         "Check that all matrix entries are set. Throws if any unset point is found.")
 
     .def("setElastic",
         py::overload_cast<
-            const xt::xtensor<size_t,2>&,
-            const xt::xtensor<size_t,2>&,
-            const xt::xtensor<double,1>&,
-            const xt::xtensor<double,1>&>(&SM::Matrix::setElastic),
+            const xt::xtensor<size_t, 2>&,
+            const xt::xtensor<size_t, 2>&,
+            const xt::xtensor<double, 1>&,
+            const xt::xtensor<double, 1>&>(&SM::Array<2>::setElastic),
         "Set specific entries 'Elastic'.",
         py::arg("I"),
         py::arg("idx"),
@@ -328,12 +323,12 @@ py::class_<SM::Matrix>(sm, "Matrix")
 
     .def("setCusp",
         py::overload_cast<
-            const xt::xtensor<size_t,2>&,
-            const xt::xtensor<size_t,2>&,
-            const xt::xtensor<double,1>&,
-            const xt::xtensor<double,1>&,
-            const xt::xtensor<double,2>&,
-            bool>(&SM::Matrix::setCusp),
+            const xt::xtensor<size_t, 2>&,
+            const xt::xtensor<size_t, 2>&,
+            const xt::xtensor<double, 1>&,
+            const xt::xtensor<double, 1>&,
+            const xt::xtensor<double, 2>&,
+            bool>(&SM::Array<2>::setCusp),
         "Set specific entries 'Cusp'.",
         py::arg("I"),
         py::arg("idx"),
@@ -344,12 +339,12 @@ py::class_<SM::Matrix>(sm, "Matrix")
 
     .def("setSmooth",
         py::overload_cast<
-            const xt::xtensor<size_t,2>&,
-            const xt::xtensor<size_t,2>&,
-            const xt::xtensor<double,1>&,
-            const xt::xtensor<double,1>&,
-            const xt::xtensor<double,2>&,
-            bool>(&SM::Matrix::setSmooth),
+            const xt::xtensor<size_t, 2>&,
+            const xt::xtensor<size_t, 2>&,
+            const xt::xtensor<double, 1>&,
+            const xt::xtensor<double, 1>&,
+            const xt::xtensor<double, 2>&,
+            bool>(&SM::Array<2>::setSmooth),
         "Set specific entries 'Smooth'.",
         py::arg("I"),
         py::arg("idx"),
@@ -359,8 +354,8 @@ py::class_<SM::Matrix>(sm, "Matrix")
         py::arg("init_elastic") = true)
 
     .def("setElastic",
-        py::overload_cast<const xt::xtensor<size_t,2>&, double, double>(
-            &SM::Matrix::setElastic),
+        py::overload_cast<const xt::xtensor<size_t, 2>&, double, double>(
+            &SM::Array<2>::setElastic),
         "Set specific entries 'Elastic'.",
         py::arg("I"),
         py::arg("K"),
@@ -368,11 +363,11 @@ py::class_<SM::Matrix>(sm, "Matrix")
 
     .def("setCusp",
         py::overload_cast<
-            const xt::xtensor<size_t,2>&,
+            const xt::xtensor<size_t, 2>&,
             double,
             double,
-            const xt::xtensor<double,1>&,
-            bool>(&SM::Matrix::setCusp),
+            const xt::xtensor<double, 1>&,
+            bool>(&SM::Array<2>::setCusp),
         "Set specific entries 'Cusp'.",
         py::arg("I"),
         py::arg("K"),
@@ -382,11 +377,11 @@ py::class_<SM::Matrix>(sm, "Matrix")
 
     .def("setSmooth",
         py::overload_cast<
-            const xt::xtensor<size_t,2>&,
+            const xt::xtensor<size_t, 2>&,
             double,
             double,
-            const xt::xtensor<double,1>&,
-            bool>(&SM::Matrix::setSmooth),
+            const xt::xtensor<double, 1>&,
+            bool>(&SM::Array<2>::setSmooth),
         "Set specific entries 'Smooth'.",
         py::arg("I"),
         py::arg("K"),
@@ -395,40 +390,40 @@ py::class_<SM::Matrix>(sm, "Matrix")
         py::arg("init_elastic") = true)
 
     .def("setStrain",
-        &SM::Matrix::setStrain,
+        &SM::Array<2>::setStrain,
         "Set matrix of strain tensors.",
         py::arg("Eps"))
 
     .def("Stress",
-        &SM::Matrix::Stress,
+        &SM::Array<2>::Stress,
         "Returns matrix of stress tensors, given the current strain.")
 
     .def("Tangent",
-        &SM::Matrix::Tangent,
+        &SM::Array<2>::Tangent,
         "Returns matrices of stress tangent stiffness tensors, given the current strain.")
 
     .def("currentIndex",
-        &SM::Matrix::currentIndex,
+        &SM::Array<2>::currentIndex,
         "Returns matrix of potential indices, given the current strain.")
 
     .def("currentYieldLeft",
-        &SM::Matrix::currentYieldLeft,
+        &SM::Array<2>::currentYieldLeft,
         "Returns matrix of yield strains to the left, given the current strain.")
 
     .def("currentYieldRight",
-        &SM::Matrix::currentYieldRight,
+        &SM::Array<2>::currentYieldRight,
         "Returns matrix of yield strains to the left, given the current strain.")
 
     .def("Epsp",
-        &SM::Matrix::Epsp,
+        &SM::Array<2>::Epsp,
         "Returns matrix of equivalent plastic strains, given the current strain.")
 
     .def("Energy",
-        &SM::Matrix::Energy,
+        &SM::Array<2>::Energy,
         "Returns matrix of energies, given the current strain.")
 
-    .def("__repr__", [](const SM::Matrix&) {
-        return "<GMatElastoPlasticQPot.Cartesian2d.Matrix>";
+    .def("__repr__", [](const SM::Array<2>&) {
+        return "<GMatElastoPlasticQPot.Cartesian2d.Array2d>";
     });
 
 }
