@@ -8,7 +8,9 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 endif()
 
 option(WARNINGS "Show build warnings" ON)
-option(ASSERT "Enable assertions" ON)
+option(ASSERT "Enable assertions" OFF)
+
+set(CMAKE_BUILD_TYPE Release)
 
 file(GLOB APP_SOURCES *.cpp)
 
