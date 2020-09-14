@@ -38,6 +38,8 @@ Eps = np.array(
     [[epsm, gamma],
      [gamma, epsm]])
 
+ISCLOSE(float(GMat.Epsd(Eps)), gamma)
+
 # Elastic - stress
 
 mat = GMat.Elastic(K, G)

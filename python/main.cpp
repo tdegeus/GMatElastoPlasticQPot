@@ -50,7 +50,7 @@ sm.def("Deviatoric",
     py::arg("A"));
 
 sm.def("Deviatoric",
-    static_cast<SM::Tensor2 (*) (const SM::Tensor2&)>(&SM::Deviatoric<SM::Tensor2>),
+    static_cast<xt::xtensor<double,2> (*) (const xt::xtensor<double,2>&)>(&SM::Deviatoric<xt::xtensor<double,2>>),
     "Deviatoric part of a 2nd-order tensor. Returns 2nd-order tensor.",
     py::arg("A"));
 
@@ -65,7 +65,7 @@ sm.def("Hydrostatic",
     py::arg("A"));
 
 sm.def("Hydrostatic",
-    static_cast<double (*) (const SM::Tensor2&)>(&SM::Hydrostatic<SM::Tensor2>),
+    static_cast<xt::xtensor<double,0> (*) (const xt::xtensor<double,2>&)>(&SM::Hydrostatic<xt::xtensor<double,2>>),
     "Hydrostatic part of a 2nd-order tensor. Returns scalar.",
     py::arg("A"));
 
@@ -80,7 +80,7 @@ sm.def("Epsd",
     py::arg("A"));
 
 sm.def("Epsd",
-    static_cast<double (*) (const SM::Tensor2&)>(&SM::Epsd<SM::Tensor2>),
+    static_cast<xt::xtensor<double,0> (*) (const xt::xtensor<double,2>&)>(&SM::Epsd<xt::xtensor<double,2>>),
     "Equivalent strain. Returns scalar.",
     py::arg("A"));
 
@@ -95,11 +95,9 @@ sm.def("Sigd",
     py::arg("A"));
 
 sm.def("Sigd",
-    static_cast<double (*) (const SM::Tensor2&)>(&SM::Sigd<SM::Tensor2>),
+    static_cast<xt::xtensor<double,0> (*) (const xt::xtensor<double,2>&)>(&SM::Sigd<xt::xtensor<double,2>>),
     "Equivalent stress. Returns scalar.",
     py::arg("A"));
-
-
 
 // Material point: Elastic
 

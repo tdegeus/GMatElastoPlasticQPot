@@ -89,7 +89,7 @@ SECTION("Hydrostatic - Tensor2")
     GM::Tensor2 A = xt::random::randn<double>({2, 2});
     A(0, 0) = 1.0;
     A(1, 1) = 1.0;
-    ISCLOSE(GM::Hydrostatic(A), 1.0);
+    ISCLOSE(GM::Hydrostatic(A)(), 1.0);
 }
 
 SECTION("Hydrostatic - List")
@@ -127,7 +127,7 @@ SECTION("Epsd - Tensor2")
     GM::Tensor2 A = xt::zeros<double>({2, 2});
     A(0, 1) = 1.0;
     A(1, 0) = 1.0;
-    ISCLOSE(GM::Epsd(A), 1.0);
+    ISCLOSE(GM::Epsd(A)(), 1.0);
 }
 
 SECTION("Epsd - List")
@@ -165,7 +165,7 @@ SECTION("Sigd - Tensor2")
     GM::Tensor2 A = xt::zeros<double>({2, 2});
     A(0, 1) = 1.0;
     A(1, 0) = 1.0;
-    ISCLOSE(GM::Sigd(A), 2.0);
+    ISCLOSE(GM::Sigd(A)(), 2.0);
 }
 
 SECTION("Sigd - List")
