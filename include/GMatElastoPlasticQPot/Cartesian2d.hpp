@@ -169,7 +169,6 @@ inline Tensor4 I4d()
 
 namespace detail
 {
-
     template <class T, typename = void>
     struct equiv_impl
     {
@@ -217,8 +216,8 @@ namespace detail
         {
             GMATELASTOPLASTICQPOT_ASSERT(A.shape() == B.shape());
             #pragma omp parallel for
-            for (size_t e = 0; e < A.shape(0); ++e) {
-                detail::pointer::deviatoric(&A(e, 0, 0), &B(e, 0, 0));
+            for (size_t i = 0; i < A.shape(0); ++i) {
+                detail::pointer::deviatoric(&A.data()[i * 2 * 2], &B.data()[i * 2 * 2]);
             }
         }
 
@@ -226,8 +225,8 @@ namespace detail
         {
             GMATELASTOPLASTICQPOT_ASSERT(A.shape() == shape_type({B.shape(0), 2, 2}));
             #pragma omp parallel for
-            for (size_t e = 0; e < A.shape(0); ++e) {
-                B(e) = 0.5 * detail::pointer::trace(&A(e, 0, 0));
+            for (size_t i = 0; i < A.shape(0); ++i) {
+                B.data()[i] = 0.5 * detail::pointer::trace(&A.data()[i * 2 * 2]);
             }
         }
 
@@ -235,9 +234,9 @@ namespace detail
         {
             GMATELASTOPLASTICQPOT_ASSERT(A.shape() == shape_type({B.shape(0), 2, 2}));
             #pragma omp parallel for
-            for (size_t e = 0; e < A.shape(0); ++e) {
-                auto b = detail::pointer::deviatoric_ddot_deviatoric(&A(e, 0, 0));
-                B(e) = std::sqrt(0.5 * b);
+            for (size_t i = 0; i < A.shape(0); ++i) {
+                auto b = detail::pointer::deviatoric_ddot_deviatoric(&A.data()[i * 2 * 2]);
+                B.data()[i] = std::sqrt(0.5 * b);
             }
         }
 
@@ -245,9 +244,9 @@ namespace detail
         {
             GMATELASTOPLASTICQPOT_ASSERT(A.shape() == shape_type({B.shape(0), 2, 2}));
             #pragma omp parallel for
-            for (size_t e = 0; e < A.shape(0); ++e) {
-                auto b = detail::pointer::deviatoric_ddot_deviatoric(&A(e, 0, 0));
-                B(e) = std::sqrt(2.0 * b);
+            for (size_t i = 0; i < A.shape(0); ++i) {
+                auto b = detail::pointer::deviatoric_ddot_deviatoric(&A.data()[i * 2 * 2]);
+                B.data()[i] = std::sqrt(2.0 * b);
             }
         }
 
@@ -292,10 +291,8 @@ namespace detail
         {
             GMATELASTOPLASTICQPOT_ASSERT(A.shape() == B.shape());
             #pragma omp parallel for
-            for (size_t e = 0; e < A.shape(0); ++e) {
-                for (size_t q = 0; q < A.shape(1); ++q) {
-                    detail::pointer::deviatoric(&A(e, q, 0, 0), &B(e, q, 0, 0));
-                }
+            for (size_t i = 0; i < A.shape(0) * A.shape(1); ++i) {
+                detail::pointer::deviatoric(&A.data()[i * 2 * 2], &B.data()[i * 2 * 2]);
             }
         }
 
@@ -303,10 +300,8 @@ namespace detail
         {
             GMATELASTOPLASTICQPOT_ASSERT(A.shape() == shape_type({B.shape(0), B.shape(1), 2, 2}));
             #pragma omp parallel for
-            for (size_t e = 0; e < A.shape(0); ++e) {
-                for (size_t q = 0; q < A.shape(1); ++q) {
-                    B(e, q) = 0.5 * detail::pointer::trace(&A(e, q, 0, 0));
-                }
+            for (size_t i = 0; i < A.shape(0) * A.shape(1); ++i) {
+                B.data()[i] = 0.5 * detail::pointer::trace(&A.data()[i * 2 * 2]);
             }
         }
 
@@ -314,11 +309,9 @@ namespace detail
         {
             GMATELASTOPLASTICQPOT_ASSERT(A.shape() == shape_type({B.shape(0), B.shape(1), 2, 2}));
             #pragma omp parallel for
-            for (size_t e = 0; e < A.shape(0); ++e) {
-                for (size_t q = 0; q < A.shape(1); ++q) {
-                    auto b = detail::pointer::deviatoric_ddot_deviatoric(&A(e, q, 0, 0));
-                    B(e, q) = std::sqrt(0.5 * b);
-                }
+            for (size_t i = 0; i < A.shape(0) * A.shape(1); ++i) {
+                auto b = detail::pointer::deviatoric_ddot_deviatoric(&A.data()[i * 2 * 2]);
+                B.data()[i] = std::sqrt(0.5 * b);
             }
         }
 
@@ -326,11 +319,9 @@ namespace detail
         {
             GMATELASTOPLASTICQPOT_ASSERT(A.shape() == shape_type({B.shape(0), B.shape(1), 2, 2}));
             #pragma omp parallel for
-            for (size_t e = 0; e < A.shape(0); ++e) {
-                for (size_t q = 0; q < A.shape(1); ++q) {
-                    auto b = detail::pointer::deviatoric_ddot_deviatoric(&A(e, q, 0, 0));
-                    B(e, q) = std::sqrt(2.0 * b);
-                }
+            for (size_t i = 0; i < A.shape(0) * A.shape(1); ++i) {
+                auto b = detail::pointer::deviatoric_ddot_deviatoric(&A.data()[i * 2 * 2]);
+                B.data()[i] = std::sqrt(2.0 * b);
             }
         }
 
