@@ -14,6 +14,8 @@ set(CMAKE_BUILD_TYPE Release)
 
 file(GLOB APP_SOURCES *.cpp)
 
+set(CMAKE_BUILD_TYPE Release)
+
 foreach(testsourcefile ${APP_SOURCES})
 
     string(REPLACE ".cpp" "" testname ${testsourcefile})
