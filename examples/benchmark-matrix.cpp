@@ -6,10 +6,10 @@ int main()
 {
     double K = 12.3;
     double G = 45.6;
-    xt::xtensor<double,1> epsy = xt::linspace(0, 1, 5001);
+    xt::xtensor<double,1> epsy = xt::linspace<double>(1e-5, 1, 5001);
 
     size_t nelem = 700;
-    size_t nip = 4;
+    size_t nip = 9;
 
     GMat::Matrix mat(nelem, nip);
     xt::xtensor<double,4> Eps = xt::zeros<double>({nelem, nip, 2ul, 2ul});
@@ -25,7 +25,7 @@ int main()
     xt::view(I, xt::range(500, nelem), xt::all()) = 1;
     mat.setCusp(I, K, G, epsy);
 
-    size_t n = 10000;
+    size_t n = 100000;
     for (size_t i = 0; i < n; ++i) {
         double g = 0.5 / static_cast<double>(n) * static_cast<double>(i);
         xt::view(Eps, xt::all(), xt::all(), 0, 1) = g;
