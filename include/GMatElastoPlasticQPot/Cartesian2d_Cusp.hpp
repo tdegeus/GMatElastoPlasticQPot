@@ -15,8 +15,6 @@ namespace Cartesian2d {
 inline Cusp::Cusp(double K, double G, const xt::xtensor<double,1>& epsy, bool init_elastic)
     : m_K(K), m_G(G)
 {
-    GMATELASTOPLASTICQPOT_ASSERT(epsy.size() > 1);
-
     xt::xtensor<double,1> y = xt::sort(epsy);
 
     if (init_elastic) {
@@ -24,6 +22,8 @@ inline Cusp::Cusp(double K, double G, const xt::xtensor<double,1>& epsy, bool in
             y = xt::concatenate(xt::xtuple(xt::xtensor<double,1>({-y(0)}), y));
         }
     }
+
+    GMATELASTOPLASTICQPOT_ASSERT(y.size() > 1);
 
     m_yield = QPot::Static(0.0, y);
 }
@@ -48,12 +48,12 @@ inline size_t Cusp::currentIndex() const
     return m_yield.currentIndex();
 }
 
-inline size_t Cusp::currentYieldLeft() const
+inline double Cusp::currentYieldLeft() const
 {
     return m_yield.currentYieldLeft();
 }
 
-inline size_t Cusp::currentYieldRight() const
+inline double Cusp::currentYieldRight() const
 {
     return m_yield.currentYieldRight();
 }
