@@ -591,14 +591,6 @@ inline xt::xtensor<double, rank + 4> Array<rank>::Tangent() const
 }
 
 template <size_t rank>
-inline xt::xtensor<double, rank> Array<rank>::Energy() const
-{
-    xt::xtensor<double, rank> ret = xt::empty<double>(m_shape);
-    this->energy(ret);
-    return ret;
-}
-
-template <size_t rank>
 inline xt::xtensor<size_t, rank> Array<rank>::CurrentIndex() const
 {
     xt::xtensor<size_t, rank> ret = xt::empty<size_t>(m_shape);
@@ -627,6 +619,14 @@ inline xt::xtensor<double, rank> Array<rank>::Epsp() const
 {
     xt::xtensor<double, rank> ret = xt::empty<double>(m_shape);
     this->epsp(ret);
+    return ret;
+}
+
+template <size_t rank>
+inline xt::xtensor<double, rank> Array<rank>::Energy() const
+{
+    xt::xtensor<double, rank> ret = xt::empty<double>(m_shape);
+    this->energy(ret);
     return ret;
 }
 
