@@ -35,6 +35,10 @@ conveniently compiled to this [PDF](docs/readme.pdf).
     - [By hand](#by-hand)
     - [Using pkg-config](#using-pkg-config)
 - [References / Credits](#references--credits)
+- [Testing & Benchmarking](#testing--benchmarking)
+    - [Basic testing](#basic-testing)
+    - [Basic benchmarking](#basic-benchmarking)
+    - [Extensive testing](#extensive-testing)
 - [Change-log](#change-log)
 - [Upgrading to v0.6.1](#upgrading-to-v061)
 
@@ -367,6 +371,59 @@ enabling *xsimd*, ...
     [arXiv: 1904.07635](http://arxiv.org/abs/1904.07635)*.
 
 *   [xtensor](https://github.com/QuantStack/xtensor) is used under the hood.
+
+# Testing & Benchmarking
+
+## Basic testing
+
+>   Run by the continuous integration
+
+```
+cd build
+cmake .. -DBUILD_TESTS=1
+make
+./test/main
+```
+
+## Basic benchmarking
+
+```
+cd build
+cmake .. -DBUILD_EXAMPLES=1
+make
+./examples/benchmark-epsd
+./examples/benchmark-cusp
+./examples/benchmark-matrix
+```
+
+## Extensive testing
+
+To make sure that the current version in up-to-date with old versions,
+one starts by generating a set or random states using the current version:
+
+```
+cd test/compare_versions
+python Cartesian2d_generate.py
+```
+
+And then checks that the generated states are also found with previous
+versions:
+
+```
+git checkout tags/v0.6.2
+python setup.py build
+python setup.py install
+python Cartesian2d_check_v0.6.2.py
+```
+
+and likewise for
+
+```
+python Cartesian2d_check_v0.5.0.py
+```
+
+If no assertions are found each time the code should be behaving as supposed to. 
+Please feel free to contribute additional tests. 
 
 # Change-log
 
