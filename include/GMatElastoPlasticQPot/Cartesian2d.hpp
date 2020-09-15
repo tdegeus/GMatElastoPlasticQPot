@@ -19,9 +19,20 @@ namespace detail
     {
 
         template <class E>
-        inline std::vector<size_t> shape(E&& e)
+        inline bool has_shape(E&& e, std::initializer_list<size_t> shape)
         {
-            return std::vector<size_t>(e.shape().cbegin(), e.shape().cend());
+            auto s = e.shape();
+            if (s.size() != shape.size()) {
+                return false;
+            }
+            auto i = shape.begin();
+            for (size_t k = 0; k < s.size(); ++k) {
+                if (*i != s[k]) {
+                    return false;
+                }
+                ++i;
+            }
+            return true;
         }
 
         template <class T>

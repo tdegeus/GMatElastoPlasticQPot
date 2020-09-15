@@ -80,21 +80,21 @@ public:
     void setStrain(const T& Eps);
 
     template <class T>
-    void setStrainIterator(const T&& begin); // presumes contiguous storage in row-major
+    void setStrainIterator(const T& begin); // presumes: contiguous + row-major & symmetric
 
     // Stress (no allocation, overwrites "Sig")
     template <class T>
     void stress(T& Sig) const;
 
     template <class T>
-    void stressIterator(T&& begin) const; // presumes contiguous storage in row-major
+    void stressIterator(T&& begin) const; // presumes: contiguous + row-major
 
     // Tangent (no allocation, overwrites "C")
     template <class T>
     void tangent(T& C) const;
 
     template <class T>
-    void tangentIterator(T& begin) const;
+    void tangentIterator(T& begin) const; // presumes: contiguous + row-major
 
     // Auto-allocation
     Tensor2 Stress() const;
@@ -107,8 +107,8 @@ private:
 
     double m_K; // bulk modulus
     double m_G; // shear modulus
-    std::array<double,4> m_Eps; // strain tensor
-    std::array<double,4> m_Sig; // stress tensor
+    std::array<double,4> m_Eps; // strain tensor [xx, xy, yx, yy]
+    std::array<double,4> m_Sig; // stress tensor [xx, xy, yx, yy]
 
 };
 
@@ -132,21 +132,21 @@ public:
     void setStrain(const T& Eps);
 
     template <class T>
-    void setStrainIterator(const T&& begin); // presumes contiguous storage in row-major
+    void setStrainIterator(const T& begin); // presumes: contiguous + row-major & symmetric
 
     // Stress (no allocation, overwrites "Sig")
     template <class T>
     void stress(T& Sig) const;
 
     template <class T>
-    void stressIterator(T&& begin) const; // presumes contiguous storage in row-major
+    void stressIterator(T&& begin) const; // presumes: contiguous + row-major
 
     // Tangent (no allocation, overwrites "C")
     template <class T>
     void tangent(T& C) const;
 
     template <class T>
-    void tangentIterator(T& begin) const;
+    void tangentIterator(T& begin) const; // presumes: contiguous + row-major
 
     // Auto-allocation
     Tensor2 Stress() const;
@@ -164,8 +164,8 @@ private:
     double m_K; // bulk modulus
     double m_G; // shear modulus
     QPot::Static m_yield; // potential energy landscape
-    std::array<double,4> m_Eps; // strain tensor
-    std::array<double,4> m_Sig; // stress tensor
+    std::array<double,4> m_Eps; // strain tensor [xx, xy, yx, yy]
+    std::array<double,4> m_Sig; // stress tensor [xx, xy, yx, yy]
 
 };
 
@@ -189,21 +189,21 @@ public:
     void setStrain(const T& Eps);
 
     template <class T>
-    void setStrainIterator(const T&& begin); // presumes contiguous storage in row-major
+    void setStrainIterator(const T& begin); // presumes: contiguous + row-major & symmetric
 
     // Stress (no allocation, overwrites "Sig")
     template <class T>
     void stress(T& Sig) const;
 
     template <class T>
-    void stressIterator(T&& begin) const; // presumes contiguous storage in row-major
+    void stressIterator(T&& begin) const; // presumes: contiguous + row-major
 
     // Tangent (no allocation, overwrites "C")
     template <class T>
     void tangent(T& C) const;
 
     template <class T>
-    void tangentIterator(T& begin) const;
+    void tangentIterator(T& begin) const; // presumes: contiguous + row-major
 
     // Auto-allocation
     Tensor2 Stress() const;
@@ -221,8 +221,8 @@ private:
     double m_K; // bulk modulus
     double m_G; // shear modulus
     QPot::Static m_yield; // potential energy landscape
-    std::array<double,4> m_Eps; // strain tensor
-    std::array<double,4> m_Sig; // stress tensor
+    std::array<double,4> m_Eps; // strain tensor [xx, xy, yx, yy]
+    std::array<double,4> m_Sig; // stress tensor [xx, xy, yx, yy]
 
 };
 

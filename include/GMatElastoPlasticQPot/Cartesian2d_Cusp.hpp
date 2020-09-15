@@ -66,12 +66,12 @@ inline double Cusp::epsp() const
 template <class T>
 inline void Cusp::setStrain(const T& a)
 {
-    GMATELASTOPLASTICQPOT_ASSERT(detail::xtensor::shape(a) == std::vector<size_t>({2, 2}));
+    GMATELASTOPLASTICQPOT_ASSERT(detail::xtensor::has_shape(a, {2, 2}));
     return this->setStrainIterator(a.cbegin());
 }
 
 template <class T>
-inline void Cusp::setStrainIterator(const T&& begin)
+inline void Cusp::setStrainIterator(const T& begin)
 {
     std::copy(begin, begin + 4, m_Eps.begin());
 
@@ -99,7 +99,7 @@ inline void Cusp::setStrainIterator(const T&& begin)
 template <class T>
 inline void Cusp::stress(T& a) const
 {
-    GMATELASTOPLASTICQPOT_ASSERT(detail::xtensor::shape(a) == std::vector<size_t>({2, 2}));
+    GMATELASTOPLASTICQPOT_ASSERT(detail::xtensor::has_shape(a, {2, 2}));
     return this->stressIterator(a.begin());
 }
 
