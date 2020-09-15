@@ -36,7 +36,7 @@ conveniently compiled to this [PDF](docs/readme.pdf).
     - [Using pkg-config](#using-pkg-config)
 - [References / Credits](#references--credits)
 - [Change-log](#change-log)
-- [Upgrading to v0.6.0](#upgrading-to-v060)
+- [Upgrading to v0.6.1](#upgrading-to-v061)
 
 <!-- /MarkdownTOC -->
 
@@ -89,6 +89,9 @@ At the material point level different models are implemented with different clas
 There is a `Matrix` class that allows you to combine all these material models and 
 have a single API for a matrix of material points. 
 
+>   Note that all strain tensors are presumed symmetric. 
+>   No checks are made to ensure this.
+
 ### Function names
 
 +   Functions whose name starts with a capital letter (e.g. `Stress`) 
@@ -103,6 +106,10 @@ have a single API for a matrix of material points.
     ```cpp
     double
     ```
+    or
+    ```cpp
+    xt::xtensor<double, 0>
+    ```
 
 +   2nd-order tensor
     ```cpp
@@ -111,18 +118,18 @@ have a single API for a matrix of material points.
     ```
     or 
     ```cpp
-    xt:xtensor<double,2>
+    xt:xtensor<double, 2>
     ```
 
 +   List *(i)* of second order tensors *(x,y)* : *A(i,x,y)*
     ```cpp
-    xt::xtensor<double,3>
+    xt::xtensor<double, 3>
     ```
     Note that the shape is `[I, 2, 2]`.
 
 +   Matrix *(i,j)* of second order tensors *(x,y)* : *A(i,j,x,y)*
     ```cpp
-    xt::xtensor<double,4>
+    xt::xtensor<double, 4>
     ```
     Note that the shape is `[I, J, 2, 2]`.
 
@@ -363,16 +370,15 @@ enabling *xsimd*, ...
 
 # Change-log
 
-# Upgrading to v0.6.0
+# Upgrading to v0.6.1
 
-Compared to v0.5.0, v0.6.0 has some generalisations and efficiency updates. 
+Compared to v0.5.0, v0.6.1 has some generalisations and efficiency updates. 
 This requires the following changes:
 
 *   `Matrix` has been generalised to `Array<rank>`. Practically this requires changing:
     -   `Matrix` to `Array<2>` in C++.
     -   `Matrix` to `Array2d` in Python. 
-        Note that `Array1d`, `Array3d`, etc. are for the moment not compiled, 
-        but can be made available upon request.
+        Note that `Array1d`, `Array3d`, are also available.
 
 *   Strain is now stored as a member. 
     Functions like `stress` now return the state based on the last specified strain, 

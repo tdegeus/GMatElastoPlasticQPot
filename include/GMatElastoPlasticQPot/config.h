@@ -10,25 +10,24 @@
 // use "M_PI" from "math.h"
 #define _USE_MATH_DEFINES
 
-#include <tuple>
-#include <stdexcept>
+#include <QPot/Static.hpp>
+#include <iostream>
 #include <limits>
 #include <math.h>
-#include <iostream>
+#include <stdexcept>
+#include <tuple>
 #include <vector>
-#include <xtensor/xarray.hpp>
-#include <xtensor/xtensor.hpp>
-#include <xtensor/xnoalias.hpp>
-#include <xtensor/xfixed.hpp>
 #include <xtensor/xadapt.hpp>
-#include <xtensor/xview.hpp>
+#include <xtensor/xarray.hpp>
+#include <xtensor/xfixed.hpp>
 #include <xtensor/xio.hpp>
+#include <xtensor/xmath.hpp>
+#include <xtensor/xnoalias.hpp>
 #include <xtensor/xoperation.hpp>
 #include <xtensor/xsort.hpp>
-#include <xtensor/xmath.hpp>
+#include <xtensor/xtensor.hpp>
 #include <xtensor/xutils.hpp>
-#include <QPot/Static.hpp>
-
+#include <xtensor/xview.hpp>
 
 #ifdef GMATELASTOPLASTICQPOT_ENABLE_ASSERT
 

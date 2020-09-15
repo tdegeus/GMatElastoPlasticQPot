@@ -12,68 +12,80 @@
 namespace GMatElastoPlasticQPot {
 namespace Cartesian2d {
 
-namespace detail
-{
+namespace detail {
+namespace xtensor {
 
-    namespace xtensor
+    template <class E>
+    inline bool has_shape(E&& e, std::initializer_list<size_t> shape)
     {
-
-        template <class E>
-        inline std::vector<size_t> shape(E&& e)
-        {
-            return std::vector<size_t>(e.shape().cbegin(), e.shape().cend());
+        auto s = e.shape();
+        if (s.size() != shape.size()) {
+            return false;
         }
-
-        template <class T>
-        inline auto trace(const T& A)
-        {
-            return A(0,0) + A(1,1);
+        auto i = shape.begin();
+        for (size_t k = 0; k < s.size(); ++k) {
+            if (*i != s[k]) {
+                return false;
+            }
+            ++i;
         }
-
-        template <class T, class U>
-        inline auto A2_ddot_B2(const T& A, const U& B)
-        {
-            return A(0,0) * B(0,0) + 2.0 * A(0,1) * B(0,1) + A(1,1) * B(1,1);
-        }
-
-    } // namespace xtensor
-
-    namespace pointer
-    {
-
-        template <class T>
-        inline auto trace(const T A)
-        {
-            return A[0] + A[3];
-        }
-
-        template <class T, class U>
-        inline void deviatoric(const T A, U ret)
-        {
-            auto m = 0.5 * (A[0] + A[3]);
-            ret[0] = A[0] - m;
-            ret[1] = A[1];
-            ret[2] = A[2];
-            ret[3] = A[3] - m;
-        }
-
-        template <class T>
-        inline auto deviatoric_ddot_deviatoric(const T A)
-        {
-            auto m = 0.5 * (A[0] + A[3]);
-            return (A[0] - m) * (A[0] - m) + 2.0 * A[1] * A[1] + (A[3] - m) * (A[3] - m);
-        }
-
-    } // namespace pointer
+        return true;
+    }
 
     template <class T>
-    inline T trace(const std::array<T,4>& A)
+    inline auto trace(const T& A)
+    {
+        return A(0, 0) + A(1, 1);
+    }
+
+    template <class T, class U>
+    inline auto A2_ddot_B2(const T& A, const U& B)
+    {
+        return A(0, 0) * B(0, 0) + 2.0 * A(0, 1) * B(0, 1) + A(1, 1) * B(1, 1);
+    }
+
+} // namespace xtensor
+} // namespace detail
+
+namespace detail {
+namespace pointer {
+
+    template <class T>
+    inline auto trace(const T A)
+    {
+        return A[0] + A[3];
+    }
+
+    template <class T, class U>
+    inline void deviatoric(const T A, U ret)
+    {
+        auto m = 0.5 * (A[0] + A[3]);
+        ret[0] = A[0] - m;
+        ret[1] = A[1];
+        ret[2] = A[2];
+        ret[3] = A[3] - m;
+    }
+
+    template <class T>
+    inline auto deviatoric_ddot_deviatoric(const T A)
+    {
+        auto m = 0.5 * (A[0] + A[3]);
+        return (A[0] - m) * (A[0] - m) + 2.0 * A[1] * A[1] + (A[3] - m) * (A[3] - m);
+    }
+
+} // namespace pointer
+} // namespace detail
+
+namespace detail {
+
+    template <class T>
+    inline T trace(const std::array<T, 4>& A)
     {
         return A[0] + A[3];
     }
 
     template <class T>
-    inline T hydrostatic_deviator(const std::array<T,4>& A, std::array<T,4>& Ad)
+    inline T hydrostatic_deviator(const std::array<T, 4>& A, std::array<T, 4>& Ad)
     {
         T Am = 0.5 * (A[0] + A[3]);
         Ad[0] = A[0] - Am;
@@ -84,7 +96,7 @@ namespace detail
     }
 
     template <class T>
-    inline T A2_ddot_B2(const std::array<T,4>& A, const std::array<T,4>& B)
+    inline T A2_ddot_B2(const std::array<T, 4>& A, const std::array<T, 4>& B)
     {
         return A[0] * B[0] + 2.0 * A[1] * B[1] + A[3] * B[3];
     }
@@ -167,8 +179,8 @@ inline Tensor4 I4d()
     return I4s() - 0.5 * II();
 }
 
-namespace detail
-{
+namespace detail {
+
     template <class T>
     struct equiv_impl
     {
