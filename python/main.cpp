@@ -180,18 +180,18 @@ auto add_common_members_array(T& self)
             "Returns matrices of stress tangent stiffness tensors, given the current strain.")
 
         .def(
-            "currentIndex",
-            &SM::Array<rank>::currentIndex,
+            "CurrentIndex",
+            &SM::Array<rank>::CurrentIndex,
             "Returns matrix of potential indices, given the current strain.")
 
         .def(
-            "currentYieldLeft",
-            &SM::Array<rank>::currentYieldLeft,
+            "CurrentYieldLeft",
+            &SM::Array<rank>::CurrentYieldLeft,
             "Returns matrix of yield strains to the left, given the current strain.")
 
         .def(
-            "currentYieldRight",
-            &SM::Array<rank>::currentYieldRight,
+            "CurrentYieldRight",
+            &SM::Array<rank>::CurrentYieldRight,
             "Returns matrix of yield strains to the left, given the current strain.")
 
         .def(
