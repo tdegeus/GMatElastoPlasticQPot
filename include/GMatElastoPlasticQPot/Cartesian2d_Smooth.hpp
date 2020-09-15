@@ -11,14 +11,14 @@
 
 namespace GMatElastoPlasticQPot {
 namespace Cartesian2d {
-inline Smooth::Smooth(double K, double G, const xt::xtensor<double,1>& epsy, bool init_elastic)
+inline Smooth::Smooth(double K, double G, const xt::xtensor<double, 1>& epsy, bool init_elastic)
     : m_K(K), m_G(G)
 {
-    xt::xtensor<double,1> y = xt::sort(epsy);
+    xt::xtensor<double, 1> y = xt::sort(epsy);
 
     if (init_elastic) {
         if (y(0) != -y(1)) {
-            y = xt::concatenate(xt::xtuple(xt::xtensor<double,1>({-y(0)}), y));
+            y = xt::concatenate(xt::xtuple(xt::xtensor<double, 1>({-y(0)}), y));
         }
     }
 
@@ -37,7 +37,7 @@ inline double Smooth::G() const
     return m_G;
 }
 
-inline xt::xtensor<double,1> Smooth::epsy() const
+inline xt::xtensor<double, 1> Smooth::epsy() const
 {
     return m_yield.yield();
 }
@@ -74,7 +74,7 @@ inline void Smooth::setStrainIterator(const T& begin)
 {
     std::copy(begin, begin + 4, m_Eps.begin());
 
-    std::array<double,4> Epsd;
+    std::array<double, 4> Epsd;
     double epsm = detail::hydrostatic_deviator(m_Eps, Epsd);
     double epsd = std::sqrt(0.5 * detail::A2_ddot_B2(Epsd, Epsd));
     m_yield.setPosition(epsd);
@@ -133,7 +133,7 @@ inline Tensor4 Smooth::Tangent() const
 
 inline double Smooth::energy() const
 {
-    std::array<double,4> Epsd;
+    std::array<double, 4> Epsd;
     double epsm = detail::hydrostatic_deviator(m_Eps, Epsd);
     double epsd = std::sqrt(0.5 * detail::A2_ddot_B2(Epsd, Epsd));
 

@@ -66,7 +66,6 @@ inline auto Sigd(const T& A);
 class Elastic
 {
 public:
-
     // Constructors
     Elastic() = default;
     Elastic(double K, double G);
@@ -104,12 +103,10 @@ public:
     double energy() const; // potential energy
 
 private:
-
-    double m_K; // bulk modulus
-    double m_G; // shear modulus
-    std::array<double,4> m_Eps; // strain tensor [xx, xy, yx, yy]
-    std::array<double,4> m_Sig; // stress tensor [xx, xy, yx, yy]
-
+    double m_K;                  // bulk modulus
+    double m_G;                  // shear modulus
+    std::array<double, 4> m_Eps; // strain tensor [xx, xy, yx, yy]
+    std::array<double, 4> m_Sig; // stress tensor [xx, xy, yx, yy]
 };
 
 // Material point
@@ -117,15 +114,14 @@ private:
 class Cusp
 {
 public:
-
     // Constructors
     Cusp() = default;
-    Cusp(double K, double G, const xt::xtensor<double,1>& epsy, bool init_elastic = true);
+    Cusp(double K, double G, const xt::xtensor<double, 1>& epsy, bool init_elastic = true);
 
     // Parameters
     double K() const;
     double G() const;
-    xt::xtensor<double,1> epsy() const;
+    xt::xtensor<double, 1> epsy() const;
 
     // Set strain
     template <class T>
@@ -153,20 +149,18 @@ public:
     Tensor4 Tangent() const;
 
     // Return current state
-    size_t currentIndex() const; // yield index
-    double currentYieldLeft() const; // yield strain left epsy[index]
+    size_t currentIndex() const;      // yield index
+    double currentYieldLeft() const;  // yield strain left epsy[index]
     double currentYieldRight() const; // yield strain right epsy[index + 1]
-    double epsp() const; // "plastic strain" (mean of currentYieldLeft and currentYieldRight)
+    double epsp() const;   // "plastic strain" (mean of currentYieldLeft and currentYieldRight)
     double energy() const; // potential energy
 
 private:
-
-    double m_K; // bulk modulus
-    double m_G; // shear modulus
-    QPot::Static m_yield; // potential energy landscape
-    std::array<double,4> m_Eps; // strain tensor [xx, xy, yx, yy]
-    std::array<double,4> m_Sig; // stress tensor [xx, xy, yx, yy]
-
+    double m_K;                  // bulk modulus
+    double m_G;                  // shear modulus
+    QPot::Static m_yield;        // potential energy landscape
+    std::array<double, 4> m_Eps; // strain tensor [xx, xy, yx, yy]
+    std::array<double, 4> m_Sig; // stress tensor [xx, xy, yx, yy]
 };
 
 // Material point
@@ -174,15 +168,14 @@ private:
 class Smooth
 {
 public:
-
     // Constructors
     Smooth() = default;
-    Smooth(double K, double G, const xt::xtensor<double,1>& epsy, bool init_elastic = true);
+    Smooth(double K, double G, const xt::xtensor<double, 1>& epsy, bool init_elastic = true);
 
     // Parameters
     double K() const;
     double G() const;
-    xt::xtensor<double,1> epsy() const;
+    xt::xtensor<double, 1> epsy() const;
 
     // Set strain
     template <class T>
@@ -210,20 +203,18 @@ public:
     Tensor4 Tangent() const;
 
     // Return current state
-    size_t currentIndex() const; // yield index
-    double currentYieldLeft() const; // yield strain left epsy[index]
+    size_t currentIndex() const;      // yield index
+    double currentYieldLeft() const;  // yield strain left epsy[index]
     double currentYieldRight() const; // yield strain right epsy[index + 1]
-    double epsp() const; // "plastic strain" (mean of currentYieldLeft and currentYieldRight)
+    double epsp() const;   // "plastic strain" (mean of currentYieldLeft and currentYieldRight)
     double energy() const; // potential energy
 
 private:
-
-    double m_K; // bulk modulus
-    double m_G; // shear modulus
-    QPot::Static m_yield; // potential energy landscape
-    std::array<double,4> m_Eps; // strain tensor [xx, xy, yx, yy]
-    std::array<double,4> m_Sig; // stress tensor [xx, xy, yx, yy]
-
+    double m_K;                  // bulk modulus
+    double m_G;                  // shear modulus
+    QPot::Static m_yield;        // potential energy landscape
+    std::array<double, 4> m_Eps; // strain tensor [xx, xy, yx, yy]
+    std::array<double, 4> m_Sig; // stress tensor [xx, xy, yx, yy]
 };
 
 // Material identifier
@@ -243,7 +234,6 @@ template <size_t rank>
 class Array
 {
 public:
-
     // Constructors
 
     Array() = default;
@@ -349,14 +339,13 @@ public:
     xt::xtensor<double, rank> Energy() const;
 
 private:
-
     // Material vectors
     std::vector<Elastic> m_Elastic;
     std::vector<Cusp> m_Cusp;
     std::vector<Smooth> m_Smooth;
 
     // Identifiers for each matrix entry
-    xt::xtensor<size_t, rank> m_type; // type (e.g. "Type::Elastic")
+    xt::xtensor<size_t, rank> m_type;  // type (e.g. "Type::Elastic")
     xt::xtensor<size_t, rank> m_index; // index from the relevant material vector (e.g. "m_Elastic")
 
     // Shape
@@ -366,19 +355,18 @@ private:
     std::array<size_t, rank + 2> m_shape_tensor2;
     std::array<size_t, rank + 4> m_shape_tensor4;
 
-
     // Internal check
     bool m_allSet = false; // true if all points have a material assigned
-    void checkAllSet(); // check if all points have a material assigned (modifies "m_allSet")
+    void checkAllSet();    // check if all points have a material assigned (modifies "m_allSet")
 };
 
 } // namespace Cartesian2d
 } // namespace GMatElastoPlasticQPot
 
 #include "Cartesian2d.hpp"
-#include "Cartesian2d_Elastic.hpp"
-#include "Cartesian2d_Cusp.hpp"
-#include "Cartesian2d_Smooth.hpp"
 #include "Cartesian2d_Array.hpp"
+#include "Cartesian2d_Cusp.hpp"
+#include "Cartesian2d_Elastic.hpp"
+#include "Cartesian2d_Smooth.hpp"
 
 #endif

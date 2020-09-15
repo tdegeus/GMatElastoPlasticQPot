@@ -83,7 +83,7 @@ inline Tensor4 Elastic::Tangent() const
 
 inline double Elastic::energy() const
 {
-    std::array<double,4> Epsd;
+    std::array<double, 4> Epsd;
     double epsm = detail::hydrostatic_deviator(m_Eps, Epsd);
     double epsd = std::sqrt(0.5 * detail::A2_ddot_B2(Epsd, Epsd));
     double U = m_K * std::pow(epsm, 2.0);
