@@ -47,6 +47,7 @@ build_script:
     - python test\Cartesian2d.py
     - python test\compare_versions\Cartesian2d_generate.py
     - python test\compare_versions\Cartesian2d_check_master.py
-    # v0.5.0 was not available for Windows
-    # - mamba install -c conda-forge python-gmatelastoplasticqpot=0.5.0
+    - mamba install -c conda-forge python-gmatelastoplasticqpot=0.6.2
+    - python test\compare_versions\Cartesian2d_check_v0.6.2.py
+    # - mamba install -c conda-forge python-gmatelastoplasticqpot=0.5.0 # not available on Windows
     # - python test\compare_versions\Cartesian2d_check_v0.5.0.py
