@@ -60,7 +60,7 @@ if(NOT TARGET GMatElastoPlasticQPot::assert)
     set_property(
         TARGET GMatElastoPlasticQPot::assert
         PROPERTY INTERFACE_COMPILE_DEFINITIONS
-        GMATELASTOPLASTICQPOT_ENABLE_ASSERT)
+        GMATELASTOPLASTICQPOT_ENABLE_ASSERT QPOT_ENABLE_ASSERT)
 endif()
 
 # Define support target "GMatElastoPlasticQPot::debug"

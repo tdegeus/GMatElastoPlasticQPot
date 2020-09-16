@@ -33,7 +33,7 @@ install:
     - conda update -q conda
     - conda info -a
     - conda install -c conda-forge mamba
-    - mamba install -c conda-forge cmake xtensor qpot python-qpot xsimd python numpy pyxtensor catch2
+    - mamba install -c conda-forge cmake xtensor qpot python-qpot xsimd python numpy pyxtensor catch2 h5py
     # Build/install the library
     - cmake -G "NMake Makefiles" -DCMAKE_INSTALL_PREFIX=%MINICONDA%\\LIBRARY -DCMAKE_BUILD_TYPE=RELEASE -DBUILD_TESTS=ON -DBUILD_EXAMPLES=ON .
     - nmake
@@ -45,3 +45,8 @@ build_script:
     # Run tests
     - .\test\main
     - python test\Cartesian2d.py
+    - python test\compare_versions\Cartesian2d_generate.py
+    - python test\compare_versions\Cartesian2d_check_master.py
+    # v0.5.0 was not available for Windows
+    # - mamba install -c conda-forge python-gmatelastoplasticqpot=0.5.0
+    # - python test\compare_versions\Cartesian2d_check_v0.5.0.py

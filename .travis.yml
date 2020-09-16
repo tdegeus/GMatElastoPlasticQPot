@@ -65,7 +65,7 @@ install:
     - conda config --set always_yes yes --set changeps1 no
     - conda update -q conda
     - conda install -c conda-forge mamba
-    - mamba install -c conda-forge cmake xtensor qpot python-qpot xsimd python numpy pyxtensor catch2
+    - mamba install -c conda-forge cmake xtensor qpot python-qpot xsimd python numpy pyxtensor catch2 h5py
     # Build/install the library
     - cmake . -DBUILD_TESTS=ON -DBUILD_EXAMPLES=ON -DXSIMD=$XSIMD
     - make
@@ -76,3 +76,7 @@ script:
     # Run tests
     - ./test/main
     - python test/Cartesian2d.py
+    - python test/compare_versions/Cartesian2d_generate.py
+    - python test/compare_versions/Cartesian2d_check_master.py
+    - mamba install -c conda-forge python-gmatelastoplasticqpot=0.5.0
+    - python test/compare_versions/Cartesian2d_check_v0.5.0.py
