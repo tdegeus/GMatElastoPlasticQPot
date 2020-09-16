@@ -9,6 +9,12 @@ with h5py.File('Cartesian2d_random.hdf5', 'r') as data:
 
     shape = data['/shape'][...]
 
+    i = np.eye(2)
+    I = np.einsum('xy,ij', np.ones(shape), i)
+    I4 = np.einsum('xy,ijkl->xyijkl', np.ones(shape), np.einsum('il,jk', i, i))
+    I4rt = np.einsum('xy,ijkl->xyijkl', np.ones(shape), np.einsum('ik,jl', i, i))
+    I4s = (I4 + I4rt) / 2.0
+
     mat = GMat.Matrix(shape[0], shape[1])
 
     I = data['/cusp/I'][...]
@@ -38,7 +44,7 @@ with h5py.File('Cartesian2d_random.hdf5', 'r') as data:
 
         GradU = data['/random/{0:d}/GradU'.format(i)][...]
 
-        Eps = np.einsum('...ijkl,...lk->...ij', mat.I4s(), GradU)
+        Eps = np.einsum('...ijkl,...lk->...ij', I4s, GradU)
         idx = mat.Find(Eps)
 
         assert np.allclose(mat.Stress(Eps), data['/random/{0:d}/Stress'.format(i)][...])

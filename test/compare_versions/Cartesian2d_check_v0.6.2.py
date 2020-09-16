@@ -37,7 +37,6 @@ with h5py.File('Cartesian2d_random.hdf5', 'r') as data:
         mat.setStrain(Eps)
 
         assert np.allclose(mat.Stress(), data['/random/{0:d}/Stress'.format(i)][...])
-        assert np.allclose(mat.CurrentIndex(), data['/random/{0:d}/CurrentIndex'.format(i)][...])
         assert np.allclose(mat.CurrentYieldLeft(), data['/random/{0:d}/CurrentYieldLeft'.format(i)][...])
         assert np.allclose(mat.CurrentYieldRight(), data['/random/{0:d}/CurrentYieldRight'.format(i)][...])
-
+        assert np.all(mat.CurrentIndex() == data['/random/{0:d}/CurrentIndex'.format(i)][...])
