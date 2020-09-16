@@ -9,6 +9,7 @@
 
 // Enable basic assertions on matrix shape
 // (doesn't cost a lot of time, but avoids segmentation faults)
+#define QPOT_ENABLE_ASSERT
 #define GMATELASTOPLASTICQPOT_ENABLE_ASSERT
 
 #include <GMatElastoPlasticQPot/Cartesian2d.h>

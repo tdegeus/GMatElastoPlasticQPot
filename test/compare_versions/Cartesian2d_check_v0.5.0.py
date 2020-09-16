@@ -19,6 +19,14 @@ with h5py.File('Cartesian2d_random.hdf5', 'r') as data:
 
     mat.setCusp(I, idx, K, G, epsy)
 
+    I = data['/smooth/I'][...]
+    idx = data['/smooth/idx'][...]
+    K = data['/smooth/K'][...]
+    G = data['/smooth/G'][...]
+    epsy = data['/smooth/epsy'][...]
+
+    mat.setSmooth(I, idx, K, G, epsy)
+
     I = data['/elastic/I'][...]
     idx = data['/elastic/idx'][...]
     K = data['/elastic/K'][...]

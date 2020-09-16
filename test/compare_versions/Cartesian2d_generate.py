@@ -7,25 +7,28 @@ def A4_ddot_B2(A, B):
 
 with h5py.File('Cartesian2d_random.hdf5', 'w') as data:
 
-    nelem = 500
+    nelem = 1000
     nip = 4
-    nplas = int(nelem / 2)
-    nelas = nelem - nplas
+    iden = 3.0 * np.random.random([nelem, nip])
+    iden = np.where(iden < 1.0, 0.0, iden)
+    iden = np.where((iden >= 1.0) * (iden < 2.0), 1.0, iden)
+    iden = np.where(iden >= 2.0, 2.0, iden)
+    iden = iden.astype(np.int)
 
-    shape = np.array([nelem, nip], dtype='int')
+    shape = np.array([nelem, nip], np.int)
 
     data['/shape'] = shape
 
     mat = GMat.Array2d(shape)
 
-    I = np.zeros((nelem, nip), dtype='int')
-    idx = np.zeros((nelem, nip), dtype='int')
-
-    I[:nplas, :] = 1
-    idx[:nplas, :] = np.arange(nplas * nip).reshape(-1, nip)
-    epsy = np.cumsum(np.random.random([nplas * nip, 500]), 1)
-    K = np.ones(nplas * nip)
-    G = np.ones(nplas * nip)
+    I = np.where(iden == 0, 1, 0).astype(np.int)
+    n = np.sum(I)
+    idx = np.zeros(I.size, np.int)
+    idx[np.argwhere(I.ravel() == 1).ravel()] = np.arange(n)
+    idx = idx.reshape(I.shape)
+    epsy = np.cumsum(np.random.random([n, 500]), 1)
+    K = np.ones(n)
+    G = np.ones(n)
 
     data['/cusp/I'] = I
     data['/cusp/idx'] = idx
@@ -35,13 +38,30 @@ with h5py.File('Cartesian2d_random.hdf5', 'w') as data:
 
     mat.setCusp(I, idx, K, G, epsy)
 
-    I = np.zeros((nelem, nip), dtype='int')
-    idx = np.zeros((nelem, nip), dtype='int')
+    I = np.where(iden == 1, 1, 0).astype(np.int)
+    n = np.sum(I)
+    idx = np.zeros(I.size, np.int)
+    idx[np.argwhere(I.ravel() == 1).ravel()] = np.arange(n)
+    idx = idx.reshape(I.shape)
+    epsy = np.cumsum(np.random.random([n, 500]), 1)
+    K = np.ones(n)
+    G = np.ones(n)
 
-    I[nplas:, :] = 1
-    idx[nplas:, :] = np.arange(nelas * nip).reshape(-1, nip)
-    K = np.ones(nelas * nip)
-    G = np.ones(nelas * nip)
+    data['/smooth/I'] = I
+    data['/smooth/idx'] = idx
+    data['/smooth/K'] = K
+    data['/smooth/G'] = G
+    data['/smooth/epsy'] = epsy
+
+    mat.setSmooth(I, idx, K, G, epsy)
+
+    I = np.where(iden == 2, 1, 0).astype(np.int)
+    n = np.sum(I)
+    idx = np.zeros(I.size, np.int)
+    idx[np.argwhere(I.ravel() == 1).ravel()] = np.arange(n)
+    idx = idx.reshape(I.shape)
+    K = np.ones(n)
+    G = np.ones(n)
 
     data['/elastic/I'] = I
     data['/elastic/idx'] = idx
@@ -49,6 +69,7 @@ with h5py.File('Cartesian2d_random.hdf5', 'w') as data:
     data['/elastic/G'] = G
 
     mat.setElastic(I, idx, K, G)
+    mat.check()
 
     for i in range(20):
 
