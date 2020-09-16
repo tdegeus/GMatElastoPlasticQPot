@@ -274,10 +274,15 @@ inline void Array<rank>::setElastic(const xt::xtensor<size_t, rank>& I, double K
     GMATELASTOPLASTICQPOT_ASSERT(
         xt::all(xt::equal(xt::where(xt::equal(I, 1ul), m_type, Type::Unset), Type::Unset)));
 
-    m_type = xt::where(xt::equal(I, 1ul), Type::Elastic, m_type);
-    m_index = xt::where(xt::equal(I, 1ul), m_Elastic.size(), m_index);
+    for (size_t i = 0; i < m_size; ++i) {
+        if (I.data()[i] == 1ul) {
+            m_type.data()[i] = Type::Elastic;
+            m_index.data()[i] = m_Elastic.size();
+            m_Elastic.push_back(Elastic(K, G));
+        }
+    }
+
     this->checkAllSet();
-    m_Elastic.push_back(Elastic(K, G));
 }
 
 template <size_t rank>
@@ -293,10 +298,15 @@ inline void Array<rank>::setCusp(
     GMATELASTOPLASTICQPOT_ASSERT(
         xt::all(xt::equal(xt::where(xt::equal(I, 1ul), m_type, Type::Unset), Type::Unset)));
 
-    m_type = xt::where(xt::equal(I, 1ul), Type::Cusp, m_type);
-    m_index = xt::where(xt::equal(I, 1ul), m_Cusp.size(), m_index);
+    for (size_t i = 0; i < m_size; ++i) {
+        if (I.data()[i] == 1ul) {
+            m_type.data()[i] = Type::Cusp;
+            m_index.data()[i] = m_Cusp.size();
+            m_Cusp.push_back(Cusp(K, G, epsy, init_elastic));
+        }
+    }
+
     this->checkAllSet();
-    m_Cusp.push_back(Cusp(K, G, epsy, init_elastic));
 }
 
 template <size_t rank>
@@ -312,10 +322,15 @@ inline void Array<rank>::setSmooth(
     GMATELASTOPLASTICQPOT_ASSERT(
         xt::all(xt::equal(xt::where(xt::equal(I, 1ul), m_type, Type::Unset), Type::Unset)));
 
-    m_type = xt::where(xt::equal(I, 1ul), Type::Smooth, m_type);
-    m_index = xt::where(xt::equal(I, 1ul), m_Smooth.size(), m_index);
+    for (size_t i = 0; i < m_size; ++i) {
+        if (I.data()[i] == 1ul) {
+            m_type.data()[i] = Type::Smooth;
+            m_index.data()[i] = m_Smooth.size();
+            m_Smooth.push_back(Smooth(K, G, epsy, init_elastic));
+        }
+    }
+
     this->checkAllSet();
-    m_Smooth.push_back(Smooth(K, G, epsy, init_elastic));
 }
 
 template <size_t rank>
@@ -333,13 +348,16 @@ inline void Array<rank>::setElastic(
     GMATELASTOPLASTICQPOT_ASSERT(
         xt::all(xt::equal(xt::where(xt::equal(I, 1ul), m_type, Type::Unset), Type::Unset)));
 
-    m_type = xt::where(xt::equal(I, 1ul), Type::Elastic, m_type);
-    m_index = xt::where(xt::equal(I, 1ul), m_Elastic.size() + idx, m_index);
-    this->checkAllSet();
-
-    for (size_t i = 0; i < K.size(); ++i) {
-        m_Elastic.push_back(Elastic(K(i), G(i)));
+    for (size_t i = 0; i < m_size; ++i) {
+        if (I.data()[i] == 1ul) {
+            size_t j = idx.data()[i];
+            m_type.data()[i] = Type::Elastic;
+            m_index.data()[i] = m_Elastic.size();
+            m_Elastic.push_back(Elastic(K(j), G(j)));
+        }
     }
+
+    this->checkAllSet();
 }
 
 template <size_t rank>
@@ -360,13 +378,16 @@ inline void Array<rank>::setCusp(
     GMATELASTOPLASTICQPOT_ASSERT(
         xt::all(xt::equal(xt::where(xt::equal(I, 1ul), m_type, Type::Unset), Type::Unset)));
 
-    m_type = xt::where(xt::equal(I, 1ul), Type::Cusp, m_type);
-    m_index = xt::where(xt::equal(I, 1ul), m_Cusp.size() + idx, m_index);
-    this->checkAllSet();
-
-    for (size_t i = 0; i < K.size(); ++i) {
-        m_Cusp.push_back(Cusp(K(i), G(i), xt::view(epsy, i, xt::all()), init_elastic));
+    for (size_t i = 0; i < m_size; ++i) {
+        if (I.data()[i] == 1ul) {
+            size_t j = idx.data()[i];
+            m_type.data()[i] = Type::Cusp;
+            m_index.data()[i] = m_Cusp.size();
+            m_Cusp.push_back(Cusp(K(j), G(j), xt::view(epsy, j, xt::all()), init_elastic));
+        }
     }
+
+    this->checkAllSet();
 }
 
 template <size_t rank>
@@ -387,13 +408,16 @@ inline void Array<rank>::setSmooth(
     GMATELASTOPLASTICQPOT_ASSERT(
         xt::all(xt::equal(xt::where(xt::equal(I, 1ul), m_type, Type::Unset), Type::Unset)));
 
-    m_type = xt::where(xt::equal(I, 1ul), Type::Smooth, m_type);
-    m_index = xt::where(xt::equal(I, 1ul), m_Smooth.size() + idx, m_index);
-    this->checkAllSet();
-
-    for (size_t i = 0; i < K.size(); ++i) {
-        m_Smooth.push_back(Smooth(K(i), G(i), xt::view(epsy, i, xt::all()), init_elastic));
+    for (size_t i = 0; i < m_size; ++i) {
+        if (I.data()[i] == 1ul) {
+            size_t j = idx.data()[i];
+            m_type.data()[i] = Type::Smooth;
+            m_index.data()[i] = m_Smooth.size();
+            m_Smooth.push_back(Smooth(K(j), G(j), xt::view(epsy, j, xt::all()), init_elastic));
+        }
     }
+
+    this->checkAllSet();
 }
 
 template <size_t rank>

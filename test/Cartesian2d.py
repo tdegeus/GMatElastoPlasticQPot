@@ -89,16 +89,18 @@ mat.setElastic(I, K, G)
 
 I = np.zeros([nelem, nip], dtype='int')
 I[1,:] = 1
-mat.setCusp(I, K, G, [0.01, 0.03, 0.10])
+mat.setCusp(I, K, G, 0.01 + 0.02 * np.arange(100))
 
 I = np.zeros([nelem, nip], dtype='int')
 I[2,:] = 1
-mat.setSmooth(I, K, G, [0.01, 0.03, 0.10])
+mat.setSmooth(I, K, G, 0.01 + 0.02 * np.arange(100))
 
 eps = np.zeros((nelem, nip, 2, 2))
-for i in range(2):
-    for j in range(2):
-        eps[:, :, i, j] = Eps[i, j]
+
+for e in range(nelem):
+    for q in range(nip):
+        fac = float((e + 1) * nip + (q + 1))
+        eps[e, q, :, :] = fac * Eps
 
 mat.setStrain(eps)
 sig = mat.Stress()
@@ -106,22 +108,28 @@ epsp = mat.Epsp()
 
 for q in range(nip):
 
-    ISCLOSE(sig[0,q,0,0], K * epsm)
-    ISCLOSE(sig[0,q,1,1], K * epsm)
-    ISCLOSE(sig[0,q,0,1], G * gamma)
-    ISCLOSE(sig[0,q,0,1], G * gamma)
-    ISCLOSE(epsp[0,q], 0.0)
+    e = 0
+    fac = float((e + 1) * nip + (q + 1))
+    ISCLOSE(sig[e, q, 0, 0], fac * K * epsm)
+    ISCLOSE(sig[e, q, 1, 1], fac * K * epsm)
+    ISCLOSE(sig[e, q, 0, 1], fac * G * gamma)
+    ISCLOSE(sig[e, q, 1, 0], fac * G * gamma)
+    ISCLOSE(epsp[e, q], 0.0)
 
-    ISCLOSE(sig[1,q,0,0], K * epsm)
-    ISCLOSE(sig[1,q,1,1], K * epsm)
-    ISCLOSE(sig[1,q,0,1], G * 0.0)
-    ISCLOSE(sig[1,q,0,1], G * 0.0)
-    ISCLOSE(epsp[1,q], gamma)
+    e = 1
+    fac = float((e + 1) * nip + (q + 1))
+    ISCLOSE(sig[e, q, 0, 0], fac * K * epsm)
+    ISCLOSE(sig[e, q, 1, 1], fac * K * epsm)
+    ISCLOSE(sig[e, q, 0, 1], 0.0)
+    ISCLOSE(sig[e, q, 1, 0], 0.0)
+    ISCLOSE(epsp[e, q], fac * gamma)
 
-    ISCLOSE(sig[2,q,0,0], K * epsm)
-    ISCLOSE(sig[2,q,1,1], K * epsm)
-    ISCLOSE(sig[2,q,0,1], G * 0.0)
-    ISCLOSE(sig[2,q,0,1], G * 0.0)
-    ISCLOSE(epsp[2,q], gamma)
+    e = 2
+    fac = float((e + 1) * nip + (q + 1))
+    ISCLOSE(sig[e, q, 0, 0], fac * K * epsm)
+    ISCLOSE(sig[e, q, 1, 1], fac * K * epsm)
+    ISCLOSE(sig[e, q, 0, 1], 0.0)
+    ISCLOSE(sig[e, q, 1, 0], 0.0)
+    ISCLOSE(epsp[e, q], fac * gamma)
 
 print('All checks passed')

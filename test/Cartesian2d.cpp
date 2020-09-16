@@ -340,14 +340,14 @@ SECTION("Array")
 
     {
         xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
-        xt::xtensor<double,1> epsy = {0.01, 0.03, 0.10};
+        xt::xtensor<double,1> epsy = 0.01 + 0.02 * xt::arange<double>(100);
         xt::view(I, 1, xt::all()) = 1;
         mat.setCusp(I, K, G, epsy);
     }
 
     {
         xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
-        xt::xtensor<double,1> epsy = {0.01, 0.03, 0.10};
+        xt::xtensor<double,1> epsy = 0.01 + 0.02 * xt::arange<double>(100);
         xt::view(I, 2, xt::all()) = 1;
         mat.setCusp(I, K, G, epsy);
     }
@@ -356,7 +356,8 @@ SECTION("Array")
 
     for (size_t e = 0; e < nelem; ++e) {
         for (size_t q = 0; q < nip; ++q) {
-            xt::view(eps, e, q) = Eps;
+            double fac = static_cast<double>((e + 1) * nip + (q + 1));
+            xt::view(eps, e, q) = fac * Eps;
         }
     }
 
@@ -366,23 +367,29 @@ SECTION("Array")
 
     for (size_t q = 0; q < nip; ++q) {
 
-        ISCLOSE(sig(0,q,0,0), K * epsm);
-        ISCLOSE(sig(0,q,1,1), K * epsm);
-        ISCLOSE(sig(0,q,0,1), G * gamma);
-        ISCLOSE(sig(0,q,1,0), G * gamma);
-        ISCLOSE(epsp(0,q), 0.0);
+        size_t e = 0;
+        double fac = static_cast<double>((e + 1) * nip + (q + 1));
+        ISCLOSE(sig(e, q, 0, 0), fac * K * epsm);
+        ISCLOSE(sig(e, q, 1, 1), fac * K * epsm);
+        ISCLOSE(sig(e, q, 0, 1), fac * G * gamma);
+        ISCLOSE(sig(e, q, 1, 0), fac * G * gamma);
+        ISCLOSE(epsp(e, q), 0.0);
 
-        ISCLOSE(sig(1,q,0,0), K * epsm);
-        ISCLOSE(sig(1,q,1,1), K * epsm);
-        ISCLOSE(sig(1,q,0,1), 0.0);
-        ISCLOSE(sig(1,q,1,0), 0.0);
-        ISCLOSE(epsp(1,q), gamma);
+        e = 1;
+        fac = static_cast<double>((e + 1) * nip + (q + 1));
+        ISCLOSE(sig(e, q, 0, 0), fac * K * epsm);
+        ISCLOSE(sig(e, q, 1, 1), fac * K * epsm);
+        ISCLOSE(sig(e, q, 0, 1), 0.0);
+        ISCLOSE(sig(e, q, 1, 0), 0.0);
+        ISCLOSE(epsp(e, q), fac * gamma);
 
-        ISCLOSE(sig(2,q,0,0), K * epsm);
-        ISCLOSE(sig(2,q,1,1), K * epsm);
-        ISCLOSE(sig(2,q,0,1), 0.0);
-        ISCLOSE(sig(2,q,1,0), 0.0);
-        ISCLOSE(epsp(2,q), gamma);
+        e = 2;
+        fac = static_cast<double>((e + 1) * nip + (q + 1));
+        ISCLOSE(sig(e, q, 0, 0), fac * K * epsm);
+        ISCLOSE(sig(e, q, 1, 1), fac * K * epsm);
+        ISCLOSE(sig(e, q, 0, 1), 0.0);
+        ISCLOSE(sig(e, q, 1, 0), 0.0);
+        ISCLOSE(epsp(e, q), fac * gamma);
     }
 }
 
