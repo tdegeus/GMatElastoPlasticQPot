@@ -387,6 +387,8 @@ make
 
 ## Basic benchmarking
 
+>   Compiled by the continuous integration
+
 ```
 cd build
 cmake .. -DBUILD_EXAMPLES=1
@@ -397,6 +399,8 @@ make
 ```
 
 ## Extensive testing
+
+>   Run by the continuous integration
 
 To make sure that the current version in up-to-date with old versions,
 one starts by generating a set or random states using the current version:
