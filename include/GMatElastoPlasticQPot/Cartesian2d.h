@@ -81,19 +81,16 @@ public:
     template <class T>
     void setStrainIterator(const T& begin); // presumes: contiguous + row-major & symmetric
 
-    // Stress (no allocation, overwrites "Sig")
+    // Stress (no allocation, overwrites "Sig" / writes to "begin")
     template <class T>
     void stress(T& Sig) const;
 
     template <class T>
-    void stressIterator(T&& begin) const; // presumes: contiguous + row-major
+    void stressIterator(const T& begin) const; // presumes: contiguous + row-major
 
     // Tangent (no allocation, overwrites "C")
     template <class T>
     void tangent(T& C) const;
-
-    template <class T>
-    void tangentIterator(T& begin) const; // presumes: contiguous + row-major
 
     // Auto-allocation
     Tensor2 Stress() const;
@@ -130,19 +127,16 @@ public:
     template <class T>
     void setStrainIterator(const T& begin); // presumes: contiguous + row-major & symmetric
 
-    // Stress (no allocation, overwrites "Sig")
+    // Stress (no allocation, overwrites "Sig" / writes to "begin")
     template <class T>
     void stress(T& Sig) const;
 
     template <class T>
-    void stressIterator(T&& begin) const; // presumes: contiguous + row-major
+    void stressIterator(const T& begin) const; // presumes: contiguous + row-major
 
     // Tangent (no allocation, overwrites "C")
     template <class T>
     void tangent(T& C) const;
-
-    template <class T>
-    void tangentIterator(T& begin) const; // presumes: contiguous + row-major
 
     // Auto-allocation
     Tensor2 Stress() const;
@@ -184,19 +178,16 @@ public:
     template <class T>
     void setStrainIterator(const T& begin); // presumes: contiguous + row-major & symmetric
 
-    // Stress (no allocation, overwrites "Sig")
+    // Stress (no allocation, overwrites "Sig" / writes to "begin")
     template <class T>
     void stress(T& Sig) const;
 
     template <class T>
-    void stressIterator(T&& begin) const; // presumes: contiguous + row-major
+    void stressIterator(const T& begin) const; // presumes: contiguous + row-major
 
     // Tangent (no allocation, overwrites "C")
     template <class T>
     void tangent(T& C) const;
-
-    template <class T>
-    void tangentIterator(T& begin) const; // presumes: contiguous + row-major
 
     // Auto-allocation
     Tensor2 Stress() const;

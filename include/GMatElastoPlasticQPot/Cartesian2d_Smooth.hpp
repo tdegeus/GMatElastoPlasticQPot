@@ -104,7 +104,7 @@ inline void Smooth::stress(T& a) const
 }
 
 template <class T>
-inline void Smooth::stressIterator(T&& begin) const
+inline void Smooth::stressIterator(const T& begin) const
 {
     std::copy(m_Sig.begin(), m_Sig.end(), begin);
 }
