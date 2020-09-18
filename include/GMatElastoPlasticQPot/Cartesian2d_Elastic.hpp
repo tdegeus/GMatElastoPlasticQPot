@@ -54,7 +54,7 @@ inline void Elastic::stress(T& a) const
 }
 
 template <class T>
-inline void Elastic::stressIterator(T&& begin) const
+inline void Elastic::stressIterator(const T& begin) const
 {
     std::copy(m_Sig.begin(), m_Sig.end(), begin);
 }

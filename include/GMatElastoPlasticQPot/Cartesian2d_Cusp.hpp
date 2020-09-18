@@ -104,7 +104,7 @@ inline void Cusp::stress(T& a) const
 }
 
 template <class T>
-inline void Cusp::stressIterator(T&& begin) const
+inline void Cusp::stressIterator(const T& begin) const
 {
     std::copy(m_Sig.begin(), m_Sig.end(), begin);
 }
