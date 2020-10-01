@@ -23,10 +23,13 @@ foreach(testsourcefile ${APP_SOURCES})
 
     add_executable(${testname} ${testsourcefile})
 
+    find_package(GooseFEM REQUIRED)
+
     target_link_libraries(${testname} PUBLIC
         GMatElastoPlasticQPot
         xtensor::optimize
-        xtensor::use_xsimd)
+        xtensor::use_xsimd
+        GooseFEM)
 
     if(WARNINGS)
         target_link_libraries(${testname} PRIVATE GMatElastoPlasticQPot::compiler_warnings)
