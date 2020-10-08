@@ -99,13 +99,11 @@ public:
         xt::xtensor<size_t, 1> plastic = mesh.elementsMiddleLayer();
         xt::xtensor<size_t, 1> elastic = xt::setdiff1d(xt::arange(m_nelem), plastic);
 
-        // periodicity in horizontal direction : eliminate 'dependent' DOFs
         auto left = mesh.nodesLeftOpenEdge();
         auto right = mesh.nodesRightOpenEdge();
         xt::view(m_dofs, xt::keep(right), 0) = xt::view(m_dofs, xt::keep(left), 0);
         xt::view(m_dofs, xt::keep(right), 1) = xt::view(m_dofs, xt::keep(left), 1);
 
-        // fixed top and bottom
         auto top = mesh.nodesTopEdge();
         auto bottom = mesh.nodesBottomEdge();
         size_t nfix = top.size();
@@ -166,20 +164,16 @@ public:
         {
             xt::xtensor<size_t, 2> I = xt::zeros<size_t>({m_nelem, m_nip});
             xt::xtensor<size_t, 2> idx = xt::zeros<size_t>({m_nelem, m_nip});
-            for (size_t q = 0; q < m_nip; ++q) {
-                xt::view(I, xt::keep(plastic), q) = 1ul;
-                xt::view(idx, xt::keep(plastic), q) = xt::arange<size_t>(plastic.size());
-            }
-
-            xt::xtensor<double, 1> Ki = K * xt::ones<double>({plastic.size()});
-            xt::xtensor<double, 1> Gi = G * xt::ones<double>({plastic.size()});
+            xt::view(I, xt::keep(plastic), xt::all()) = 1ul;
+            xt::view(idx, xt::keep(plastic), xt::all()) = xt::arange<size_t>(plastic.size()).reshape({-1, 1});
 
             double k = 2.0;
             xt::xtensor<double, 2> epsy = 1e-5 + 1e-3 * xt::random::weibull<double>({N, 1000ul}, k, 1.0);
             xt::view(epsy, xt::all(), 0) = 1e-5 + 1e-3 * xt::random::rand<double>({N});
             epsy = xt::cumsum(epsy, 1);
 
-            m_material.setCusp(I, idx, Ki, Gi, epsy);
+            xt::xtensor<double, 1> unit = xt::ones<double>({plastic.size()});
+            m_material.setCusp(I, idx, K * unit, G * unit, epsy);
         }
 
         m_material.check();
@@ -237,7 +231,6 @@ public:
         // compute strain/strain, and corresponding force
 
         computeStrainStress();
-
         m_quad.int_gradN_dot_tensor2_dV(m_Sig, m_fe);
         m_vector.assembleNode(m_fe, m_felas);
 
@@ -298,7 +291,7 @@ public:
         xt::view(dF, xt::range(1, dF.shape(0)), 0, 1) = 0.004 / 1000.0;
 
         xt::xtensor<double, 2> ret = xt::zeros<double>({dF.shape(0), 2ul});
-        auto dV = m_quad.DV(2);
+        auto dV = m_quad.AsTensor<2>(m_quad.dV());
 
         for (size_t inc = 0 ; inc < dF.shape(0); ++inc) {
 
@@ -341,7 +334,7 @@ public:
 
 int main(void)
 {
-    size_t N = std::pow(3, 3);
+    size_t N = std::pow(3, 4);
 
     System sys(N);
 

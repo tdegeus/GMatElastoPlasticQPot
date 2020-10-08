@@ -14,8 +14,6 @@ set(CMAKE_BUILD_TYPE Release)
 
 file(GLOB APP_SOURCES *.cpp)
 
-set(CMAKE_BUILD_TYPE Release)
-
 foreach(testsourcefile ${APP_SOURCES})
 
     string(REPLACE ".cpp" "" testname ${testsourcefile})
@@ -36,7 +34,7 @@ foreach(testsourcefile ${APP_SOURCES})
     endif()
 
     if(ASSERT)
-        target_link_libraries(${testname} PRIVATE GMatElastoPlasticQPot::debug)
+        target_link_libraries(${testname} PRIVATE GooseFEM::debug GMatElastoPlasticQPot::debug)
     endif()
 
 endforeach()
