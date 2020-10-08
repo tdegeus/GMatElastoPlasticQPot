@@ -13,6 +13,8 @@ namespace GF = GooseFEM;
 namespace QD = GooseFEM::Element::Quad4;
 namespace GM = GMatElastoPlasticQPot::Cartesian2d;
 
+// #define CHECK_MYSHORTCUT
+
 class System {
 
 private:
@@ -26,10 +28,10 @@ private:
     xt::xtensor<size_t, 1> m_iip;
 
     // mesh dimensions
+    size_t m_N; // == nelem_plas
     size_t m_nelem;
     size_t m_nelem_elas;
     size_t m_nelem_plas;
-    size_t m_N;
     size_t m_nne;
     size_t m_nnode;
     size_t m_ndim;
@@ -81,7 +83,9 @@ private:
     xt::xtensor<double, 3> m_fe_plas;
 
     // nodal forces
-    // xt::xtensor<double, 2> m_fmaterial;
+#ifdef CHECK_MYSHORTCUT
+    xt::xtensor<double, 2> m_fmaterial;
+#endif
     xt::xtensor<double, 2> m_felas;
     xt::xtensor<double, 2> m_fplas;
     xt::xtensor<double, 2> m_fdamp;
@@ -165,7 +169,9 @@ public:
         m_ue_plas = m_vector_plas.AllocateElemvec(0.0);;
         m_fe_plas = m_vector_plas.AllocateElemvec(0.0);;
 
-        // m_fmaterial = m_vector.AllocateNodevec(0.0);
+#ifdef CHECK_MYSHORTCUT
+        m_fmaterial = m_vector.AllocateNodevec(0.0);
+#endif
         m_felas = m_vector.AllocateNodevec(0.0);
         m_fplas = m_vector.AllocateNodevec(0.0);
         m_fdamp = m_vector.AllocateNodevec(0.0);
@@ -310,13 +316,15 @@ public:
 
         computeStrainStressForcesWeakLayer();
 
-        // computeStrainStress();
-        // m_quad.int_gradN_dot_tensor2_dV(m_Sig, m_fe);
-        // m_vector.assembleNode(m_fe, m_fmaterial);
+#ifdef CHECK_MYSHORTCUT
+        computeStrainStress();
+        m_quad.int_gradN_dot_tensor2_dV(m_Sig, m_fe);
+        m_vector.assembleNode(m_fe, m_fmaterial);
 
-        // if (!xt::allclose(m_fmaterial, m_felas + m_fplas)) {
-        //     throw std::runtime_error("Forces");
-        // }
+        if (!xt::allclose(m_fmaterial, m_felas + m_fplas)) {
+            throw std::runtime_error("Forces");
+        }
+#endif
 
         // estimate new velocity, update corresponding force
 
@@ -428,6 +436,10 @@ int main(void)
     std::ofstream outfile("friction.txt");
     xt::dump_csv(outfile, ret);
     outfile.close();
+
+#ifdef CHECK_MYSHORTCUT
+    std::cout << "Shortcut successfully checked" << std::endl;
+#endif
 
     return 0;
 }

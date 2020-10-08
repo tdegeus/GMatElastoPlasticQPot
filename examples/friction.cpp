@@ -23,11 +23,16 @@ private:
     xt::xtensor<size_t, 1> m_iip;
 
     // mesh dimensions
+    size_t m_N; // == nelem_plas
     size_t m_nelem;
     size_t m_nne;
     size_t m_nnode;
     size_t m_ndim;
     size_t m_nip;
+
+    // element sets
+    xt::xtensor<size_t, 1> m_elastic;
+    xt::xtensor<size_t, 1> m_plastic;
 
     // numerical quadrature
     QD::Quadrature m_quad;
@@ -63,7 +68,7 @@ private:
     xt::xtensor<double, 3> m_fe;
 
     // nodal forces
-    xt::xtensor<double, 2> m_felas;
+    xt::xtensor<double, 2> m_fmaterial;
     xt::xtensor<double, 2> m_fdamp;
     xt::xtensor<double, 2> m_fint;
     xt::xtensor<double, 2> m_fext;
@@ -75,7 +80,7 @@ private:
 
 public:
 
-    System(size_t N)
+    System(size_t N) : m_N(N)
     {
 
         // ----
@@ -83,9 +88,9 @@ public:
         // ----
 
         double h = xt::numeric_constants<double>::PI;
-        double L = h * static_cast<double>(N);
+        double L = h * static_cast<double>(m_N);
 
-        GF::Mesh::Quad4::FineLayer mesh(N, N, h);
+        GF::Mesh::Quad4::FineLayer mesh(m_N, m_N, h);
 
         m_coor = mesh.coor();
         m_conn = mesh.conn();
@@ -96,8 +101,8 @@ public:
         m_nelem = m_conn.shape(0);
         m_nne = m_conn.shape(1);
 
-        xt::xtensor<size_t, 1> plastic = mesh.elementsMiddleLayer();
-        xt::xtensor<size_t, 1> elastic = xt::setdiff1d(xt::arange(m_nelem), plastic);
+        m_plastic = mesh.elementsMiddleLayer();
+        m_elastic = xt::setdiff1d(xt::arange(m_nelem), m_plastic);
 
         auto left = mesh.nodesLeftOpenEdge();
         auto right = mesh.nodesRightOpenEdge();
@@ -118,24 +123,23 @@ public:
         m_quad = QD::Quadrature(m_vector.AsElement(m_coor));
         m_nip = m_quad.nip();
 
-        m_u = xt::zeros<double>(m_coor.shape());
-        m_v = xt::zeros<double>(m_coor.shape());
-        m_a = xt::zeros<double>(m_coor.shape());
-        m_v_n = xt::zeros<double>(m_coor.shape());
-        m_a_n = xt::zeros<double>(m_coor.shape());
+        m_u = m_vector.AllocateNodevec(0.0);
+        m_v = m_vector.AllocateNodevec(0.0);
+        m_a = m_vector.AllocateNodevec(0.0);
+        m_v_n = m_vector.AllocateNodevec(0.0);
+        m_a_n = m_vector.AllocateNodevec(0.0);
 
-        m_ue = xt::zeros<double>({m_nelem, m_nne, m_ndim});
-        m_fe = xt::zeros<double>({m_nelem, m_nne, m_ndim});
+        m_ue = m_vector.AllocateElemvec(0.0);
+        m_fe = m_vector.AllocateElemvec(0.0);
 
-        m_felas = xt::zeros<double>(m_coor.shape());
-        m_fdamp = xt::zeros<double>(m_coor.shape());
-        m_fint = xt::zeros<double>(m_coor.shape());
-        m_fext = xt::zeros<double>(m_coor.shape());
-        m_fres = xt::zeros<double>(m_coor.shape());
+        m_fmaterial = m_vector.AllocateNodevec(0.0);
+        m_fdamp = m_vector.AllocateNodevec(0.0);
+        m_fint = m_vector.AllocateNodevec(0.0);
+        m_fext = m_vector.AllocateNodevec(0.0);
+        m_fres = m_vector.AllocateNodevec(0.0);
 
-        m_Eps = xt::zeros<double>({m_nelem, m_nip, m_ndim, m_ndim});
-        m_Sig = xt::zeros<double>({m_nelem, m_nip, m_ndim, m_ndim});
-
+        m_Eps = m_quad.AllocateQtensor<2>(0.0);
+        m_Sig = m_quad.AllocateQtensor<2>(0.0);
         // --------
         // material
         // --------
@@ -156,27 +160,27 @@ public:
         // assign elastic material points
         {
             xt::xtensor<size_t, 2> I = xt::zeros<size_t>({m_nelem, m_nip});
-            xt::view(I, xt::keep(elastic), xt::all()) = 1ul;
+            xt::view(I, xt::keep(m_elastic), xt::all()) = 1ul;
             m_material.setElastic(I, K, G);
         }
 
         // assign plastic material points
         {
+            double k = 2.0;
+            xt::xtensor<double, 2> epsy = 1e-5 + 1e-3 * xt::random::weibull<double>({m_N, 1000ul}, k, 1.0);
+            xt::view(epsy, xt::all(), 0) = 1e-5 + 1e-3 * xt::random::rand<double>({m_N});
+            epsy = xt::cumsum(epsy, 1);        
+        
             xt::xtensor<size_t, 2> I = xt::zeros<size_t>({m_nelem, m_nip});
             xt::xtensor<size_t, 2> idx = xt::zeros<size_t>({m_nelem, m_nip});
-            xt::view(I, xt::keep(plastic), xt::all()) = 1ul;
-            xt::view(idx, xt::keep(plastic), xt::all()) = xt::arange<size_t>(plastic.size()).reshape({-1, 1});
-
-            double k = 2.0;
-            xt::xtensor<double, 2> epsy = 1e-5 + 1e-3 * xt::random::weibull<double>({N, 1000ul}, k, 1.0);
-            xt::view(epsy, xt::all(), 0) = 1e-5 + 1e-3 * xt::random::rand<double>({N});
-            epsy = xt::cumsum(epsy, 1);
-
-            xt::xtensor<double, 1> unit = xt::ones<double>({plastic.size()});
+            xt::view(I, xt::keep(m_plastic), xt::all()) = 1ul;
+            xt::view(idx, xt::keep(m_plastic), xt::all()) = xt::arange<size_t>(m_N).reshape({-1, 1});
+            xt::xtensor<double, 1> unit = xt::ones<double>({m_N});
             m_material.setCusp(I, idx, K * unit, G * unit, epsy);
         }
 
         m_material.check();
+        m_material.setStrain(m_Eps);
 
         // -----------
         // mass matrix
@@ -232,7 +236,7 @@ public:
 
         computeStrainStress();
         m_quad.int_gradN_dot_tensor2_dV(m_Sig, m_fe);
-        m_vector.assembleNode(m_fe, m_felas);
+        m_vector.assembleNode(m_fe, m_fmaterial);
 
         // estimate new velocity, update corresponding force
 
@@ -242,7 +246,7 @@ public:
 
         // compute residual force & solve
 
-        xt::noalias(m_fint) = m_felas + m_fdamp;
+        xt::noalias(m_fint) = m_fmaterial + m_fdamp;
 
         m_vector.copy_p(m_fint, m_fext);
 
@@ -258,7 +262,7 @@ public:
 
         // compute residual force & solve
 
-        xt::noalias(m_fint) = m_felas + m_fdamp;
+        xt::noalias(m_fint) = m_fmaterial + m_fdamp;
 
         m_vector.copy_p(m_fint, m_fext);
 
@@ -274,7 +278,7 @@ public:
 
         // compute residual force & solve
 
-        xt::noalias(m_fint) = m_felas + m_fdamp;
+        xt::noalias(m_fint) = m_fmaterial + m_fdamp;
 
         m_vector.copy_p(m_fint, m_fext);
 

@@ -4,7 +4,6 @@ cmake_minimum_required(VERSION 3.0)
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     project(GMatElastoPlasticQPot-examples)
     find_package(GMatElastoPlasticQPot REQUIRED CONFIG)
-    set(GOOSEEYE_INCLUDE_DIR ${GooseEYE_INCLUDE_DIRS})
 endif()
 
 option(WARNINGS "Show build warnings" ON)
