@@ -167,10 +167,10 @@ public:
         // assign plastic material points
         {
             double k = 2.0;
-            xt::xtensor<double, 2> epsy = 1e-5 + 1e-3 * xt::random::weibull<double>({m_N, 1000ul}, k, 1.0);
+            xt::xtensor<double, 2> epsy = 1e-5 + 1e-3 * xt::random::weibull<double>(std::array<size_t, 2>{m_N, 1000}, k, 1.0);
             xt::view(epsy, xt::all(), 0) = 1e-5 + 1e-3 * xt::random::rand<double>({m_N});
-            epsy = xt::cumsum(epsy, 1);        
-        
+            epsy = xt::cumsum(epsy, 1);
+
             xt::xtensor<size_t, 2> I = xt::zeros<size_t>({m_nelem, m_nip});
             xt::xtensor<size_t, 2> idx = xt::zeros<size_t>({m_nelem, m_nip});
             xt::view(I, xt::keep(m_plastic), xt::all()) = 1ul;
@@ -294,7 +294,7 @@ public:
         xt::xtensor<double, 3> dF = xt::zeros<double>({1001, 2, 2});
         xt::view(dF, xt::range(1, dF.shape(0)), 0, 1) = 0.004 / 1000.0;
 
-        xt::xtensor<double, 2> ret = xt::zeros<double>({dF.shape(0), 2ul});
+        xt::xtensor<double, 2> ret = xt::zeros<double>(std::array<size_t, 2>{dF.shape(0), 2});
         auto dV = m_quad.AsTensor<2>(m_quad.dV());
 
         for (size_t inc = 0 ; inc < dF.shape(0); ++inc) {
