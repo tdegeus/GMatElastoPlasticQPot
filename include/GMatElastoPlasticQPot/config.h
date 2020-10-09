@@ -25,6 +25,7 @@
 #include <xtensor/xnoalias.hpp>
 #include <xtensor/xoperation.hpp>
 #include <xtensor/xsort.hpp>
+#include <xtensor/xshape.hpp>
 #include <xtensor/xtensor.hpp>
 #include <xtensor/xutils.hpp>
 #include <xtensor/xview.hpp>

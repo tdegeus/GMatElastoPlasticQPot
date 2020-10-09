@@ -29,7 +29,7 @@ inline double Elastic::G() const
 template <class T>
 inline void Elastic::setStrain(const T& a)
 {
-    GMATELASTOPLASTICQPOT_ASSERT(detail::xtensor::has_shape(a, {2, 2}));
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(a, {2, 2}));
     return this->setStrainIterator(a.cbegin());
 }
 
@@ -49,7 +49,7 @@ inline void Elastic::setStrainIterator(const T& begin)
 template <class T>
 inline void Elastic::stress(T& a) const
 {
-    GMATELASTOPLASTICQPOT_ASSERT(detail::xtensor::has_shape(a, {2, 2}));
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(a, {2, 2}));
     return this->stressIterator(a.begin());
 }
 
