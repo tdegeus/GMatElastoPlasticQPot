@@ -19,19 +19,11 @@ inline Array<rank>::Array(const std::array<size_t, rank>& shape) : m_shape(shape
     m_index = xt::empty<size_t>(m_shape);
     m_allSet = false;
 
-    m_size = 1;
-    for (size_t i = 0; i < rank; ++i) {
-        m_size *= m_shape[i];
-        m_shape_tensor2[i] = m_shape[i];
-        m_shape_tensor4[i] = m_shape[i];
-    }
-    for (size_t i = rank; i < rank + 2; ++i) {
-        m_shape_tensor2[i] = m_ndim;
-        m_shape_tensor4[i] = m_ndim;
-    }
-    for (size_t i = rank + 2; i < rank + 4; ++i) {
-        m_shape_tensor4[i] = m_ndim;
-    }
+    std::copy(shape.begin(), shape.end(), m_shape_tensor2.begin());
+    std::copy(shape.begin(), shape.end(), m_shape_tensor4.begin());
+    std::fill(m_shape_tensor2.begin() + rank, m_shape_tensor2.end(), m_ndim);
+    std::fill(m_shape_tensor4.begin() + rank, m_shape_tensor4.end(), m_ndim);
+    m_size = std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<size_t>());
 }
 
 template <size_t rank>
@@ -424,7 +416,7 @@ template <size_t rank>
 inline void Array<rank>::setStrain(const xt::xtensor<double, rank + 2>& A)
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
-    GMATELASTOPLASTICQPOT_ASSERT(A.shape() == m_shape_tensor2);
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(A, m_shape_tensor2));
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
@@ -446,7 +438,7 @@ template <size_t rank>
 inline void Array<rank>::stress(xt::xtensor<double, rank + 2>& A) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
-    GMATELASTOPLASTICQPOT_ASSERT(A.shape() == m_shape_tensor2);
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(A, m_shape_tensor2));
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
@@ -468,7 +460,7 @@ template <size_t rank>
 inline void Array<rank>::tangent(xt::xtensor<double, rank + 4>& A) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
-    GMATELASTOPLASTICQPOT_ASSERT(A.shape() == m_shape_tensor4);
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(A, m_shape_tensor4));
     size_t stride = m_ndim * m_ndim * m_ndim * m_ndim;
 
     #pragma omp parallel for
@@ -492,7 +484,7 @@ template <size_t rank>
 inline void Array<rank>::currentIndex(xt::xtensor<size_t, rank>& A) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
-    GMATELASTOPLASTICQPOT_ASSERT(A.shape() == m_shape);
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(A, m_shape));
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
@@ -514,7 +506,7 @@ template <size_t rank>
 inline void Array<rank>::currentYieldLeft(xt::xtensor<double, rank>& A) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
-    GMATELASTOPLASTICQPOT_ASSERT(A.shape() == m_shape);
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(A, m_shape));
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
@@ -536,7 +528,7 @@ template <size_t rank>
 inline void Array<rank>::currentYieldRight(xt::xtensor<double, rank>& A) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
-    GMATELASTOPLASTICQPOT_ASSERT(A.shape() == m_shape);
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(A, m_shape));
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
@@ -558,7 +550,7 @@ template <size_t rank>
 inline void Array<rank>::epsp(xt::xtensor<double, rank>& A) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
-    GMATELASTOPLASTICQPOT_ASSERT(A.shape() == m_shape);
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(A, m_shape));
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
@@ -580,7 +572,7 @@ template <size_t rank>
 inline void Array<rank>::energy(xt::xtensor<double, rank>& A) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
-    GMATELASTOPLASTICQPOT_ASSERT(A.shape() == m_shape);
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(A, m_shape));
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
