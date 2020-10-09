@@ -1,10 +1,7 @@
 
 cmake_minimum_required(VERSION 3.0)
 
-if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-    project(GMatElastoPlasticQPot-examples)
-    find_package(GMatElastoPlasticQPot REQUIRED CONFIG)
-endif()
+project(GMatElastoPlasticQPot-examples)
 
 option(WARNINGS "Show build warnings" ON)
 option(ASSERT "Enable assertions" OFF)
@@ -20,7 +17,9 @@ foreach(testsourcefile ${APP_SOURCES})
 
     add_executable(${testname} ${testsourcefile})
 
+    find_package(GMatElastoPlasticQPot REQUIRED)
     find_package(GooseFEM REQUIRED)
+    find_package(xtensor REQUIRED)
 
     target_link_libraries(${testname} PUBLIC
         GMatElastoPlasticQPot
