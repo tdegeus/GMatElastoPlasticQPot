@@ -39,8 +39,19 @@ conveniently compiled to this [PDF](docs/readme.pdf).
     - [Basic testing](#basic-testing)
     - [Basic benchmarking](#basic-benchmarking)
     - [Extensive testing](#extensive-testing)
+- [Upgrading instructions](#upgrading-instructions)
+    - [Upgrading to v0.6.*](#upgrading-to-v06)
 - [Change-log](#change-log)
-- [Upgrading to v0.6.1](#upgrading-to-v061)
+    - [v0.6.4](#v064)
+    - [v0.6.3](#v063)
+    - [v0.6.2](#v062)
+    - [v0.6.1](#v061)
+    - [v0.6.0](#v060)
+    - [v0.5.0](#v050)
+    - [v0.4.0](#v040)
+    - [v0.3.0](#v030)
+    - [v0.2.2](#v022)
+- [v0.2.1](#v021)
 
 <!-- /MarkdownTOC -->
 
@@ -429,9 +440,9 @@ python Cartesian2d_check_v0.5.0.py
 If no assertions are found each time the code should be behaving as supposed to. 
 Please feel free to contribute additional tests. 
 
-# Change-log
+# Upgrading instructions
 
-# Upgrading to v0.6.1
+## Upgrading to v0.6.*
 
 Compared to v0.5.0, v0.6.1 has some generalisations and efficiency updates. 
 This requires the following changes:
@@ -452,3 +463,83 @@ This requires the following changes:
 *   By storing strain as a member, 
     efficiency upgrades have been made to find the position in the potential energy landscape. 
     The library therefore now depends on [QPot](https://www.github.com/tdegeus/QPot).
+
+# Change-log
+
+## v0.6.4
+
+*   Increasing robustness using the new xtensor's `has_fixed_rank` and `get_rank`.
+*   Using the new xtensor's `has_shape`
+*   Added examples for friction.
+*   Added examples for old versions (helps benchmarking and facilitates upgrading).
+
+## v0.6.3
+
+*   Bugfix: Removing alias from material points incompatible with the new storage of stress etc inside the material point.
+
+## v0.6.2
+
+*   Minor bugfix in Python API: calling auto-allocation function.
+*   Adding additional test mechanism, comparing to old releases.
+
+## v0.6.1
+
+*   Adding `Array1d` and `Array3d` to Python module.
+*   Code-style updates
+
+## v0.6.0
+
+Compared to v0.5.0, v0.6.0 has some generalisations and efficiency updates. 
+This requires the following changes:
+
+*   `Matrix` has been generalised to `Array<rank>`. Practically this requires changing:
+    -   `Matrix` to `Array<2>` in C++.
+    -   `Matrix` to `Array2d` in Python. 
+        Note that `Array1d`, `Array3d`, etc. are for the moment not compiled, 
+        but can be made available upon request.
+
+*   Strain is now stored as a member. 
+    Functions like `stress` now return the state based on the last specified strain, 
+    specified using `setStrain(Esp)`. This leads to the following changes:
+    - `stress`: no argument.
+    - `tangent`: no argument, single return value (no longer returns stress).
+    - `find`: no argument, renamed to `currentIndex`.
+    - `epsy`: replaced by `currentYieldLeft` and `currentYieldRight`.
+
+*   By storing strain as a member, 
+    efficiency upgrades have been made to find the position in the potential energy landscape. 
+    The library therefore now depends on [QPot](https://www.github.com/tdegeus/QPot).
+
+## v0.5.0
+
+*   Added 'tangent' which gives the linear response using a fourth order tangent.
+
+## v0.4.0
+
+*   Cleanup all code, applying rules from `.clang-format` (and pep8 for Python).
+*   Rewriting readme.
+*   Improving syntax of `epsy` for material classes.
+*   Adding `isElastic()`, `isCusp()`, and `isSmooth`
+
+## v0.3.0
+
+*   Enabling assertion only when explicitly defining `GMATELASTOPLASTICQPOT_ENABLE_ASSERT`
+*   Introducing extra CMake targets
+*   Reformatting code
+*   Reformatting CMake
+*   Reformatting tests
+*   Updating readme
+*   Updating CI
+*   Reformatting `docs/readme.tex`
+
+## v0.2.2
+
+*   Updating CMake
+*   Updating Python build
+*   Making xsimd 'optional' for Python build: runs in xsimd is found
+*   Minor code-style updates
+
+# v0.2.1
+
+*   Added minimal documentation.
+
