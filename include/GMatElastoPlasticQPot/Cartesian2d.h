@@ -149,6 +149,10 @@ public:
     double epsp() const;   // "plastic strain" (mean of currentYieldLeft and currentYieldRight)
     double energy() const; // potential energy
 
+    // Check that 'the particle' is "n" wells from the far-left/right
+    bool checkYieldBoundLeft(size_t n = 0) const;
+    bool checkYieldBoundRight(size_t n = 0) const;
+
 private:
     double m_K;                  // bulk modulus
     double m_G;                  // shear modulus
@@ -199,6 +203,10 @@ public:
     double currentYieldRight() const; // yield strain right epsy[index + 1]
     double epsp() const;   // "plastic strain" (mean of currentYieldLeft and currentYieldRight)
     double energy() const; // potential energy
+
+    // Check that 'the particle' is "n" wells from the far-left/right
+    bool checkYieldBoundLeft(size_t n = 0) const;
+    bool checkYieldBoundRight(size_t n = 0) const;
 
 private:
     double m_K;                  // bulk modulus
@@ -316,6 +324,8 @@ public:
     void currentIndex(xt::xtensor<size_t, rank>& arg) const;
     void currentYieldLeft(xt::xtensor<double, rank>& arg) const;
     void currentYieldRight(xt::xtensor<double, rank>& arg) const;
+    bool checkYieldBoundLeft(size_t n = 0) const;
+    bool checkYieldBoundRight(size_t n = 0) const;
     void epsp(xt::xtensor<double, rank>& arg) const;
     void energy(xt::xtensor<double, rank>& arg) const;
 

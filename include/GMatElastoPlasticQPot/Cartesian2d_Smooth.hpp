@@ -149,6 +149,16 @@ inline double Smooth::energy() const
     return U + V;
 }
 
+inline bool Smooth::checkYieldBoundLeft(size_t n) const
+{
+    return m_yield.checkYieldBoundLeft(n);
+}
+
+inline bool Smooth::checkYieldBoundRight(size_t n) const
+{
+    return m_yield.checkYieldBoundRight(n);
+}
+
 } // namespace Cartesian2d
 } // namespace GMatElastoPlasticQPot
 
