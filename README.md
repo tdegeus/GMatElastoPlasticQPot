@@ -42,6 +42,7 @@ conveniently compiled to this [PDF](docs/readme.pdf).
 - [Upgrading instructions](#upgrading-instructions)
     - [Upgrading to v0.6.*](#upgrading-to-v06)
 - [Change-log](#change-log)
+    - [v0.7.0](#v070)
     - [v0.6.4](#v064)
     - [v0.6.3](#v063)
     - [v0.6.2](#v062)
@@ -465,6 +466,10 @@ This requires the following changes:
     The library therefore now depends on [QPot](https://www.github.com/tdegeus/QPot).
 
 # Change-log
+
+## v0.7.0
+
+*   Exposing "checkYieldBoundLeft" and "checkYieldBoundRight" from QPot v0.2.0.
 
 ## v0.6.4
 
