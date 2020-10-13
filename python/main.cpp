@@ -196,6 +196,18 @@ auto add_common_members_array(T& self)
             "Returns matrix of yield strains to the left, given the current strain.")
 
         .def(
+            "checkYieldBoundLeft",
+            &SM::Array<rank>::checkYieldBoundLeft,
+            "Check that the particle is 'n' wells from the far-left.",
+            py::arg("n") = 0)
+
+        .def(
+            "checkYieldBoundRight",
+            &SM::Array<rank>::checkYieldBoundRight,
+            "Check that the particle is 'n' wells from the far-left.",
+            py::arg("n") = 0)
+
+        .def(
             "Epsp",
             &SM::Array<rank>::Epsp,
             "Returns matrix of equivalent plastic strains, given the current strain.")
@@ -386,6 +398,18 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
             "Returns the yield strain to the right, for last known strain.")
 
         .def(
+            "checkYieldBoundLeft",
+            &SM::Cusp::checkYieldBoundLeft,
+            "Check that the particle is 'n' wells from the far-left.",
+            py::arg("n") = 0)
+
+        .def(
+            "checkYieldBoundRight",
+            &SM::Cusp::checkYieldBoundRight,
+            "Check that the particle is 'n' wells from the far-left.",
+            py::arg("n") = 0)
+
+        .def(
             "epsp", &SM::Cusp::epsp, "Returns the equivalent plastic strain for last known strain.")
 
         .def("energy", &SM::Cusp::energy, "Returns the energy, for last known strain.")
@@ -435,6 +459,18 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
             "currentYieldRight",
             &SM::Smooth::currentYieldRight,
             "Returns the yield strain to the right, for last known strain.")
+
+        .def(
+            "checkYieldBoundLeft",
+            &SM::Smooth::checkYieldBoundLeft,
+            "Check that the particle is 'n' wells from the far-left.",
+            py::arg("n") = 0)
+
+        .def(
+            "checkYieldBoundRight",
+            &SM::Smooth::checkYieldBoundRight,
+            "Check that the particle is 'n' wells from the far-left.",
+            py::arg("n") = 0)
 
         .def(
             "epsp",

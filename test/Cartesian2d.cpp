@@ -239,6 +239,8 @@ SECTION("Cusp - stress")
     ISCLOSE(Sig(1, 0), 0.0);
     ISCLOSE(mat.epsp(), 0.02);
     REQUIRE(mat.currentIndex() == 1);
+    REQUIRE(mat.checkYieldBoundLeft());
+    REQUIRE(mat.checkYieldBoundRight());
     ISCLOSE(mat.energy(), K * std::pow(epsm, 2.0) + G * (0.0 - std::pow(0.01, 2.0)));
 
     epsm *= 2.0;
@@ -256,6 +258,8 @@ SECTION("Cusp - stress")
     ISCLOSE(Sig(1, 0), G * (gamma - 0.04));
     ISCLOSE(mat.epsp(), 0.04);
     REQUIRE(mat.currentIndex() == 2);
+    REQUIRE(mat.checkYieldBoundLeft());
+    REQUIRE(mat.checkYieldBoundRight());
     ISCLOSE(mat.energy(), K * std::pow(epsm, 2.0) + G * (std::pow(gamma - 0.04, 2.0) - std::pow(0.01, 2.0)));
 }
 
@@ -279,6 +283,8 @@ SECTION("Smooth - stress")
     ISCLOSE(Sig(1, 0), 0.0);
     ISCLOSE(mat.epsp(), 0.02);
     REQUIRE(mat.currentIndex() == 1);
+    REQUIRE(mat.checkYieldBoundLeft());
+    REQUIRE(mat.checkYieldBoundRight());
 }
 
 SECTION("Tangent (purely elastic response only)")
@@ -391,6 +397,9 @@ SECTION("Array")
         ISCLOSE(sig(e, q, 1, 0), 0.0);
         ISCLOSE(epsp(e, q), fac * gamma);
     }
+
+    REQUIRE(mat.checkYieldBoundLeft());
+    REQUIRE(mat.checkYieldBoundRight());
 }
 
 }

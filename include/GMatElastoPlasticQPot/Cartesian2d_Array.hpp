@@ -503,6 +503,58 @@ inline void Array<rank>::currentIndex(xt::xtensor<size_t, rank>& A) const
 }
 
 template <size_t rank>
+inline bool Array<rank>::checkYieldBoundLeft(size_t n) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
+
+    #pragma omp parallel for
+    for (size_t i = 0; i < m_size; ++i) {
+        switch (m_type.data()[i]) {
+        case Type::Elastic:
+            break;
+        case Type::Cusp:
+            if (!m_Cusp[m_index.data()[i]].checkYieldBoundLeft(n)) {
+                return false;
+            }
+            break;
+        case Type::Smooth:
+            if (!m_Smooth[m_index.data()[i]].checkYieldBoundLeft(n)) {
+                return false;
+            }
+            break;
+        }
+    }
+
+    return true;
+}
+
+template <size_t rank>
+inline bool Array<rank>::checkYieldBoundRight(size_t n) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
+
+    #pragma omp parallel for
+    for (size_t i = 0; i < m_size; ++i) {
+        switch (m_type.data()[i]) {
+        case Type::Elastic:
+            break;
+        case Type::Cusp:
+            if (!m_Cusp[m_index.data()[i]].checkYieldBoundRight(n)) {
+                return false;
+            }
+            break;
+        case Type::Smooth:
+            if (!m_Smooth[m_index.data()[i]].checkYieldBoundRight(n)) {
+                return false;
+            }
+            break;
+        }
+    }
+
+    return true;
+}
+
+template <size_t rank>
 inline void Array<rank>::currentYieldLeft(xt::xtensor<double, rank>& A) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);

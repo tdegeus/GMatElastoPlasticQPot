@@ -147,6 +147,16 @@ inline double Cusp::energy() const
     return U + V;
 }
 
+inline bool Cusp::checkYieldBoundLeft(size_t n) const
+{
+    return m_yield.checkYieldBoundLeft(n);
+}
+
+inline bool Cusp::checkYieldBoundRight(size_t n) const
+{
+    return m_yield.checkYieldBoundRight(n);
+}
+
 } // namespace Cartesian2d
 } // namespace GMatElastoPlasticQPot
 
