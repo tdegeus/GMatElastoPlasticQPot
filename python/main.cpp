@@ -24,59 +24,35 @@ auto add_common_members_array(T& self)
 
     self.def(py::init<std::array<size_t, rank>>(), "Matrix of material points.", py::arg("shape"))
 
-        .def("shape", &SM::Array<rank>::shape, "Return matrix shape.")
+        .def("shape", &SM::Array<rank>::shape, "Matrix shape.")
 
-        .def("K", &SM::Array<rank>::K, "Return matrix with bulk moduli.")
+        .def("K", &SM::Array<rank>::K, "Matrix with bulk moduli.")
 
-        .def("G", &SM::Array<rank>::G, "Return matrix with shear moduli.")
+        .def("G", &SM::Array<rank>::G, "Matrix with shear moduli.")
 
-        .def("I2", &SM::Array<rank>::I2, "Return matrix with second order unit tensors.")
+        .def("I2", &SM::Array<rank>::I2, "Matrix with 2nd-order unit tensors.")
 
-        .def(
-            "II",
-            &SM::Array<rank>::II,
-            "Return matrix with fourth order tensors with the result of the dyadic product II.")
+        .def("II", &SM::Array<rank>::II, "Matrix with 4th-order tensors = dyadic(I2, I2).")
 
-        .def("I4", &SM::Array<rank>::I4, "Return matrix with fourth order unit tensors.")
+        .def("I4", &SM::Array<rank>::I4, "Matrix with 4th-order unit tensors.")
 
-        .def(
-            "I4rt",
-            &SM::Array<rank>::I4rt,
-            "Return matrix with fourth right-transposed order unit tensors.")
+        .def("I4rt", &SM::Array<rank>::I4rt, "Matrix with 4th-order right-transposed unit tensors.")
 
-        .def(
-            "I4s",
-            &SM::Array<rank>::I4s,
-            "Return matrix with fourth order symmetric projection tensors.")
+        .def("I4s", &SM::Array<rank>::I4s, "Matrix with 4th-order symmetric projection tensors.")
 
-        .def(
-            "I4d",
-            &SM::Array<rank>::I4d,
-            "Return matrix with fourth order deviatoric projection tensors.")
+        .def("I4d", &SM::Array<rank>::I4d, "Matrix with 4th-order deviatoric projection tensors.")
 
-        .def("type", &SM::Array<rank>::type, "Return matrix with material types.")
+        .def("type", &SM::Array<rank>::type, "Matrix with material types.")
 
-        .def(
-            "isElastic",
-            &SM::Array<rank>::isElastic,
-            "Return matrix with boolean: Elastic (1) or not (0).")
+        .def("isElastic", &SM::Array<rank>::isElastic, "Boolean-matrix: true for Elastic.")
 
-        .def(
-            "isPlastic",
-            &SM::Array<rank>::isPlastic,
-            "Return matrix with boolean: Elastic (0) or plastic (Cusp/Smooth) (1).")
+        .def("isPlastic", &SM::Array<rank>::isPlastic, "Boolean-matrix: true for Cusp/Smooth.")
 
-        .def("isCusp", &SM::Array<rank>::isCusp, "Return matrix with boolean: Cusp (1) or not (0).")
+        .def("isCusp", &SM::Array<rank>::isCusp, "Boolean-matrix: true for Cusp.")
 
-        .def(
-            "isSmooth",
-            &SM::Array<rank>::isSmooth,
-            "Return matrix with boolean: Smooth (1) or not (0).")
+        .def("isSmooth", &SM::Array<rank>::isSmooth, "Boolean-matrix: true for Smooth.")
 
-        .def(
-            "check",
-            &SM::Array<rank>::check,
-            "Check that all matrix entries are set. Throws if any unset point is found.")
+        .def("check", &SM::Array<rank>::check, "Throws if any unset point is found.")
 
         .def(
             "setElastic",
