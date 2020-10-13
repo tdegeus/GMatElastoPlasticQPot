@@ -1,10 +1,9 @@
 
 #include <catch2/catch.hpp>
 #include <xtensor/xrandom.hpp>
+#include <GMatElastoPlasticQPot/Cartesian2d.h>
 
 #define ISCLOSE(a,b) REQUIRE_THAT((a), Catch::WithinAbs((b), 1.e-12));
-
-#include <GMatElastoPlasticQPot/Cartesian2d.h>
 
 namespace GM = GMatElastoPlasticQPot::Cartesian2d;
 
@@ -89,7 +88,7 @@ SECTION("Hydrostatic - Tensor2")
     GM::Tensor2 A = xt::random::randn<double>({2, 2});
     A(0, 0) = 1.0;
     A(1, 1) = 1.0;
-    ISCLOSE(GM::Hydrostatic(A)(), 1.0);
+    REQUIRE(GM::Hydrostatic(A)() == Approx(1.0));
 }
 
 SECTION("Hydrostatic - List")
@@ -127,7 +126,7 @@ SECTION("Epsd - Tensor2")
     GM::Tensor2 A = xt::zeros<double>({2, 2});
     A(0, 1) = 1.0;
     A(1, 0) = 1.0;
-    ISCLOSE(GM::Epsd(A)(), 1.0);
+    REQUIRE(GM::Epsd(A)() == Approx(1.0));
 }
 
 SECTION("Epsd - List")
@@ -165,7 +164,7 @@ SECTION("Sigd - Tensor2")
     GM::Tensor2 A = xt::zeros<double>({2, 2});
     A(0, 1) = 1.0;
     A(1, 0) = 1.0;
-    ISCLOSE(GM::Sigd(A)(), 2.0);
+    REQUIRE(GM::Sigd(A)() == Approx(2.0));
 }
 
 SECTION("Sigd - List")
@@ -212,11 +211,11 @@ SECTION("Elastic - stress")
     mat.setStrain(Eps);
     auto Sig = mat.Stress();
 
-    ISCLOSE(Sig(0, 0), K * epsm);
-    ISCLOSE(Sig(1, 1), K * epsm);
-    ISCLOSE(Sig(0, 1), G * gamma);
-    ISCLOSE(Sig(1, 0), G * gamma);
-    ISCLOSE(mat.energy(), K * std::pow(epsm, 2.0) + G * std::pow(gamma, 2.0));
+    REQUIRE(Sig(0, 0) == Approx(K * epsm));
+    REQUIRE(Sig(1, 1) == Approx(K * epsm));
+    REQUIRE(Sig(0, 1) == Approx(G * gamma));
+    REQUIRE(Sig(1, 0) == Approx(G * gamma));
+    REQUIRE(mat.energy() == Approx(K * std::pow(epsm, 2.0) + G * std::pow(gamma, 2.0)));
 }
 
 SECTION("Cusp - stress")
@@ -233,15 +232,15 @@ SECTION("Cusp - stress")
     mat.setStrain(Eps);
     auto Sig = mat.Stress();
 
-    ISCLOSE(Sig(0, 0), K * epsm);
-    ISCLOSE(Sig(1, 1), K * epsm);
-    ISCLOSE(Sig(0, 1), 0.0);
-    ISCLOSE(Sig(1, 0), 0.0);
-    ISCLOSE(mat.epsp(), 0.02);
+    REQUIRE(Sig(0, 0) == Approx(K * epsm));
+    REQUIRE(Sig(1, 1) == Approx(K * epsm));
+    REQUIRE(Sig(0, 1) == Approx(0.0));
+    REQUIRE(Sig(1, 0) == Approx(0.0));
+    REQUIRE(mat.epsp() == Approx(0.02));
     REQUIRE(mat.currentIndex() == 1);
     REQUIRE(mat.checkYieldBoundLeft());
     REQUIRE(mat.checkYieldBoundRight());
-    ISCLOSE(mat.energy(), K * std::pow(epsm, 2.0) + G * (0.0 - std::pow(0.01, 2.0)));
+    REQUIRE(mat.energy() == Approx(K * std::pow(epsm, 2.0) + G * (0.0 - std::pow(0.01, 2.0))));
 
     epsm *= 2.0;
     gamma *= 1.9;
@@ -252,15 +251,15 @@ SECTION("Cusp - stress")
     mat.setStrain(Eps);
     Sig = mat.Stress();
 
-    ISCLOSE(Sig(0, 0), K * epsm);
-    ISCLOSE(Sig(1, 1), K * epsm);
-    ISCLOSE(Sig(0, 1), G * (gamma - 0.04));
-    ISCLOSE(Sig(1, 0), G * (gamma - 0.04));
-    ISCLOSE(mat.epsp(), 0.04);
+    REQUIRE(Sig(0, 0) == Approx(K * epsm));
+    REQUIRE(Sig(1, 1) == Approx(K * epsm));
+    REQUIRE(Sig(0, 1) == Approx(G * (gamma - 0.04)));
+    REQUIRE(Sig(1, 0) == Approx(G * (gamma - 0.04)));
+    REQUIRE(mat.epsp() == Approx(0.04));
     REQUIRE(mat.currentIndex() == 2);
     REQUIRE(mat.checkYieldBoundLeft());
     REQUIRE(mat.checkYieldBoundRight());
-    ISCLOSE(mat.energy(), K * std::pow(epsm, 2.0) + G * (std::pow(gamma - 0.04, 2.0) - std::pow(0.01, 2.0)));
+    REQUIRE(mat.energy() == Approx(K * std::pow(epsm, 2.0) + G * (std::pow(gamma - 0.04, 2.0) - std::pow(0.01, 2.0))));
 }
 
 SECTION("Smooth - stress")
@@ -277,11 +276,11 @@ SECTION("Smooth - stress")
     mat.setStrain(Eps);
     auto Sig = mat.Stress();
 
-    ISCLOSE(Sig(0, 0), K * epsm);
-    ISCLOSE(Sig(1, 1), K * epsm);
-    ISCLOSE(Sig(0, 1), 0.0);
-    ISCLOSE(Sig(1, 0), 0.0);
-    ISCLOSE(mat.epsp(), 0.02);
+    REQUIRE(Sig(0, 0) == Approx(K * epsm));
+    REQUIRE(Sig(1, 1) == Approx(K * epsm));
+    REQUIRE(Sig(0, 1) == Approx(0.0));
+    REQUIRE(Sig(1, 0) == Approx(0.0));
+    REQUIRE(mat.epsp() == Approx(0.02));
     REQUIRE(mat.currentIndex() == 1);
     REQUIRE(mat.checkYieldBoundLeft());
     REQUIRE(mat.checkYieldBoundRight());

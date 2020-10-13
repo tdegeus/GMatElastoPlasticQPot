@@ -470,6 +470,7 @@ This requires the following changes:
 ## v0.7.0
 
 *   Exposing "checkYieldBoundLeft" and "checkYieldBoundRight" from QPot v0.2.0.
+*   Proper float testing using Catch2.
 
 ## v0.6.4
 
