@@ -314,6 +314,8 @@ public:
 
         xt::noalias(m_u) = m_u + m_dt * m_v + 0.5 * std::pow(m_dt, 2.) * m_a;
 
+        // compute strain/strain, and corresponding force
+
         computeStrainStressForcesWeakLayer();
 
 #ifdef CHECK_MYSHORTCUT
