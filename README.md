@@ -471,7 +471,7 @@ This requires the following changes:
 
 *   Exposing "checkYieldBoundLeft" and "checkYieldBoundRight" from QPot v0.2.0.
 *   Better float testing using Catch2.
-*   Adding dependencies in CMakeLists.txt of the examples.
+*   Adding dependencies in `CMakeLists.txt` of the examples.
 *   Minor style and comments fix.
 
 ## v0.6.4
