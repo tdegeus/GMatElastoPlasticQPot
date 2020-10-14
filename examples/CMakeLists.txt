@@ -21,6 +21,8 @@ foreach(testsourcefile ${APP_SOURCES})
     add_executable(${testname} ${testsourcefile})
 
     find_package(GooseFEM REQUIRED)
+    find_package(xtensor REQUIRED)
+    find_package(xsimd REQUIRED)
 
     target_link_libraries(${testname} PUBLIC
         GMatElastoPlasticQPot
