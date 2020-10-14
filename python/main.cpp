@@ -174,13 +174,13 @@ auto add_common_members_array(T& self)
         .def(
             "checkYieldBoundLeft",
             &SM::Array<rank>::checkYieldBoundLeft,
-            "Check that the particle is 'n' wells from the far-left.",
+            "Check that 'the particle' is at least 'n' wells from the far-left.",
             py::arg("n") = 0)
 
         .def(
             "checkYieldBoundRight",
             &SM::Array<rank>::checkYieldBoundRight,
-            "Check that the particle is 'n' wells from the far-left.",
+            "Check that 'the particle' is at least 'n' wells from the far-right.",
             py::arg("n") = 0)
 
         .def(
@@ -376,13 +376,13 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
         .def(
             "checkYieldBoundLeft",
             &SM::Cusp::checkYieldBoundLeft,
-            "Check that the particle is 'n' wells from the far-left.",
+            "Check that 'the particle' is at least 'n' wells from the far-left.",
             py::arg("n") = 0)
 
         .def(
             "checkYieldBoundRight",
             &SM::Cusp::checkYieldBoundRight,
-            "Check that the particle is 'n' wells from the far-left.",
+            "Check that 'the particle' is at least 'n' wells from the far-right.",
             py::arg("n") = 0)
 
         .def(
@@ -439,13 +439,13 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
         .def(
             "checkYieldBoundLeft",
             &SM::Smooth::checkYieldBoundLeft,
-            "Check that the particle is 'n' wells from the far-left.",
+            "Check that 'the particle' is at least 'n' wells from the far-left.",
             py::arg("n") = 0)
 
         .def(
             "checkYieldBoundRight",
             &SM::Smooth::checkYieldBoundRight,
-            "Check that the particle is 'n' wells from the far-left.",
+            "Check that 'the particle' is at least 'n' wells from the far-right.",
             py::arg("n") = 0)
 
         .def(

@@ -149,7 +149,7 @@ public:
     double epsp() const;   // "plastic strain" (mean of currentYieldLeft and currentYieldRight)
     double energy() const; // potential energy
 
-    // Check that 'the particle' is "n" wells from the far-left/right
+    // Check that 'the particle' is at least "n" wells from the far-left/right
     bool checkYieldBoundLeft(size_t n = 0) const;
     bool checkYieldBoundRight(size_t n = 0) const;
 
@@ -204,7 +204,7 @@ public:
     double epsp() const;   // "plastic strain" (mean of currentYieldLeft and currentYieldRight)
     double energy() const; // potential energy
 
-    // Check that 'the particle' is "n" wells from the far-left/right
+    // Check that 'the particle' is at least "n" wells from the far-left/right
     bool checkYieldBoundLeft(size_t n = 0) const;
     bool checkYieldBoundRight(size_t n = 0) const;
 
