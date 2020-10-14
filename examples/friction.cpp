@@ -140,6 +140,7 @@ public:
 
         m_Eps = m_quad.AllocateQtensor<2>(0.0);
         m_Sig = m_quad.AllocateQtensor<2>(0.0);
+
         // --------
         // material
         // --------
