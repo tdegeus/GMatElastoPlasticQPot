@@ -332,7 +332,7 @@ inline void Array<rank>::setElastic(
     const xt::xtensor<double, 1>& K,
     const xt::xtensor<double, 1>& G)
 {
-    GMATELASTOPLASTICQPOT_ASSERT(xt::amax(idx)[0] == K.size() - 1);
+    GMATELASTOPLASTICQPOT_ASSERT(xt::amax(idx)() == K.size() - 1);
     GMATELASTOPLASTICQPOT_ASSERT(K.size() == G.size());
     GMATELASTOPLASTICQPOT_ASSERT(m_type.shape() == idx.shape());
     GMATELASTOPLASTICQPOT_ASSERT(m_type.shape() == I.shape());
@@ -361,9 +361,9 @@ inline void Array<rank>::setCusp(
     const xt::xtensor<double, 2>& epsy,
     bool init_elastic)
 {
-    GMATELASTOPLASTICQPOT_ASSERT(xt::amax(idx)[0] == K.size() - 1);
+    GMATELASTOPLASTICQPOT_ASSERT(xt::amax(idx)() == K.size() - 1);
     GMATELASTOPLASTICQPOT_ASSERT(K.size() == G.size());
-    GMATELASTOPLASTICQPOT_ASSERT(K.size() == epsy.shape()[0]);
+    GMATELASTOPLASTICQPOT_ASSERT(K.size() == epsy.shape(0));
     GMATELASTOPLASTICQPOT_ASSERT(m_type.shape() == idx.shape());
     GMATELASTOPLASTICQPOT_ASSERT(m_type.shape() == I.shape());
     GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(I, 0ul) || xt::equal(I, 1ul)));
@@ -391,9 +391,9 @@ inline void Array<rank>::setSmooth(
     const xt::xtensor<double, 2>& epsy,
     bool init_elastic)
 {
-    GMATELASTOPLASTICQPOT_ASSERT(xt::amax(idx)[0] == K.size() - 1);
+    GMATELASTOPLASTICQPOT_ASSERT(xt::amax(idx)() == K.size() - 1);
     GMATELASTOPLASTICQPOT_ASSERT(K.size() == G.size());
-    GMATELASTOPLASTICQPOT_ASSERT(K.size() == epsy.shape()[0]);
+    GMATELASTOPLASTICQPOT_ASSERT(K.size() == epsy.shape(0));
     GMATELASTOPLASTICQPOT_ASSERT(m_type.shape() == idx.shape());
     GMATELASTOPLASTICQPOT_ASSERT(m_type.shape() == I.shape());
     GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(I, 0ul) || xt::equal(I, 1ul)));
