@@ -10,13 +10,19 @@ option(XSIMD "Use xsimd and 'march=native' optimisations" OFF)
 
 set(CMAKE_BUILD_TYPE Release)
 
+set(test_name "unit-tests")
+
 find_package(Catch2 REQUIRED)
 find_package(xtensor REQUIRED)
-add_executable(main main.cpp Cartesian2d.cpp)
-target_link_libraries(main PRIVATE Catch2::Catch2 GMatElastoPlasticQPot)
-target_link_libraries(main PRIVATE GMatElastoPlasticQPot::compiler_warnings)
-target_link_libraries(main PRIVATE GMatElastoPlasticQPot::assert)
+
+add_executable(${test_name} main.cpp Cartesian2d.cpp)
+
+target_link_libraries(${test_name} PRIVATE Catch2::Catch2 GMatElastoPlasticQPot)
+target_link_libraries(${test_name} PRIVATE GMatElastoPlasticQPot::compiler_warnings)
+target_link_libraries(${test_name} PRIVATE GMatElastoPlasticQPot::assert)
 
 if(XSIMD)
-    target_link_libraries(main PRIVATE xtensor::optimize xtensor::use_xsimd)
+    target_link_libraries(${test_name} PRIVATE xtensor::optimize xtensor::use_xsimd)
 endif()
+
+add_test(NAME ${test_name} COMMAND ${test_name})

@@ -1,0 +1,9 @@
+channels:
+  - conda-forge
+dependencies:
+  - cmake
+  - qpot
+  - xtensor
+  - xsimd
+  - python
+  - pyxtensor
