@@ -19,30 +19,29 @@ namespace py = pybind11;
 template <size_t rank, class T>
 auto add_common_members_array(T& self)
 {
-
     namespace SM = GMatElastoPlasticQPot::Cartesian2d;
 
-    self.def(py::init<std::array<size_t, rank>>(), "Matrix of material points.", py::arg("shape"))
+    self.def(py::init<std::array<size_t, rank>>(), "Array of material points.", py::arg("shape"))
 
-        .def("shape", &SM::Array<rank>::shape, "Matrix shape.")
+        .def("shape", &SM::Array<rank>::shape, "Shape of array.")
 
-        .def("K", &SM::Array<rank>::K, "Matrix with bulk moduli.")
+        .def("K", &SM::Array<rank>::K, "Array with bulk moduli.")
 
-        .def("G", &SM::Array<rank>::G, "Matrix with shear moduli.")
+        .def("G", &SM::Array<rank>::G, "Array with shear moduli.")
 
-        .def("I2", &SM::Array<rank>::I2, "Matrix with 2nd-order unit tensors.")
+        .def("I2", &SM::Array<rank>::I2, "Array with 2nd-order unit tensors.")
 
-        .def("II", &SM::Array<rank>::II, "Matrix with 4th-order tensors = dyadic(I2, I2).")
+        .def("II", &SM::Array<rank>::II, "Array with 4th-order tensors = dyadic(I2, I2).")
 
-        .def("I4", &SM::Array<rank>::I4, "Matrix with 4th-order unit tensors.")
+        .def("I4", &SM::Array<rank>::I4, "Array with 4th-order unit tensors.")
 
-        .def("I4rt", &SM::Array<rank>::I4rt, "Matrix with 4th-order right-transposed unit tensors.")
+        .def("I4rt", &SM::Array<rank>::I4rt, "Array with 4th-order right-transposed unit tensors.")
 
-        .def("I4s", &SM::Array<rank>::I4s, "Matrix with 4th-order symmetric projection tensors.")
+        .def("I4s", &SM::Array<rank>::I4s, "Array with 4th-order symmetric projection tensors.")
 
-        .def("I4d", &SM::Array<rank>::I4d, "Matrix with 4th-order deviatoric projection tensors.")
+        .def("I4d", &SM::Array<rank>::I4d, "Array with 4th-order deviatoric projection tensors.")
 
-        .def("type", &SM::Array<rank>::type, "Matrix with material types.")
+        .def("type", &SM::Array<rank>::type, "Array with material types.")
 
         .def("isElastic", &SM::Array<rank>::isElastic, "Boolean-matrix: true for Elastic.")
 

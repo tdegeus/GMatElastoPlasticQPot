@@ -269,7 +269,7 @@ public:
     void check() const;
 
     // Set parameters for a batch of points
-    // (uniform for all points specified: that have "I(i,j) == 1")
+    // (uniform for all points specified: that have "I(i, j) == 1")
 
     void setElastic(
         const xt::xtensor<size_t, rank>& I,
@@ -292,7 +292,7 @@ public:
 
     // Set parameters for a batch of points:
     // each to the same material, but with different parameters:
-    // the matrix "idx" refers to a which entry to use: "K[idx]", "G[idx]", or "epsy[idx,:]"
+    // the matrix "idx" refers to a which entry to use: "K(idx)", "G(idx)", or "epsy(idx,:)"
 
     void setElastic(
         const xt::xtensor<size_t, rank>& I,

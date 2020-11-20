@@ -15,23 +15,6 @@ namespace Cartesian2d {
 namespace detail {
 namespace xtensor {
 
-    template <class E>
-    inline bool has_shape(E&& e, std::initializer_list<size_t> shape)
-    {
-        auto s = e.shape();
-        if (s.size() != shape.size()) {
-            return false;
-        }
-        auto i = shape.begin();
-        for (size_t k = 0; k < s.size(); ++k) {
-            if (*i != s[k]) {
-                return false;
-            }
-            ++i;
-        }
-        return true;
-    }
-
     template <class T>
     inline auto trace(const T& A)
     {
@@ -85,14 +68,14 @@ namespace detail {
     }
 
     template <class T>
-    inline T hydrostatic_deviator(const std::array<T, 4>& A, std::array<T, 4>& Ad)
+    inline T hydrostatic_deviator(const std::array<T, 4>& A, std::array<T, 4>& ret)
     {
-        T Am = 0.5 * (A[0] + A[3]);
-        Ad[0] = A[0] - Am;
-        Ad[1] = A[1];
-        Ad[2] = A[2];
-        Ad[3] = A[3] - Am;
-        return Am;
+        T m = 0.5 * (A[0] + A[3]);
+        ret[0] = A[0] - m;
+        ret[1] = A[1];
+        ret[2] = A[2];
+        ret[3] = A[3] - m;
+        return m;
     }
 
     template <class T>
@@ -204,6 +187,16 @@ namespace detail {
         }
 
         template <class S>
+        static std::array<size_t, rank> getShape(const S& arg)
+        {
+            std::array<size_t, rank> ret;
+            for (size_t i = 0; i < rank; ++i) {
+                ret[i] = arg[i];
+            }
+            return ret;
+        }
+
+        template <class S>
         static std::array<size_t, scalar_rank> getShapeScalar(const S& arg)
         {
             std::array<size_t, scalar_rank> ret;
@@ -222,16 +215,6 @@ namespace detail {
             }
             for (size_t i = scalar_rank; i < rank; ++i) {
                 ret[i] = ndim;
-            }
-            return ret;
-        }
-
-        template <class S>
-        static std::array<size_t, rank> getShape(const S& arg)
-        {
-            std::array<size_t, rank> ret;
-            for (size_t i = 0; i < rank; ++i) {
-                ret[i] = arg[i];
             }
             return ret;
         }

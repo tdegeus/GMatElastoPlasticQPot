@@ -43,7 +43,7 @@ SECTION("Deviatoric - Tensor2")
 {
     GM::Tensor2 A = xt::random::randn<double>({2, 2});
     GM::Tensor2 B = A;
-    double tr = B(0,0) + B(1,1);
+    double tr = B(0, 0) + B(1, 1);
     B(0, 0) -= 0.5 * tr;
     B(1, 1) -= 0.5 * tr;
     REQUIRE(xt::allclose(GM::Deviatoric(A), B));
@@ -53,7 +53,7 @@ SECTION("Deviatoric - List")
 {
     GM::Tensor2 A = xt::random::randn<double>({2, 2});
     GM::Tensor2 B = A;
-    double tr = B(0,0) + B(1,1);
+    double tr = B(0, 0) + B(1, 1);
     B(0, 0) -= 0.5 * tr;
     B(1, 1) -= 0.5 * tr;
     auto M = xt::xtensor<double,3>::from_shape({3, 2, 2});
@@ -69,7 +69,7 @@ SECTION("Deviatoric - Matrix")
 {
     GM::Tensor2 A = xt::random::randn<double>({2, 2});
     GM::Tensor2 B = A;
-    double tr = B(0,0) + B(1,1);
+    double tr = B(0, 0) + B(1, 1);
     B(0, 0) -= 0.5 * tr;
     B(1, 1) -= 0.5 * tr;
     auto M = xt::xtensor<double,4>::from_shape({3, 4, 2, 2});
@@ -176,7 +176,7 @@ SECTION("Sigd - List")
     auto R = xt::xtensor<double,1>::from_shape({M.shape(0)});
     for (size_t i = 0; i < M.shape(0); ++i) {
         xt::view(M, i, xt::all(), xt::all()) = static_cast<double>(i) * A;
-        R(i) = 2.0 * static_cast<double>(i);
+        R(i) = static_cast<double>(i) * 2.0;
     }
     REQUIRE(xt::allclose(GM::Sigd(M), R));
 }
@@ -191,7 +191,7 @@ SECTION("Sigd - Matrix")
     for (size_t i = 0; i < M.shape(0); ++i) {
         for (size_t j = 0; j < M.shape(1); ++j) {
             xt::view(M, i, j, xt::all(), xt::all()) = static_cast<double>(i * M.shape(1) + j) * A;
-            R(i, j) = 2.0 * static_cast<double>(i * M.shape(1) + j);
+            R(i, j) = static_cast<double>(i * M.shape(1) + j) * 2.0;
         }
     }
     REQUIRE(xt::allclose(GM::Sigd(M), R));
