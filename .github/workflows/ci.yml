@@ -41,14 +41,19 @@ jobs:
     - name: Extending conda environment for testing
       run: conda env update --file environment_test.yaml
 
-    - name: Configure using CMake
+    - name: Configure using CMake (also compile examples)
+      if: runner.os == 'Linux'
       run: cmake . -DBUILD_TESTS=ON -DBUILD_EXAMPLES=ON
+
+    - name: Configure using CMake (without examples)
+      if: runner.os != 'Linux'
+      run: cmake . -DBUILD_TESTS=ON -DBUILD_EXAMPLES=OFF
 
     - name: Build C++ tests & examples
       run: cmake --build .
 
-    - name: Run C++ tests & examples
-      run: cmake --build . --target "RUN_TESTS_AND_EXAMPLES"
+    - name: Run C++ tests
+      run: cmake --build . --target "RUN_ALL_TESTS"
 
     - name: Build and install Python module
       run: |
@@ -58,33 +63,38 @@ jobs:
     - name: Run Python tests
       run: python ./test/Cartesian2d.py
 
-    - name: Generate consistency data for "main"
+    - name: Generate consistency data based on current commit
       if: runner.os == 'Linux'
       run: |
         python test/compare_versions/Cartesian2d_generate.py
         python test/compare_versions/Cartesian2d_check_master.py
 
     - name: Check consistency with v0.6.3
+      if: runner.os == 'Linux'
       run: |
         conda install -c conda-forge python-gmatelastoplasticqpot=0.6.3
         python test/compare_versions/Cartesian2d_check_v0.6.3.py
 
     - name: Check consistency with v0.5.0
+      if: runner.os == 'Linux'
       run: |
         conda install -c conda-forge python-gmatelastoplasticqpot=0.5.0
         python test/compare_versions/Cartesian2d_check_v0.5.0.py
 
     - name: Check consistency with v0.4.0
+      if: runner.os == 'Linux'
       run: |
         conda install -c conda-forge python-gmatelastoplasticqpot=0.4.0
         python test/compare_versions/Cartesian2d_check_v0.4.0.py
 
     - name: Check consistency with v0.3.0
+      if: runner.os == 'Linux'
       run: |
         conda install -c conda-forge python-gmatelastoplasticqpot=0.3.0
         python test/compare_versions/Cartesian2d_check_v0.3.0.py
 
     - name: Check consistency with v0.2.2
+      if: runner.os == 'Linux'
       run: |
         conda install -c conda-forge python-gmatelastoplasticqpot=0.2.2
         python test/compare_versions/Cartesian2d_check_v0.2.2.py
