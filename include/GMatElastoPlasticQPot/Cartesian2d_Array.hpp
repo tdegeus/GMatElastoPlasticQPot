@@ -15,8 +15,6 @@ namespace Cartesian2d {
 template <size_t rank>
 inline Array<rank>::Array(const std::array<size_t, rank>& shape) : m_shape(shape)
 {
-    m_type = xt::ones<size_t>(m_shape) * Type::Unset;
-    m_index = xt::empty<size_t>(m_shape);
     m_allSet = false;
     size_t nd = m_ndim;
     std::copy(shape.begin(), shape.end(), m_shape_tensor2.begin());
@@ -24,6 +22,8 @@ inline Array<rank>::Array(const std::array<size_t, rank>& shape) : m_shape(shape
     std::fill(m_shape_tensor2.begin() + rank, m_shape_tensor2.end(), nd);
     std::fill(m_shape_tensor4.begin() + rank, m_shape_tensor4.end(), nd);
     m_size = std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<size_t>());
+    m_type = xt::ones<size_t>(m_shape) * Type::Unset;
+    m_index = xt::empty<size_t>(m_shape);
 }
 
 template <size_t rank>

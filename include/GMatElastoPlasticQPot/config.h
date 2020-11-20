@@ -11,16 +11,11 @@
 #define _USE_MATH_DEFINES
 
 #include <QPot/Static.hpp>
-#include <iostream>
 #include <limits>
 #include <math.h>
 #include <stdexcept>
-#include <tuple>
-#include <vector>
 #include <xtensor/xadapt.hpp>
-#include <xtensor/xarray.hpp>
 #include <xtensor/xfixed.hpp>
-#include <xtensor/xio.hpp>
 #include <xtensor/xmath.hpp>
 #include <xtensor/xnoalias.hpp>
 #include <xtensor/xoperation.hpp>
