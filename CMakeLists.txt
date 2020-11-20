@@ -82,7 +82,7 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/GMatElastoPlasticQPot.pc"
 
 include("GMatElastoPlasticQPotConfig.cmake")
 
-set(CTEST_TEST_TARGET_ALIAS RUN_TESTS_AND_EXAMPLES)
+set(CTEST_TEST_TARGET_ALIAS RUN_ALL_TESTS)
 include(CTest)
 
 if(BUILD_TESTS)
@@ -91,6 +91,5 @@ if(BUILD_TESTS)
 endif()
 
 if(BUILD_EXAMPLES)
-    enable_testing()
     add_subdirectory(examples)
 endif()

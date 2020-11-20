@@ -44,7 +44,5 @@ foreach(testsourcefile ${APP_SOURCES})
         target_link_libraries(${test_name} PRIVATE GooseFEM::debug GMatElastoPlasticQPot::debug)
     endif()
 
-    add_test(NAME ${test_name} COMMAND ${test_name})
-
 endforeach()
 
