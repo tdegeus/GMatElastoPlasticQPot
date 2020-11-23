@@ -32,6 +32,7 @@ message(STATUS "Building GMatElastoPlasticQPot v${_GMAT_VERSION}")
 # ==========
 
 find_package(xtensor REQUIRED)
+find_package(GMatTensor REQUIRED)
 find_package(QPot REQUIRED)
 
 add_library(GMatElastoPlasticQPot INTERFACE)
@@ -40,7 +41,7 @@ target_include_directories(GMatElastoPlasticQPot INTERFACE
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 
-target_link_libraries(GMatElastoPlasticQPot INTERFACE xtensor QPot)
+target_link_libraries(GMatElastoPlasticQPot INTERFACE xtensor QPot GMatTensor)
 
 # Installation
 # ============

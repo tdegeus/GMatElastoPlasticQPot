@@ -1,8 +1,9 @@
 channels:
   - conda-forge
 dependencies:
-  - cmake
   - qpot
+  - gmattensor
+  - cmake
   - xtensor
   - xsimd
   - python

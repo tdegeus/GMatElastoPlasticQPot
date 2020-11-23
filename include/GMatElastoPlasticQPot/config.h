@@ -7,24 +7,6 @@
 #ifndef GMATELASTOPLASTICQPOT_CONFIG_H
 #define GMATELASTOPLASTICQPOT_CONFIG_H
 
-// use "M_PI" from "math.h"
-#define _USE_MATH_DEFINES
-
-#include <QPot/Static.hpp>
-#include <limits>
-#include <math.h>
-#include <stdexcept>
-#include <xtensor/xadapt.hpp>
-#include <xtensor/xfixed.hpp>
-#include <xtensor/xmath.hpp>
-#include <xtensor/xnoalias.hpp>
-#include <xtensor/xoperation.hpp>
-#include <xtensor/xsort.hpp>
-#include <xtensor/xshape.hpp>
-#include <xtensor/xtensor.hpp>
-#include <xtensor/xutils.hpp>
-#include <xtensor/xview.hpp>
-
 #ifdef GMATELASTOPLASTICQPOT_ENABLE_ASSERT
 
     #define GMATELASTOPLASTICQPOT_ASSERT(expr) \

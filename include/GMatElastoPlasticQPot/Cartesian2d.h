@@ -7,6 +7,14 @@
 #ifndef GMATELASTOPLASTICQPOT_CARTESIAN2D_H
 #define GMATELASTOPLASTICQPOT_CARTESIAN2D_H
 
+// use "M_PI" from "math.h"
+#define _USE_MATH_DEFINES
+
+#include <QPot/Static.hpp>
+#include <GMatTensor/Cartesian2d.h>
+#include <math.h>
+#include <xtensor/xsort.hpp>
+
 #include "config.h"
 
 namespace GMatElastoPlasticQPot {
@@ -24,26 +32,19 @@ namespace Cartesian2d {
 
 // Unit tensors
 
-inline Tensor2 I2();
-inline Tensor4 II();
-inline Tensor4 I4();
-inline Tensor4 I4rt();
-inline Tensor4 I4s();
-inline Tensor4 I4d();
+using GMatTensor::Cartesian2d::I2;
+using GMatTensor::Cartesian2d::II;
+using GMatTensor::Cartesian2d::I4;
+using GMatTensor::Cartesian2d::I4rt;
+using GMatTensor::Cartesian2d::I4s;
+using GMatTensor::Cartesian2d::I4d;
 
 // Tensor decomposition
 
-template <class T, class U>
-inline void hydrostatic(const T& A, U& B);
-
-template <class T>
-inline auto Hydrostatic(const T& A);
-
-template <class T, class U>
-inline void deviatoric(const T& A, U& B);
-
-template <class T>
-inline auto Deviatoric(const T& A);
+using GMatTensor::Cartesian2d::hydrostatic;
+using GMatTensor::Cartesian2d::Hydrostatic;
+using GMatTensor::Cartesian2d::deviatoric;
+using GMatTensor::Cartesian2d::Deviatoric;
 
 // Equivalent strain
 
@@ -229,40 +230,40 @@ struct Type {
 
 // Array of material points
 
-template <size_t rank>
-class Array
+template <size_t N>
+class Array : public GMatTensor::Cartesian2d::Array<N>
 {
 public:
     // Constructors
 
     Array() = default;
-    Array(const std::array<size_t, rank>& shape);
+    Array(const std::array<size_t, N>& shape);
 
-    // Shape
+    // Overloaded methods
 
-    std::array<size_t, rank> shape() const;
+    /*
+    std::array<size_t, N> shape() const;
+
+    xt::xtensor<double, N + 2> I2() const;
+    xt::xtensor<double, N + 4> II() const;
+    xt::xtensor<double, N + 4> I4() const;
+    xt::xtensor<double, N + 4> I4rt() const;
+    xt::xtensor<double, N + 4> I4s() const;
+    xt::xtensor<double, N + 4> I4d() const;
+    */
 
     // Type
 
-    xt::xtensor<size_t, rank> type() const;
-    xt::xtensor<size_t, rank> isElastic() const;
-    xt::xtensor<size_t, rank> isPlastic() const;
-    xt::xtensor<size_t, rank> isCusp() const;
-    xt::xtensor<size_t, rank> isSmooth() const;
+    xt::xtensor<size_t, N> type() const;
+    xt::xtensor<size_t, N> isElastic() const;
+    xt::xtensor<size_t, N> isPlastic() const;
+    xt::xtensor<size_t, N> isCusp() const;
+    xt::xtensor<size_t, N> isSmooth() const;
 
     // Parameters
 
-    xt::xtensor<double, rank> K() const;
-    xt::xtensor<double, rank> G() const;
-
-    // Array of unit tensors
-
-    xt::xtensor<double, rank + 2> I2() const;
-    xt::xtensor<double, rank + 4> II() const;
-    xt::xtensor<double, rank + 4> I4() const;
-    xt::xtensor<double, rank + 4> I4rt() const;
-    xt::xtensor<double, rank + 4> I4s() const;
-    xt::xtensor<double, rank + 4> I4d() const;
+    xt::xtensor<double, N> K() const;
+    xt::xtensor<double, N> G() const;
 
     // Check that a type has been set everywhere (throws if unset points are found)
 
@@ -272,19 +273,19 @@ public:
     // (uniform for all points specified: that have "I(i, j) == 1")
 
     void setElastic(
-        const xt::xtensor<size_t, rank>& I,
+        const xt::xtensor<size_t, N>& I,
         double K,
         double G);
 
     void setCusp(
-        const xt::xtensor<size_t, rank>& I,
+        const xt::xtensor<size_t, N>& I,
         double K,
         double G,
         const xt::xtensor<double, 1>& epsy,
         bool init_elastic = true);
 
     void setSmooth(
-        const xt::xtensor<size_t, rank>& I,
+        const xt::xtensor<size_t, N>& I,
         double K,
         double G,
         const xt::xtensor<double, 1>& epsy,
@@ -295,22 +296,22 @@ public:
     // the matrix "idx" refers to a which entry to use: "K(idx)", "G(idx)", or "epsy(idx,:)"
 
     void setElastic(
-        const xt::xtensor<size_t, rank>& I,
-        const xt::xtensor<size_t, rank>& idx,
+        const xt::xtensor<size_t, N>& I,
+        const xt::xtensor<size_t, N>& idx,
         const xt::xtensor<double, 1>& K,
         const xt::xtensor<double, 1>& G);
 
     void setCusp(
-        const xt::xtensor<size_t, rank>& I,
-        const xt::xtensor<size_t, rank>& idx,
+        const xt::xtensor<size_t, N>& I,
+        const xt::xtensor<size_t, N>& idx,
         const xt::xtensor<double, 1>& K,
         const xt::xtensor<double, 1>& G,
         const xt::xtensor<double, 2>& epsy,
         bool init_elastic = true);
 
     void setSmooth(
-        const xt::xtensor<size_t, rank>& I,
-        const xt::xtensor<size_t, rank>& idx,
+        const xt::xtensor<size_t, N>& I,
+        const xt::xtensor<size_t, N>& idx,
         const xt::xtensor<double, 1>& K,
         const xt::xtensor<double, 1>& G,
         const xt::xtensor<double, 2>& epsy,
@@ -318,26 +319,26 @@ public:
 
     // Set strain tensor, get the response
 
-    void setStrain(const xt::xtensor<double, rank + 2>& Eps);
-    void stress(xt::xtensor<double, rank + 2>& Sig) const;
-    void tangent(xt::xtensor<double, rank + 4>& C) const;
-    void currentIndex(xt::xtensor<size_t, rank>& arg) const;
-    void currentYieldLeft(xt::xtensor<double, rank>& arg) const;
-    void currentYieldRight(xt::xtensor<double, rank>& arg) const;
+    void setStrain(const xt::xtensor<double, N + 2>& Eps);
+    void stress(xt::xtensor<double, N + 2>& Sig) const;
+    void tangent(xt::xtensor<double, N + 4>& C) const;
+    void currentIndex(xt::xtensor<size_t, N>& arg) const;
+    void currentYieldLeft(xt::xtensor<double, N>& arg) const;
+    void currentYieldRight(xt::xtensor<double, N>& arg) const;
     bool checkYieldBoundLeft(size_t n = 0) const;
     bool checkYieldBoundRight(size_t n = 0) const;
-    void epsp(xt::xtensor<double, rank>& arg) const;
-    void energy(xt::xtensor<double, rank>& arg) const;
+    void epsp(xt::xtensor<double, N>& arg) const;
+    void energy(xt::xtensor<double, N>& arg) const;
 
     // Auto-allocation of the functions above
 
-    xt::xtensor<double, rank + 2> Stress() const;
-    xt::xtensor<double, rank + 4> Tangent() const;
-    xt::xtensor<size_t, rank> CurrentIndex() const;
-    xt::xtensor<double, rank> CurrentYieldLeft() const;
-    xt::xtensor<double, rank> CurrentYieldRight() const;
-    xt::xtensor<double, rank> Epsp() const;
-    xt::xtensor<double, rank> Energy() const;
+    xt::xtensor<double, N + 2> Stress() const;
+    xt::xtensor<double, N + 4> Tangent() const;
+    xt::xtensor<size_t, N> CurrentIndex() const;
+    xt::xtensor<double, N> CurrentYieldLeft() const;
+    xt::xtensor<double, N> CurrentYieldRight() const;
+    xt::xtensor<double, N> Epsp() const;
+    xt::xtensor<double, N> Energy() const;
 
 private:
     // Material vectors
@@ -346,15 +347,15 @@ private:
     std::vector<Smooth> m_Smooth;
 
     // Identifiers for each matrix entry
-    xt::xtensor<size_t, rank> m_type;  // type (e.g. "Type::Elastic")
-    xt::xtensor<size_t, rank> m_index; // index from the relevant material vector (e.g. "m_Elastic")
+    xt::xtensor<size_t, N> m_type;  // type (e.g. "Type::Elastic")
+    xt::xtensor<size_t, N> m_index; // index from the relevant material vector (e.g. "m_Elastic")
 
     // Shape
     static const size_t m_ndim = 2;
-    size_t m_size;
-    std::array<size_t, rank> m_shape;
-    std::array<size_t, rank + 2> m_shape_tensor2;
-    std::array<size_t, rank + 4> m_shape_tensor4;
+    using GMatTensor::Cartesian2d::Array<N>::m_size;
+    using GMatTensor::Cartesian2d::Array<N>::m_shape;
+    using GMatTensor::Cartesian2d::Array<N>::m_shape_tensor2;
+    using GMatTensor::Cartesian2d::Array<N>::m_shape_tensor4;
 
     // Internal check
     bool m_allSet = false; // true if all points have a material assigned

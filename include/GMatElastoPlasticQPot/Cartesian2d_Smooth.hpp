@@ -75,8 +75,8 @@ inline void Smooth::setStrainIterator(const T& begin)
     std::copy(begin, begin + 4, m_Eps.begin());
 
     std::array<double, 4> Epsd;
-    double epsm = detail::hydrostatic_deviator(m_Eps, Epsd);
-    double epsd = std::sqrt(0.5 * detail::A2_ddot_B2(Epsd, Epsd));
+    double epsm = GMatTensor::Cartesian2d::pointer::hydrostatic_deviatoric(&m_Eps[0], &Epsd[0]);
+    double epsd = std::sqrt(0.5 * GMatTensor::Cartesian2d::pointer::A2_ddot_B2(&Epsd[0], &Epsd[0]));
     m_yield.setPosition(epsd);
 
     m_Sig[0] = m_Sig[3] = m_K * epsm;
@@ -134,8 +134,8 @@ inline Tensor4 Smooth::Tangent() const
 inline double Smooth::energy() const
 {
     std::array<double, 4> Epsd;
-    double epsm = detail::hydrostatic_deviator(m_Eps, Epsd);
-    double epsd = std::sqrt(0.5 * detail::A2_ddot_B2(Epsd, Epsd));
+    double epsm = GMatTensor::Cartesian2d::pointer::hydrostatic_deviatoric(&m_Eps[0], &Epsd[0]);
+    double epsd = std::sqrt(0.5 * GMatTensor::Cartesian2d::pointer::A2_ddot_B2(&Epsd[0], &Epsd[0]));
 
     double U = m_K * std::pow(epsm, 2.0);
 

@@ -38,7 +38,7 @@ inline void Elastic::setStrainIterator(const T& begin)
 {
     std::copy(begin, begin + 4, m_Eps.begin());
 
-    double epsm = 0.5 * detail::trace(m_Eps);
+    double epsm = 0.5 * GMatTensor::Cartesian2d::pointer::trace(&m_Eps[0]);
 
     m_Sig[0] = (m_K - m_G) * epsm + m_G * m_Eps[0];
     m_Sig[1] = m_G * m_Eps[1];
@@ -84,8 +84,8 @@ inline Tensor4 Elastic::Tangent() const
 inline double Elastic::energy() const
 {
     std::array<double, 4> Epsd;
-    double epsm = detail::hydrostatic_deviator(m_Eps, Epsd);
-    double epsd = std::sqrt(0.5 * detail::A2_ddot_B2(Epsd, Epsd));
+    double epsm = GMatTensor::Cartesian2d::pointer::hydrostatic_deviatoric(&m_Eps[0], &Epsd[0]);
+    double epsd = std::sqrt(0.5 * GMatTensor::Cartesian2d::pointer::A2_ddot_B2(&Epsd[0], &Epsd[0]));
     double U = m_K * std::pow(epsm, 2.0);
     double V = m_G * std::pow(epsd, 2.0);
     return U + V;
