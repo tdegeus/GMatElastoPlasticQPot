@@ -234,6 +234,8 @@ template <size_t N>
 class Array : public GMatTensor::Cartesian2d::Array<N>
 {
 public:
+    using GMatTensor::Cartesian2d::Array<N>::rank;
+
     // Constructors
 
     Array() = default;
