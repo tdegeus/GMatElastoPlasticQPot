@@ -65,7 +65,7 @@ install:
     - conda config --set always_yes yes --set changeps1 no
     - conda update -q conda
     - conda install -c conda-forge mamba
-    - mamba install -c conda-forge cmake xtensor qpot python-qpot xsimd python numpy pyxtensor catch2 h5py goosefem
+    - mamba install -c conda-forge cmake xtensor qpot python-qpot xsimd python numpy pyxtensor catch2 h5py goosefem gmattensor
     # Build/install the library
     - cmake . -DBUILD_TESTS=ON -DBUILD_EXAMPLES=ON -DXSIMD=$XSIMD
     - make
@@ -74,7 +74,7 @@ install:
     - python setup.py install
 script:
     # Run tests
-    - ./test/main
+    - ./test/unit-tests
     - python test/Cartesian2d.py
     - python test/compare_versions/Cartesian2d_generate.py
     - python test/compare_versions/Cartesian2d_check_master.py
