@@ -6,17 +6,17 @@ int main()
 {
     double K = 12.3;
     double G = 45.6;
-    xt::xtensor<double,1> epsy = xt::linspace<double>(1e-5, 1, 5001);
+    xt::xtensor<double, 1> epsy = xt::linspace<double>(1e-5, 1, 5001);
 
     size_t nelem = 700;
     size_t nip = 8;
     size_t ndim = 2;
 
     GMat::Array<2> mat({nelem, nip});
-    xt::xtensor<double,4> Eps = xt::zeros<double>({nelem, nip, ndim, ndim});
-    xt::xtensor<double,4> Sig = xt::zeros<double>({nelem, nip, ndim, ndim});
+    xt::xtensor<double, 4> Eps = xt::zeros<double>({nelem, nip, ndim, ndim});
+    xt::xtensor<double, 4> Sig = xt::zeros<double>({nelem, nip, ndim, ndim});
 
-    xt::xtensor<size_t,2> I = xt::empty<size_t>({nelem, nip});
+    xt::xtensor<size_t, 2> I = xt::empty<size_t>({nelem, nip});
 
     I.fill(0);
     xt::view(I, xt::range(0, 500), xt::all()) = 1;
@@ -34,7 +34,6 @@ int main()
         mat.setStrain(Eps);
         mat.stress(Sig);
     }
-
 
     return 0;
 }

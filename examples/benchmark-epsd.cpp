@@ -6,10 +6,11 @@ namespace GMat = GMatElastoPlasticQPot::Cartesian2d;
 int main()
 {
 
-    GMat::Tensor2 A = xt::random::randn<double>({2, 2});
+    xt::xtensor<double, 2> A = xt::random::randn<double>({2, 2});
     A(0, 0) = 1.0;
     A(1, 1) = 1.0;
-    auto M = xt::xtensor<double,4>::from_shape({800, 1000, 2, 2});
+
+    xt::xtensor<double, 4> M = xt::zeros<double>({800, 1000, 2, 2});
     for (size_t i = 0; i < M.shape(0); ++i) {
         for (size_t j = 0; j < M.shape(1); ++j) {
             xt::view(M, i, j, xt::all(), xt::all()) = static_cast<double>(i * M.shape(1) + j) * A;
