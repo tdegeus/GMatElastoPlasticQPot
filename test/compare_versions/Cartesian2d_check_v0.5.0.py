@@ -1,47 +1,53 @@
 import h5py
 import numpy as np
 import GMatElastoPlasticQPot.Cartesian2d as GMat
+import unittest
 
-def A4_ddot_B2(A, B):
-    return np.einsum('...ijkl,...lk->...ij', A, B)
+class Test(unittest.TestCase):
 
-with h5py.File('Cartesian2d_random.hdf5', 'r') as data:
+    def test_main(self):
 
-    shape = data['/shape'][...]
+        with h5py.File('Cartesian2d_random.hdf5', 'r') as data:
 
-    mat = GMat.Matrix(shape[0], shape[1])
+            shape = data['/shape'][...]
 
-    I = data['/cusp/I'][...]
-    idx = data['/cusp/idx'][...]
-    K = data['/cusp/K'][...]
-    G = data['/cusp/G'][...]
-    epsy = data['/cusp/epsy'][...]
+            mat = GMat.Matrix(shape[0], shape[1])
 
-    mat.setCusp(I, idx, K, G, epsy)
+            I = data['/cusp/I'][...]
+            idx = data['/cusp/idx'][...]
+            K = data['/cusp/K'][...]
+            G = data['/cusp/G'][...]
+            epsy = data['/cusp/epsy'][...]
 
-    I = data['/smooth/I'][...]
-    idx = data['/smooth/idx'][...]
-    K = data['/smooth/K'][...]
-    G = data['/smooth/G'][...]
-    epsy = data['/smooth/epsy'][...]
+            mat.setCusp(I, idx, K, G, epsy)
 
-    mat.setSmooth(I, idx, K, G, epsy)
+            I = data['/smooth/I'][...]
+            idx = data['/smooth/idx'][...]
+            K = data['/smooth/K'][...]
+            G = data['/smooth/G'][...]
+            epsy = data['/smooth/epsy'][...]
 
-    I = data['/elastic/I'][...]
-    idx = data['/elastic/idx'][...]
-    K = data['/elastic/K'][...]
-    G = data['/elastic/G'][...]
+            mat.setSmooth(I, idx, K, G, epsy)
 
-    mat.setElastic(I, idx, K, G)
+            I = data['/elastic/I'][...]
+            idx = data['/elastic/idx'][...]
+            K = data['/elastic/K'][...]
+            G = data['/elastic/G'][...]
 
-    for i in range(20):
+            mat.setElastic(I, idx, K, G)
 
-        GradU = data['/random/{0:d}/GradU'.format(i)][...]
+            for i in range(20):
 
-        Eps = np.einsum('...ijkl,...lk->...ij', mat.I4s(), GradU)
-        idx = mat.Find(Eps)
+                GradU = data['/random/{0:d}/GradU'.format(i)][...]
 
-        assert np.allclose(mat.Stress(Eps), data['/random/{0:d}/Stress'.format(i)][...])
-        assert np.allclose(mat.Epsy(idx), data['/random/{0:d}/CurrentYieldLeft'.format(i)][...])
-        assert np.allclose(mat.Epsy(idx + 1), data['/random/{0:d}/CurrentYieldRight'.format(i)][...])
-        assert np.all(mat.Find(Eps) == data['/random/{0:d}/CurrentIndex'.format(i)][...])
+                Eps = np.einsum('...ijkl,...lk->...ij', mat.I4s(), GradU)
+                idx = mat.Find(Eps)
+
+                self.assertTrue(np.allclose(mat.Stress(Eps), data['/random/{0:d}/Stress'.format(i)][...]))
+                self.assertTrue(np.allclose(mat.Epsy(idx), data['/random/{0:d}/CurrentYieldLeft'.format(i)][...]))
+                self.assertTrue(np.allclose(mat.Epsy(idx + 1), data['/random/{0:d}/CurrentYieldRight'.format(i)][...]))
+                self.assertTrue(np.all(mat.Find(Eps) == data['/random/{0:d}/CurrentIndex'.format(i)][...]))
+
+if __name__ == '__main__':
+
+    unittest.main()

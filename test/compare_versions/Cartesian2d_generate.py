@@ -2,9 +2,6 @@ import h5py
 import numpy as np
 import GMatElastoPlasticQPot.Cartesian2d as GMat
 
-def A4_ddot_B2(A, B):
-    return
-
 with h5py.File('Cartesian2d_random.hdf5', 'w') as data:
 
     nelem = 1000
