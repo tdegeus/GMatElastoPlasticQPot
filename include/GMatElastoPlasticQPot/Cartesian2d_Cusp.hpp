@@ -109,9 +109,9 @@ inline void Cusp::stressIterator(const T& begin) const
     std::copy(m_Sig.begin(), m_Sig.end(), begin);
 }
 
-inline Tensor2 Cusp::Stress() const
+inline xt::xtensor<double, 2> Cusp::Stress() const
 {
-    auto ret = Tensor2::from_shape({2, 2});
+    xt::xtensor<double, 2> ret = xt::empty<double>({2, 2});
     this->stressIterator(ret.begin());
     return ret;
 }
@@ -124,9 +124,9 @@ inline void Cusp::tangent(T& C) const
     xt::noalias(C) = 0.5 * m_K * II + m_G * I4d;
 }
 
-inline Tensor4 Cusp::Tangent() const
+inline xt::xtensor<double, 4> Cusp::Tangent() const
 {
-    auto ret = Tensor4::from_shape({2, 2, 2, 2});
+    xt::xtensor<double, 4> ret = xt::zeros<double>({2, 2, 2, 2});
     this->tangent(ret);
     return ret;
 }

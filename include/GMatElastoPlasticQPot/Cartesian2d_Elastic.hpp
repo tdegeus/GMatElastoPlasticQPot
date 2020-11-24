@@ -59,9 +59,9 @@ inline void Elastic::stressIterator(const T& begin) const
     std::copy(m_Sig.begin(), m_Sig.end(), begin);
 }
 
-inline Tensor2 Elastic::Stress() const
+inline xt::xtensor<double, 2> Elastic::Stress() const
 {
-    auto ret = Tensor2::from_shape({2, 2});
+    xt::xtensor<double, 2> ret = xt::empty<double>({2, 2});
     this->stressIterator(ret.begin());
     return ret;
 }
@@ -74,9 +74,9 @@ inline void Elastic::tangent(T& C) const
     xt::noalias(C) = 0.5 * m_K * II + m_G * I4d;
 }
 
-inline Tensor4 Elastic::Tangent() const
+inline xt::xtensor<double, 4> Elastic::Tangent() const
 {
-    auto ret = Tensor4::from_shape({2, 2, 2, 2});
+    xt::xtensor<double, 4> ret = xt::zeros<double>({2, 2, 2, 2});
     this->tangent(ret);
     return ret;
 }

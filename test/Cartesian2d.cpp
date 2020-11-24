@@ -31,7 +31,7 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
 
 SECTION("Epsd - Tensor2")
 {
-    GM::Tensor2 A = xt::zeros<double>({2, 2});
+    xt::xtensor<double, 2> A = xt::zeros<double>({2, 2});
     A(0, 1) = 1.0;
     A(1, 0) = 1.0;
     REQUIRE(GM::Epsd(A)() == Approx(1.0));
@@ -39,7 +39,7 @@ SECTION("Epsd - Tensor2")
 
 SECTION("Epsd - List")
 {
-    GM::Tensor2 A = xt::zeros<double>({2, 2});
+    xt::xtensor<double, 2> A = xt::zeros<double>({2, 2});
     A(0, 1) = 1.0;
     A(1, 0) = 1.0;
     auto M = xt::xtensor<double,3>::from_shape({3, 2, 2});
@@ -53,7 +53,7 @@ SECTION("Epsd - List")
 
 SECTION("Epsd - Matrix")
 {
-    GM::Tensor2 A = xt::zeros<double>({2, 2});
+    xt::xtensor<double, 2> A = xt::zeros<double>({2, 2});
     A(0, 1) = 1.0;
     A(1, 0) = 1.0;
     auto M = xt::xtensor<double,4>::from_shape({3, 4, 2, 2});
@@ -69,7 +69,7 @@ SECTION("Epsd - Matrix")
 
 SECTION("Sigd - Tensor2")
 {
-    GM::Tensor2 A = xt::zeros<double>({2, 2});
+    xt::xtensor<double, 2> A = xt::zeros<double>({2, 2});
     A(0, 1) = 1.0;
     A(1, 0) = 1.0;
     REQUIRE(GM::Sigd(A)() == Approx(2.0));
@@ -77,7 +77,7 @@ SECTION("Sigd - Tensor2")
 
 SECTION("Sigd - List")
 {
-    GM::Tensor2 A = xt::zeros<double>({2, 2});
+    xt::xtensor<double, 2> A = xt::zeros<double>({2, 2});
     A(0, 1) = 1.0;
     A(1, 0) = 1.0;
     auto M = xt::xtensor<double,3>::from_shape({3, 2, 2});
@@ -91,7 +91,7 @@ SECTION("Sigd - List")
 
 SECTION("Sigd - Matrix")
 {
-    GM::Tensor2 A = xt::zeros<double>({2, 2});
+    xt::xtensor<double, 2> A = xt::zeros<double>({2, 2});
     A(0, 1) = 1.0;
     A(1, 0) = 1.0;
     auto M = xt::xtensor<double,4>::from_shape({3, 4, 2, 2});
@@ -201,8 +201,8 @@ SECTION("Tangent (purely elastic response only)")
     double K = 12.3;
     double G = 45.6;
 
-    GM::Tensor2 Eps = xt::random::randn<double>({2, 2});
-    GM::Tensor4 Is = GM::I4s();
+    xt::xtensor<double, 2> Eps = xt::random::randn<double>({2, 2});
+    xt::xtensor<double, 4> Is = GM::I4s();
     Eps = A4_ddot_B2(Is, Eps);
 
     // Elastic

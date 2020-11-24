@@ -236,7 +236,7 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
 
         .def("K", &SM::Elastic::K, "Returns the bulk modulus.")
         .def("G", &SM::Elastic::G, "Returns the shear modulus.")
-        .def("setStrain", &SM::Elastic::setStrain<SM::Tensor2>, "Set current strain tensor.")
+        .def("setStrain", &SM::Elastic::setStrain<xt::xtensor<double, 2>>, "Set current strain tensor.")
         .def("Stress", &SM::Elastic::Stress, "Returns stress tensor, for last known strain.")
 
         .def(
@@ -265,7 +265,7 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
         .def("K", &SM::Cusp::K, "Returns the bulk modulus.")
         .def("G", &SM::Cusp::G, "Returns the shear modulus.")
         .def("epsy", &SM::Cusp::epsy, "Returns the yield strains.")
-        .def("setStrain", &SM::Cusp::setStrain<SM::Tensor2>, "Set current strain tensor.")
+        .def("setStrain", &SM::Cusp::setStrain<xt::xtensor<double, 2>>, "Set current strain tensor.")
         .def("Stress", &SM::Cusp::Stress, "Returns stress tensor, for last known strain.")
 
         .def(
@@ -324,7 +324,7 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
         .def("K", &SM::Smooth::K, "Returns the bulk modulus.")
         .def("G", &SM::Smooth::G, "Returns the shear modulus.")
         .def("epsy", &SM::Smooth::epsy, "Returns the yield strains.")
-        .def("setStrain", &SM::Smooth::setStrain<SM::Tensor2>, "Set current strain tensor.")
+        .def("setStrain", &SM::Smooth::setStrain<xt::xtensor<double, 2>>, "Set current strain tensor.")
         .def("Stress", &SM::Smooth::Stress, "Returns stress tensor, for last known strain.")
 
         .def(

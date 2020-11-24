@@ -12,15 +12,12 @@ option(BUILD_EXAMPLES "${PROJECT_NAME} Build examples" OFF)
 # Version
 # =======
 
-file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/include/GMatElastoPlasticQPot/config.h"
-             _GMAT_version_defines
+file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/include/GMatElastoPlasticQPot/config.h" _GMAT_ver
      REGEX "#define GMATELASTOPLASTICQPOT_VERSION_(MAJOR|MINOR|PATCH)")
 
-foreach(ver ${_GMAT_version_defines})
+foreach(ver ${_GMAT_ver})
     if(ver MATCHES "#define GMATELASTOPLASTICQPOT_VERSION_(MAJOR|MINOR|PATCH) +([^ ]+)$")
-        set(_GMAT_VERSION_${CMAKE_MATCH_1}
-            "${CMAKE_MATCH_2}"
-            CACHE INTERNAL "")
+        set(_GMAT_VERSION_${CMAKE_MATCH_1} "${CMAKE_MATCH_2}" CACHE INTERNAL "")
     endif()
 endforeach()
 

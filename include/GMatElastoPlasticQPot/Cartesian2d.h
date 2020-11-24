@@ -20,16 +20,6 @@
 namespace GMatElastoPlasticQPot {
 namespace Cartesian2d {
 
-// Alias
-
-#if defined(_WIN32) || defined(_WIN64)
-    using Tensor2 = xt::xtensor<double, 2>;
-    using Tensor4 = xt::xtensor<double, 4>;
-#else
-    using Tensor2 = xt::xtensor_fixed<double, xt::xshape<2, 2>>;
-    using Tensor4 = xt::xtensor_fixed<double, xt::xshape<2, 2, 2, 2>>;
-#endif
-
 // Unit tensors
 
 using GMatTensor::Cartesian2d::I2;
@@ -94,8 +84,8 @@ public:
     void tangent(T& C) const;
 
     // Auto-allocation
-    Tensor2 Stress() const;
-    Tensor4 Tangent() const;
+    xt::xtensor<double, 2> Stress() const;
+    xt::xtensor<double, 4> Tangent() const;
 
     // Return current state
     double energy() const; // potential energy
@@ -140,8 +130,8 @@ public:
     void tangent(T& C) const;
 
     // Auto-allocation
-    Tensor2 Stress() const;
-    Tensor4 Tangent() const;
+    xt::xtensor<double, 2> Stress() const;
+    xt::xtensor<double, 4> Tangent() const;
 
     // Return current state
     size_t currentIndex() const;      // yield index
@@ -195,8 +185,8 @@ public:
     void tangent(T& C) const;
 
     // Auto-allocation
-    Tensor2 Stress() const;
-    Tensor4 Tangent() const;
+    xt::xtensor<double, 2> Stress() const;
+    xt::xtensor<double, 4> Tangent() const;
 
     // Return current state
     size_t currentIndex() const;      // yield index
@@ -353,7 +343,9 @@ private:
     xt::xtensor<size_t, N> m_index; // index from the relevant material vector (e.g. "m_Elastic")
 
     // Shape
-    static const size_t m_ndim = 2;
+    using GMatTensor::Cartesian2d::Array<N>::m_ndim;
+    using GMatTensor::Cartesian2d::Array<N>::m_stride_tensor2;
+    using GMatTensor::Cartesian2d::Array<N>::m_stride_tensor4;
     using GMatTensor::Cartesian2d::Array<N>::m_size;
     using GMatTensor::Cartesian2d::Array<N>::m_shape;
     using GMatTensor::Cartesian2d::Array<N>::m_shape_tensor2;

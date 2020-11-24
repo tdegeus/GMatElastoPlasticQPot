@@ -1,5 +1,6 @@
 # GMatElastoPlasticQPot
 
+[![CI](https://github.com/tdegeus/GMatElastoPlasticQPot/workflows/CI/badge.svg)](https://github.com/tdegeus/GMatElastoPlasticQPot/actions)
 [![Travis](https://travis-ci.com/tdegeus/GMatElastoPlasticQPot.svg?branch=master)](https://travis-ci.com/tdegeus/GMatElastoPlasticQPot)
 [![Build status](https://ci.appveyor.com/api/projects/status/6qb7cgh3b7ant3a7?svg=true)](https://ci.appveyor.com/project/tdegeus/gmatelastoplasticqpot)
 
@@ -16,9 +17,9 @@ conveniently compiled to this [PDF](docs/readme.pdf).
     - [C++ and Python](#c-and-python)
     - [Cartesian2d](#cartesian2d)
         - [Overview](#overview)
+        - [Example](#example)
         - [Function names](#function-names)
         - [Storage](#storage)
-        - [Example](#example)
     - [Debugging](#debugging)
 - [Installation](#installation)
     - [C++ headers](#c-headers)
@@ -40,8 +41,9 @@ conveniently compiled to this [PDF](docs/readme.pdf).
     - [Basic benchmarking](#basic-benchmarking)
     - [Extensive testing](#extensive-testing)
 - [Upgrading instructions](#upgrading-instructions)
-    - [Upgrading to v0.6.*](#upgrading-to-v06)
+    - [Upgrading to >v0.6.*](#upgrading-to-v06)
 - [Change-log](#change-log)
+    - [v0.7.1](#v071)
     - [v0.7.0](#v070)
     - [v0.6.4](#v064)
     - [v0.6.3](#v063)
@@ -52,7 +54,7 @@ conveniently compiled to this [PDF](docs/readme.pdf).
     - [v0.4.0](#v040)
     - [v0.3.0](#v030)
     - [v0.2.2](#v022)
-- [v0.2.1](#v021)
+    - [v0.2.1](#v021)
 
 <!-- /MarkdownTOC -->
 
@@ -107,50 +109,7 @@ have a single API for a matrix of material points.
 
 >   Note that all strain tensors are presumed symmetric. 
 >   No checks are made to ensure this.
-
-### Function names
-
-+   Functions whose name starts with a capital letter (e.g. `Stress`) 
-    return their result (allocating it internally).
-+   Functions whose name starts with a small letter (e.g. `stress`) 
-    write to the, fully allocated, last input argument(s) 
-    (avoiding re-allocation, but making the user responsible to do it properly).
-
-### Storage
-
-+   Scalar
-    ```cpp
-    double
-    ```
-    or
-    ```cpp
-    xt::xtensor<double, 0>
-    ```
-
-+   2nd-order tensor
-    ```cpp
-    xt::xtensor_fixed<double, xt::xshape<2, 2>> = 
-    GMatElastoPlasticQPot::Cartesian2d::Tensor2
-    ```
-    or 
-    ```cpp
-    xt:xtensor<double, 2>
-    ```
-
-+   List *(i)* of second order tensors *(x,y)* : *A(i,x,y)*
-    ```cpp
-    xt::xtensor<double, 3>
-    ```
-    Note that the shape is `[I, 2, 2]`.
-
-+   Matrix *(i,j)* of second order tensors *(x,y)* : *A(i,j,x,y)*
-    ```cpp
-    xt::xtensor<double, 4>
-    ```
-    Note that the shape is `[I, J, 2, 2]`.
-
-+   Etc.
-
+   
 ### Example
 
 Only a partial examples are presented here, meant to understand the code's structure.
@@ -170,13 +129,13 @@ int main()
     ...
     
     // set strain (follows e.g. from FEM discretisation)
-    GMat::Tensor2 Eps;
+    xt::xtensor<double, 2> Eps;
     ...
     elastic.setStrain(Eps);
     ...
     
     // compute stress (including allocation of the result)
-    GMat::Tensor2 Sig = elastic.Stress();
+    xt::xtensor<double, 2> Sig = elastic.Stress();
     // OR compute stress without (re)allocating the results
     // in this case "Sig" has to be of the correct type and shape
     elastic.stress(Sig); 
@@ -221,6 +180,45 @@ int main()
 }
 ```
 
+### Function names
+
++   Functions whose name starts with a capital letter (e.g. `Stress`) 
+    return their result (allocating it internally).
++   Functions whose name starts with a small letter (e.g. `stress`) 
+    write to the, fully allocated, last input argument(s) 
+    (avoiding re-allocation, but making the user responsible to do it properly).
+
+### Storage
+
++   Scalar:
+    ```cpp
+    double
+    ```
+    or
+    ```cpp
+    xt::xtensor<double, 0>
+    ```
+
++   Tensors
+    ```cpp
+    xt:xtensor<double, 2> // 2nd-order tensor
+    xt:xtensor<double, 4> // 4th-order tensor
+    ```
+
++   List *(i)* of second order tensors *(x, y)* : *A(i, x, y)*
+    ```cpp
+    xt::xtensor<double, 3>
+    ```
+    Note that the shape is `[I, 2, 2]`.
+
++   Matrix *(i, j)* of second order tensors *(x, y)* : *A(i, j, x, y)*
+    ```cpp
+    xt::xtensor<double, 4>
+    ```
+    Note that the shape is `[I, J, 2, 2]`.
+
++   Etc.
+
 ## Debugging
 
 To enable assertions define `GMATELASTOPLASTICQPOT_ENABLE_ASSERT` 
@@ -234,7 +232,7 @@ Using *CMake* this can be done using the `GMatElastoPlasticQPot::assert` target
 >   
 >   Using *CMake* all assertions are enabled using the `GMatElastoPlasticQPot::debug` target
 >   (see [below](#using-cmake)).
-
+>
 >   The library's assertions are enabled in the Python interface, 
 >   but debugging with *xtensor* is disabled.
 
@@ -412,7 +410,8 @@ make
 
 ## Extensive testing
 
->   Run by the continuous integration
+>   Run by the continuous integration.
+>   See [ci.yaml](.github/workflows/ci.yml) for details.
 
 To make sure that the current version in up-to-date with old versions,
 one starts by generating a set or random states using the current version:
@@ -426,10 +425,10 @@ And then checks that the generated states are also found with previous
 versions:
 
 ```
-git checkout tags/v0.6.2
+git checkout tags/v0.6.3
 python setup.py build
 python setup.py install
-python Cartesian2d_check_v0.6.2.py
+python Cartesian2d_check_v0.6.3.py
 ```
 
 and likewise for
@@ -438,12 +437,16 @@ and likewise for
 python Cartesian2d_check_v0.5.0.py
 ```
 
+etc.
+
+See [ci.yaml](.github/workflows/ci.yml) for details.
+
 If no assertions are found each time the code should be behaving as supposed to. 
 Please feel free to contribute additional tests. 
 
 # Upgrading instructions
 
-## Upgrading to v0.6.*
+## Upgrading to >v0.6.*
 
 Compared to v0.5.0, v0.6.1 has some generalisations and efficiency updates. 
 This requires the following changes:
@@ -466,6 +469,16 @@ This requires the following changes:
     The library therefore now depends on [QPot](https://www.github.com/tdegeus/QPot).
 
 # Change-log
+
+## v0.7.1
+
+*   Using *GMatTensor* under the hood. 
+    This significantly shortens the implementation here, without loosing any functionality
+    (while allowing exposing future additions to *GMatTensor*).
+*   Switching to GitHub CI.
+*   Shortening Python API generator.
+*   Using Python's `unittest`.
+*   Stopping completely the use of `xtensor_fixed`.
 
 ## v0.7.0
 
@@ -547,7 +560,7 @@ This requires the following changes:
 *   Making xsimd 'optional' for Python build: runs in xsimd is found
 *   Minor code-style updates
 
-# v0.2.1
+## v0.2.1
 
 *   Added minimal documentation.
 

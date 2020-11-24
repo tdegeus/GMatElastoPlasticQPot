@@ -291,13 +291,13 @@ inline void Array<N>::setStrain(const xt::xtensor<double, N + 2>& A)
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.data()[i]) {
         case Type::Elastic:
-            m_Elastic[m_index.data()[i]].setStrainIterator(&A.data()[i * m_ndim * m_ndim]);
+            m_Elastic[m_index.data()[i]].setStrainIterator(&A.data()[i * m_stride_tensor2]);
             break;
         case Type::Cusp:
-            m_Cusp[m_index.data()[i]].setStrainIterator(&A.data()[i * m_ndim * m_ndim]);
+            m_Cusp[m_index.data()[i]].setStrainIterator(&A.data()[i * m_stride_tensor2]);
             break;
         case Type::Smooth:
-            m_Smooth[m_index.data()[i]].setStrainIterator(&A.data()[i * m_ndim * m_ndim]);
+            m_Smooth[m_index.data()[i]].setStrainIterator(&A.data()[i * m_stride_tensor2]);
             break;
         }
     }
@@ -313,13 +313,13 @@ inline void Array<N>::stress(xt::xtensor<double, N + 2>& A) const
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.data()[i]) {
         case Type::Elastic:
-            m_Elastic[m_index.data()[i]].stressIterator(&A.data()[i * m_ndim * m_ndim]);
+            m_Elastic[m_index.data()[i]].stressIterator(&A.data()[i * m_stride_tensor2]);
             break;
         case Type::Cusp:
-            m_Cusp[m_index.data()[i]].stressIterator(&A.data()[i * m_ndim * m_ndim]);
+            m_Cusp[m_index.data()[i]].stressIterator(&A.data()[i * m_stride_tensor2]);
             break;
         case Type::Smooth:
-            m_Smooth[m_index.data()[i]].stressIterator(&A.data()[i * m_ndim * m_ndim]);
+            m_Smooth[m_index.data()[i]].stressIterator(&A.data()[i * m_stride_tensor2]);
             break;
         }
     }
@@ -330,11 +330,10 @@ inline void Array<N>::tangent(xt::xtensor<double, N + 4>& A) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(A, m_shape_tensor4));
-    size_t stride = m_ndim * m_ndim * m_ndim * m_ndim;
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
-        auto c = xt::adapt(&A.data()[i * stride], xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
+        auto c = xt::adapt(&A.data()[i * m_stride_tensor4], xt::xshape<m_ndim, m_ndim, m_ndim, m_ndim>());
         switch (m_type.data()[i]) {
         case Type::Elastic:
             m_Elastic[m_index.data()[i]].tangent(c);
