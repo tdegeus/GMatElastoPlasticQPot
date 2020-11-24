@@ -41,9 +41,10 @@ conveniently compiled to this [PDF](docs/readme.pdf).
     - [Basic benchmarking](#basic-benchmarking)
     - [Extensive testing](#extensive-testing)
 - [Upgrading instructions](#upgrading-instructions)
+    - [Upgrading to >v0.8.*](#upgrading-to-v08)
     - [Upgrading to >v0.6.*](#upgrading-to-v06)
 - [Change-log](#change-log)
-    - [v0.7.1](#v071)
+    - [v0.8.0](#v080)
     - [v0.7.0](#v070)
     - [v0.6.4](#v064)
     - [v0.6.3](#v063)
@@ -446,6 +447,19 @@ Please feel free to contribute additional tests.
 
 # Upgrading instructions
 
+## Upgrading to >v0.8.*
+
+`xtensor_fixed` was completely deprecated in v0.8.0, as were the type aliases 
+`Tensor2` and `Tensor4`. 
+Please update your code as follows:
+
+*   `Tensor2` -> `xt::xtensor<double, 2>`.
+*   `Tensor4` -> `xt::xtensor<double, 4>`.
+
+**Tip:** Used `auto` as return type as much as possible.
+This simplifies implementation, and renders is less subjective to library 
+return type changes.
+
 ## Upgrading to >v0.6.*
 
 Compared to v0.5.0, v0.6.1 has some generalisations and efficiency updates. 
@@ -470,7 +484,7 @@ This requires the following changes:
 
 # Change-log
 
-## v0.7.1
+## v0.8.0
 
 *   Using *GMatTensor* under the hood. 
     This significantly shortens the implementation here, without loosing any functionality
