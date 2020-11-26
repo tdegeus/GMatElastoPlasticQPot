@@ -43,6 +43,11 @@ inline xt::xtensor<double, 1> Smooth::epsy() const
     return m_yield.yield();
 }
 
+inline auto Smooth::QPot() const
+{
+    return m_yield();
+}
+
 inline size_t Smooth::currentIndex() const
 {
     return m_yield.currentIndex();

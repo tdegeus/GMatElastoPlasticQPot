@@ -43,6 +43,11 @@ inline xt::xtensor<double, 1> Cusp::epsy() const
     return m_yield.yield();
 }
 
+inline auto Cusp::QPot() const
+{
+    return m_yield();
+}
+
 inline size_t Cusp::currentIndex() const
 {
     return m_yield.currentIndex();

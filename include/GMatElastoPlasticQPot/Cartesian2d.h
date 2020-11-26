@@ -110,6 +110,7 @@ public:
     double K() const;
     double G() const;
     xt::xtensor<double, 1> epsy() const;
+    auto QPot() const;
 
     // Set strain
     template <class T>
@@ -165,6 +166,7 @@ public:
     double K() const;
     double G() const;
     xt::xtensor<double, 1> epsy() const;
+    auto QPot() const;
 
     // Set strain
     template <class T>
@@ -331,6 +333,9 @@ public:
     xt::xtensor<double, N> CurrentYieldRight() const;
     xt::xtensor<double, N> Epsp() const;
     xt::xtensor<double, N> Energy() const;
+
+    // underlying model
+    auto Model(const std::array<size_t, N>& index) const;
 
 private:
     // Material vectors

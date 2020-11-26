@@ -566,6 +566,21 @@ inline xt::xtensor<double, N> Array<N>::Energy() const
     return ret;
 }
 
+template <size_t N>
+inline auto Array<N>::Model(const std::array<size_t, N>& index) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
+
+    switch (m_type[index]) {
+    case Type::Elastic:
+        return m_Elastic[m_index[index]];
+    case Type::Cusp:
+        return m_Cusp[m_index[index]];
+    case Type::Smooth:
+        return m_Smooth[m_index[index]];
+    }
+}
+
 } // namespace Cartesian2d
 } // namespace GMatElastoPlasticQPot
 
