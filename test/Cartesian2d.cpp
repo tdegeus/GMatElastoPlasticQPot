@@ -3,7 +3,7 @@
 #include <xtensor/xrandom.hpp>
 #include <GMatElastoPlasticQPot/Cartesian2d.h>
 
-#define ISCLOSE(a,b) REQUIRE_THAT((a), Catch::WithinAbs((b), 1.e-12));
+#define ISCLOSE(a,b) REQUIRE_THAT((a), Catch::WithinAbs((b), 1e-12));
 
 namespace GM = GMatElastoPlasticQPot::Cartesian2d;
 
@@ -244,6 +244,12 @@ SECTION("Array")
     xt::xtensor<double, 2> Eps = {
         {epsm, gamma},
         {gamma, epsm}};
+    xt::xtensor<double, 2> Sig_elas = {
+        {K * epsm, G * gamma},
+        {G * gamma, K * epsm}};
+    xt::xtensor<double, 2> Sig_plas = {
+        {K * epsm, 0.0},
+        {0.0, K * epsm}};
 
     GM::Array<2> mat({nelem, nip});
 
@@ -267,46 +273,29 @@ SECTION("Array")
         mat.setCusp(I, K, G, epsy);
     }
 
-    auto eps = xt::xtensor<double,4>::from_shape({nelem, nip, 2ul, 2ul});
+    xt::xtensor<double, 4> eps = xt::empty<double>({nelem, nip, 2ul, 2ul});
+    xt::xtensor<double, 4> sig = xt::empty<double>({nelem, nip, 2ul, 2ul});
+    xt::xtensor<double, 2> epsp = xt::empty<double>({nelem, nip});
 
     for (size_t e = 0; e < nelem; ++e) {
         for (size_t q = 0; q < nip; ++q) {
             double fac = static_cast<double>((e + 1) * nip + (q + 1));
             xt::view(eps, e, q) = fac * Eps;
+            if (e == 0) {
+                xt::view(sig, e, q) = fac * Sig_elas;
+                epsp(e, q) = 0.0;
+            }
+            else {
+                xt::view(sig, e, q) = fac * Sig_plas;
+                epsp(e, q) = fac * gamma;
+            }
         }
     }
 
     mat.setStrain(eps);
-    auto sig = mat.Stress();
-    auto epsp = mat.Epsp();
 
-    for (size_t q = 0; q < nip; ++q) {
-
-        size_t e = 0;
-        double fac = static_cast<double>((e + 1) * nip + (q + 1));
-        ISCLOSE(sig(e, q, 0, 0), fac * K * epsm);
-        ISCLOSE(sig(e, q, 1, 1), fac * K * epsm);
-        ISCLOSE(sig(e, q, 0, 1), fac * G * gamma);
-        ISCLOSE(sig(e, q, 1, 0), fac * G * gamma);
-        ISCLOSE(epsp(e, q), 0.0);
-
-        e = 1;
-        fac = static_cast<double>((e + 1) * nip + (q + 1));
-        ISCLOSE(sig(e, q, 0, 0), fac * K * epsm);
-        ISCLOSE(sig(e, q, 1, 1), fac * K * epsm);
-        ISCLOSE(sig(e, q, 0, 1), 0.0);
-        ISCLOSE(sig(e, q, 1, 0), 0.0);
-        ISCLOSE(epsp(e, q), fac * gamma);
-
-        e = 2;
-        fac = static_cast<double>((e + 1) * nip + (q + 1));
-        ISCLOSE(sig(e, q, 0, 0), fac * K * epsm);
-        ISCLOSE(sig(e, q, 1, 1), fac * K * epsm);
-        ISCLOSE(sig(e, q, 0, 1), 0.0);
-        ISCLOSE(sig(e, q, 1, 0), 0.0);
-        ISCLOSE(epsp(e, q), fac * gamma);
-    }
-
+    REQUIRE(xt::allclose(mat.Stress(), sig));
+    REQUIRE(xt::allclose(mat.Epsp(), epsp));
     REQUIRE(mat.checkYieldBoundLeft());
     REQUIRE(mat.checkYieldBoundRight());
 }
