@@ -241,6 +241,7 @@ SECTION("Array")
     double epsm = 0.12;
     size_t nelem = 3;
     size_t nip = 2;
+    size_t ndim = 2;
     xt::xtensor<double, 2> Eps = {
         {epsm, gamma},
         {gamma, epsm}};
@@ -273,8 +274,8 @@ SECTION("Array")
         mat.setCusp(I, K, G, epsy);
     }
 
-    xt::xtensor<double, 4> eps = xt::empty<double>({nelem, nip, 2ul, 2ul});
-    xt::xtensor<double, 4> sig = xt::empty<double>({nelem, nip, 2ul, 2ul});
+    xt::xtensor<double, 4> eps = xt::empty<double>({nelem, nip, ndim, ndim});
+    xt::xtensor<double, 4> sig = xt::empty<double>({nelem, nip, ndim, ndim});
     xt::xtensor<double, 2> epsp = xt::empty<double>({nelem, nip});
 
     for (size_t e = 0; e < nelem; ++e) {
