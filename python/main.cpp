@@ -131,6 +131,9 @@ auto construct_Array(T& self)
         .def("CurrentYieldRight", &S::CurrentYieldRight, "Get right yield strains.")
         .def("Epsp", &S::Epsp, "Get equivalent plastic strains.")
         .def("Energy", &S::Energy, "Get energies.")
+        .def("getElastic", &S::getElastic, "Returns underlying Elastic model.")
+        .def("getCusp", &S::getCusp, "Returns underlying Cusp model.")
+        .def("getSmooth", &S::getSmooth, "Returns underlying Smooth model.")
 
         .def(
             "checkYieldBoundLeft",
@@ -265,7 +268,7 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
         .def("K", &SM::Cusp::K, "Returns the bulk modulus.")
         .def("G", &SM::Cusp::G, "Returns the shear modulus.")
         .def("epsy", &SM::Cusp::epsy, "Returns the yield strains.")
-        .def("QPot", &SM::Cusp::QPot, "Returns underlying QPot model.")
+        .def("getQPot", &SM::Cusp::getQPot, "Returns underlying QPot model.")
         .def("setStrain", &SM::Cusp::setStrain<xt::xtensor<double, 2>>, "Set current strain tensor.")
         .def("Stress", &SM::Cusp::Stress, "Returns stress tensor, for last known strain.")
 
@@ -325,7 +328,7 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
         .def("K", &SM::Smooth::K, "Returns the bulk modulus.")
         .def("G", &SM::Smooth::G, "Returns the shear modulus.")
         .def("epsy", &SM::Smooth::epsy, "Returns the yield strains.")
-        .def("QPot", &SM::Smooth::QPot, "Returns underlying QPot model.")
+        .def("getQPot", &SM::Smooth::getQPot, "Returns underlying QPot model.")
         .def("setStrain", &SM::Smooth::setStrain<xt::xtensor<double, 2>>, "Set current strain tensor.")
         .def("Stress", &SM::Smooth::Stress, "Returns stress tensor, for last known strain.")
 

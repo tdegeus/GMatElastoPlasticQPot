@@ -567,18 +567,27 @@ inline xt::xtensor<double, N> Array<N>::Energy() const
 }
 
 template <size_t N>
-inline auto Array<N>::Model(const std::array<size_t, N>& index) const
+inline auto Array<N>::getElastic(const std::array<size_t, N>& index) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
+    GMATELASTOPLASTICQPOT_ASSERT(m_type[index] == Type::Elastic);
+    return m_Elastic[m_index[index]];
+}
 
-    switch (m_type[index]) {
-    case Type::Elastic:
-        return m_Elastic[m_index[index]];
-    case Type::Cusp:
-        return m_Cusp[m_index[index]];
-    case Type::Smooth:
-        return m_Smooth[m_index[index]];
-    }
+template <size_t N>
+inline auto Array<N>::getCusp(const std::array<size_t, N>& index) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
+    GMATELASTOPLASTICQPOT_ASSERT(m_type[index] == Type::Cusp);
+    return m_Elastic[m_index[index]];
+}
+
+template <size_t N>
+inline auto Array<N>::getSmooth(const std::array<size_t, N>& index) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
+    GMATELASTOPLASTICQPOT_ASSERT(m_type[index] == Type::Smooth);
+    return m_Elastic[m_index[index]];
 }
 
 } // namespace Cartesian2d

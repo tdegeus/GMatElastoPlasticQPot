@@ -43,9 +43,9 @@ inline xt::xtensor<double, 1> Cusp::epsy() const
     return m_yield.yield();
 }
 
-inline auto Cusp::QPot() const
+inline auto Cusp::getQPot() const
 {
-    return m_yield();
+    return m_yield;
 }
 
 inline size_t Cusp::currentIndex() const
