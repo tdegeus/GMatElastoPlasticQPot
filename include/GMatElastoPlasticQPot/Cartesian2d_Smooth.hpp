@@ -48,6 +48,11 @@ inline auto Smooth::getQPot() const
     return m_yield;
 }
 
+inline auto* Smooth::refQPot() const
+{
+    return &m_yield;
+}
+
 inline size_t Smooth::currentIndex() const
 {
     return m_yield.currentIndex();

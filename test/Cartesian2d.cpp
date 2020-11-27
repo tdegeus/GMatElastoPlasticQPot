@@ -319,12 +319,15 @@ SECTION("Array - Model")
     double epsm = 0.12;
     size_t nelem = 3;
     size_t nip = 2;
+
     xt::xtensor<double, 2> Eps = {
         {epsm, gamma},
         {gamma, epsm}};
+
     xt::xtensor<double, 2> Sig_elas = {
         {K * epsm, G * gamma},
         {G * gamma, K * epsm}};
+
     xt::xtensor<double, 2> Sig_plas = {
         {K * epsm, 0.0},
         {0.0, K * epsm}};
@@ -362,12 +365,14 @@ SECTION("Array - Model")
             else if (e == 1) {
                 auto model = mat.getCusp({e, q});
                 model.setStrain(fac * Eps);
-                REQUIRE(xt::allclose(model.Stress(), fac * Sig_elas));
+                REQUIRE(xt::allclose(model.Stress(), fac * Sig_plas));
+                REQUIRE(xt::allclose(model.epsp(), fac * gamma));
             }
             else if (e == 2) {
                 auto model = mat.getSmooth({e, q});
                 model.setStrain(fac * Eps);
-                REQUIRE(xt::allclose(model.Stress(), fac * Sig_elas));
+                REQUIRE(xt::allclose(model.Stress(), fac * Sig_plas));
+                REQUIRE(xt::allclose(model.epsp(), fac * gamma));
             }
         }
     }

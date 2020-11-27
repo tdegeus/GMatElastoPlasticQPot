@@ -48,6 +48,11 @@ inline auto Cusp::getQPot() const
     return m_yield;
 }
 
+inline auto* Cusp::refQPot() const
+{
+    return &m_yield;
+}
+
 inline size_t Cusp::currentIndex() const
 {
     return m_yield.currentIndex();

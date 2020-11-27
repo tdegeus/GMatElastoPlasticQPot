@@ -579,7 +579,7 @@ inline auto Array<N>::getCusp(const std::array<size_t, N>& index) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
     GMATELASTOPLASTICQPOT_ASSERT(m_type[index] == Type::Cusp);
-    return m_Elastic[m_index[index]];
+    return m_Cusp[m_index[index]];
 }
 
 template <size_t N>
@@ -587,7 +587,31 @@ inline auto Array<N>::getSmooth(const std::array<size_t, N>& index) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
     GMATELASTOPLASTICQPOT_ASSERT(m_type[index] == Type::Smooth);
-    return m_Elastic[m_index[index]];
+    return m_Smooth[m_index[index]];
+}
+
+template <size_t N>
+inline auto* Array<N>::refElastic(const std::array<size_t, N>& index) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
+    GMATELASTOPLASTICQPOT_ASSERT(m_type[index] == Type::Elastic);
+    return &m_Elastic[m_index[index]];
+}
+
+template <size_t N>
+inline auto* Array<N>::refCusp(const std::array<size_t, N>& index) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
+    GMATELASTOPLASTICQPOT_ASSERT(m_type[index] == Type::Cusp);
+    return &m_Cusp[m_index[index]];
+}
+
+template <size_t N>
+inline auto* Array<N>::refSmooth(const std::array<size_t, N>& index) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
+    GMATELASTOPLASTICQPOT_ASSERT(m_type[index] == Type::Smooth);
+    return &m_Smooth[m_index[index]];
 }
 
 } // namespace Cartesian2d
