@@ -43,6 +43,16 @@ inline xt::xtensor<double, 1> Smooth::epsy() const
     return m_yield.yield();
 }
 
+inline auto Smooth::getQPot() const
+{
+    return m_yield;
+}
+
+inline auto* Smooth::refQPot()
+{
+    return &m_yield;
+}
+
 inline size_t Smooth::currentIndex() const
 {
     return m_yield.currentIndex();
@@ -95,6 +105,26 @@ inline void Smooth::setStrainIterator(const T& begin)
     m_Sig[1] = g * Epsd[1];
     m_Sig[2] = g * Epsd[2];
     m_Sig[3] += g * Epsd[3];
+}
+
+template <class T>
+inline void Smooth::strain(T& a) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(a, {2, 2}));
+    return this->strainIterator(a.begin());
+}
+
+template <class T>
+inline void Smooth::strainIterator(const T& begin) const
+{
+    std::copy(m_Eps.begin(), m_Eps.end(), begin);
+}
+
+inline xt::xtensor<double, 2> Smooth::Strain() const
+{
+    xt::xtensor<double, 2> ret = xt::empty<double>({2, 2});
+    this->strainIterator(ret.begin());
+    return ret;
 }
 
 template <class T>

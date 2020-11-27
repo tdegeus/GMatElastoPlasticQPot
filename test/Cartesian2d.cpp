@@ -323,4 +323,71 @@ SECTION("Array")
     REQUIRE(mat.checkYieldBoundRight());
 }
 
+SECTION("Array - Model")
+{
+    double K = 12.3;
+    double G = 45.6;
+    double gamma = 0.02;
+    double epsm = 0.12;
+    size_t nelem = 3;
+    size_t nip = 2;
+
+    xt::xtensor<double, 2> Eps = {
+        {epsm, gamma},
+        {gamma, epsm}};
+
+    xt::xtensor<double, 2> Sig_elas = {
+        {K * epsm, G * gamma},
+        {G * gamma, K * epsm}};
+
+    xt::xtensor<double, 2> Sig_plas = {
+        {K * epsm, 0.0},
+        {0.0, K * epsm}};
+
+    GM::Array<2> mat({nelem, nip});
+
+    {
+        xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
+        xt::view(I, 0, xt::all()) = 1;
+        mat.setElastic(I, K, G);
+    }
+
+    {
+        xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
+        xt::xtensor<double,1> epsy = 0.01 + 0.02 * xt::arange<double>(100);
+        xt::view(I, 1, xt::all()) = 1;
+        mat.setCusp(I, K, G, epsy);
+    }
+
+    {
+        xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
+        xt::xtensor<double,1> epsy = 0.01 + 0.02 * xt::arange<double>(100);
+        xt::view(I, 2, xt::all()) = 1;
+        mat.setSmooth(I, K, G, epsy);
+    }
+
+    for (size_t e = 0; e < nelem; ++e) {
+        for (size_t q = 0; q < nip; ++q) {
+            double fac = static_cast<double>((e + 1) * nip + (q + 1));
+            if (e == 0) {
+                auto model = mat.getElastic({e, q});
+                model.setStrain(fac * Eps);
+                REQUIRE(xt::allclose(model.Stress(), fac * Sig_elas));
+            }
+            else if (e == 1) {
+                auto model = mat.getCusp({e, q});
+                model.setStrain(fac * Eps);
+                REQUIRE(xt::allclose(model.Stress(), fac * Sig_plas));
+                REQUIRE(xt::allclose(model.epsp(), fac * gamma));
+            }
+            else if (e == 2) {
+                auto model = mat.getSmooth({e, q});
+                model.setStrain(fac * Eps);
+                REQUIRE(xt::allclose(model.Stress(), fac * Sig_plas));
+                REQUIRE(xt::allclose(model.epsp(), fac * gamma));
+            }
+        }
+    }
+}
+
 }

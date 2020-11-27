@@ -304,6 +304,28 @@ inline void Array<N>::setStrain(const xt::xtensor<double, N + 2>& A)
 }
 
 template <size_t N>
+inline void Array<N>::strain(xt::xtensor<double, N + 2>& A) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(A, m_shape_tensor2));
+
+    #pragma omp parallel for
+    for (size_t i = 0; i < m_size; ++i) {
+        switch (m_type.data()[i]) {
+        case Type::Elastic:
+            m_Elastic[m_index.data()[i]].strainIterator(&A.data()[i * m_stride_tensor2]);
+            break;
+        case Type::Cusp:
+            m_Cusp[m_index.data()[i]].strainIterator(&A.data()[i * m_stride_tensor2]);
+            break;
+        case Type::Smooth:
+            m_Smooth[m_index.data()[i]].strainIterator(&A.data()[i * m_stride_tensor2]);
+            break;
+        }
+    }
+}
+
+template <size_t N>
 inline void Array<N>::stress(xt::xtensor<double, N + 2>& A) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
@@ -511,6 +533,14 @@ inline void Array<N>::energy(xt::xtensor<double, N>& A) const
 }
 
 template <size_t N>
+inline xt::xtensor<double, N + 2> Array<N>::Strain() const
+{
+    xt::xtensor<double, N + 2> ret = xt::empty<double>(m_shape_tensor2);
+    this->strain(ret);
+    return ret;
+}
+
+template <size_t N>
 inline xt::xtensor<double, N + 2> Array<N>::Stress() const
 {
     xt::xtensor<double, N + 2> ret = xt::empty<double>(m_shape_tensor2);
@@ -564,6 +594,54 @@ inline xt::xtensor<double, N> Array<N>::Energy() const
     xt::xtensor<double, N> ret = xt::empty<double>(m_shape);
     this->energy(ret);
     return ret;
+}
+
+template <size_t N>
+inline auto Array<N>::getElastic(const std::array<size_t, N>& index) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
+    GMATELASTOPLASTICQPOT_ASSERT(m_type[index] == Type::Elastic);
+    return m_Elastic[m_index[index]];
+}
+
+template <size_t N>
+inline auto Array<N>::getCusp(const std::array<size_t, N>& index) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
+    GMATELASTOPLASTICQPOT_ASSERT(m_type[index] == Type::Cusp);
+    return m_Cusp[m_index[index]];
+}
+
+template <size_t N>
+inline auto Array<N>::getSmooth(const std::array<size_t, N>& index) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
+    GMATELASTOPLASTICQPOT_ASSERT(m_type[index] == Type::Smooth);
+    return m_Smooth[m_index[index]];
+}
+
+template <size_t N>
+inline auto* Array<N>::refElastic(const std::array<size_t, N>& index)
+{
+    GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
+    GMATELASTOPLASTICQPOT_ASSERT(m_type[index] == Type::Elastic);
+    return &m_Elastic[m_index[index]];
+}
+
+template <size_t N>
+inline auto* Array<N>::refCusp(const std::array<size_t, N>& index)
+{
+    GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
+    GMATELASTOPLASTICQPOT_ASSERT(m_type[index] == Type::Cusp);
+    return &m_Cusp[m_index[index]];
+}
+
+template <size_t N>
+inline auto* Array<N>::refSmooth(const std::array<size_t, N>& index)
+{
+    GMATELASTOPLASTICQPOT_ASSERT(m_allSet);
+    GMATELASTOPLASTICQPOT_ASSERT(m_type[index] == Type::Smooth);
+    return &m_Smooth[m_index[index]];
 }
 
 } // namespace Cartesian2d
