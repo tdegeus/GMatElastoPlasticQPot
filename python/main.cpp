@@ -124,6 +124,7 @@ auto construct_Array(T& self)
             py::arg("init_elastic") = true)
 
         .def("setStrain", &S::setStrain, "Set strain tensors.", py::arg("Eps"))
+        .def("Strain", &S::Strain, "Get strain tensors.")
         .def("Stress", &S::Stress, "Get stress tensors.")
         .def("Tangent", &S::Tangent, "Get stiffness tensors.")
         .def("CurrentIndex", &S::CurrentIndex, "Get potential indices.")
@@ -240,7 +241,8 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
         .def("K", &SM::Elastic::K, "Returns the bulk modulus.")
         .def("G", &SM::Elastic::G, "Returns the shear modulus.")
         .def("setStrain", &SM::Elastic::setStrain<xt::xtensor<double, 2>>, "Set current strain tensor.")
-        .def("Stress", &SM::Elastic::Stress, "Returns stress tensor, for last known strain.")
+        .def("Stress", &SM::Elastic::Stress, "Returns stress tensor.")
+        .def("Strain", &SM::Elastic::Strain, "Returns strain tensor.")
 
         .def(
             "Tangent",
@@ -270,7 +272,8 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
         .def("epsy", &SM::Cusp::epsy, "Returns the yield strains.")
         .def("getQPot", &SM::Cusp::getQPot, "Returns underlying QPot model.")
         .def("setStrain", &SM::Cusp::setStrain<xt::xtensor<double, 2>>, "Set current strain tensor.")
-        .def("Stress", &SM::Cusp::Stress, "Returns stress tensor, for last known strain.")
+        .def("Stress", &SM::Cusp::Stress, "Returns stress tensor.")
+        .def("Strain", &SM::Cusp::Strain, "Returns strain tensor.")
 
         .def(
             "Tangent",
@@ -330,7 +333,8 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
         .def("epsy", &SM::Smooth::epsy, "Returns the yield strains.")
         .def("getQPot", &SM::Smooth::getQPot, "Returns underlying QPot model.")
         .def("setStrain", &SM::Smooth::setStrain<xt::xtensor<double, 2>>, "Set current strain tensor.")
-        .def("Stress", &SM::Smooth::Stress, "Returns stress tensor, for last known strain.")
+        .def("Stress", &SM::Smooth::Stress, "Returns stress tensor.")
+        .def("Strain", &SM::Smooth::Strain, "Returns strain tensor.")
 
         .def(
             "Tangent",
