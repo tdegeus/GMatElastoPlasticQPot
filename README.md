@@ -42,6 +42,7 @@ conveniently compiled to this [PDF](docs/readme.pdf).
     - [Upgrading to >v0.8.*](#upgrading-to-v08)
     - [Upgrading to >v0.6.*](#upgrading-to-v06)
 - [Change-log](#change-log)
+    - [master](#master)
     - [v0.8.0](#v080)
     - [v0.7.0](#v070)
     - [v0.6.4](#v064)
@@ -481,6 +482,11 @@ This requires the following changes:
     The library therefore now depends on [QPot](https://www.github.com/tdegeus/QPot).
 
 # Change-log
+
+## master
+
+*   Returning underlying models & stored strain tensors (#62)
+*   Simplifying tests (#61)
 
 ## v0.8.0
 
