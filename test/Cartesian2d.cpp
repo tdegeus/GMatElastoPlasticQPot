@@ -3,7 +3,7 @@
 #include <xtensor/xrandom.hpp>
 #include <GMatElastoPlasticQPot/Cartesian2d.h>
 
-#define ISCLOSE(a,b) REQUIRE_THAT((a), Catch::WithinAbs((b), 1.e-12));
+#define ISCLOSE(a,b) REQUIRE_THAT((a), Catch::WithinAbs((b), 1e-12));
 
 namespace GM = GMatElastoPlasticQPot::Cartesian2d;
 
@@ -111,9 +111,11 @@ SECTION("Elastic - stress")
     double G = 45.6;
     double gamma = 0.02;
     double epsm = 0.12;
+
     xt::xtensor<double, 2> Eps = {
         {epsm, gamma},
         {gamma, epsm}};
+
     xt::xtensor<double, 2> Sig = {
         {K * epsm, G * gamma},
         {G * gamma, K * epsm}};
@@ -131,9 +133,11 @@ SECTION("Cusp - stress (1)")
     double G = 45.6;
     double gamma = 0.02;
     double epsm = 0.12;
+
     xt::xtensor<double, 2> Eps = {
         {epsm, gamma},
         {gamma, epsm}};
+
     xt::xtensor<double, 2> Sig = {
         {K * epsm, 0.0},
         {0.0, K * epsm}};
@@ -155,9 +159,11 @@ SECTION("Cusp - stress (2)")
     double G = 45.6;
     double gamma = 1.9 * 0.02;
     double epsm = 2.0 * 0.12;
+
     xt::xtensor<double, 2> Eps = {
         {epsm, gamma},
         {gamma, epsm}};
+
     xt::xtensor<double, 2> Sig = {
         {K * epsm, G * (gamma - 0.04)},
         {G * (gamma - 0.04), K * epsm}};
@@ -179,9 +185,11 @@ SECTION("Smooth - stress")
     double G = 45.6;
     double gamma = 0.02;
     double epsm = 0.12;
+
     xt::xtensor<double, 2> Eps = {
         {epsm, gamma},
         {gamma, epsm}};
+
     xt::xtensor<double, 2> Sig = {
         {K * epsm, 0.0},
         {0.0, K * epsm}};
@@ -196,7 +204,7 @@ SECTION("Smooth - stress")
     REQUIRE(mat.checkYieldBoundRight());
 }
 
-SECTION("Tangent (purely elastic response only)")
+SECTION("Tangent (purely elastic response only) - Elastic")
 {
     double K = 12.3;
     double G = 45.6;
@@ -205,32 +213,43 @@ SECTION("Tangent (purely elastic response only)")
     xt::xtensor<double, 4> Is = GM::I4s();
     Eps = A4_ddot_B2(Is, Eps);
 
-    // Elastic
-    {
-        GM::Elastic mat(K, G);
-        mat.setStrain(Eps);
-        auto Sig = mat.Stress();
-        auto C = mat.Tangent();
-        REQUIRE(xt::allclose(A4_ddot_B2(C, Eps), Sig));
-    }
+    GM::Elastic mat(K, G);
+    mat.setStrain(Eps);
+    auto Sig = mat.Stress();
+    auto C = mat.Tangent();
+    REQUIRE(xt::allclose(A4_ddot_B2(C, Eps), Sig));
+}
 
-    // Cusp
-    {
-        GM::Cusp mat(K, G, {10000.0});
-        mat.setStrain(Eps);
-        auto Sig = mat.Stress();
-        auto C = mat.Tangent();
-        REQUIRE(xt::allclose(A4_ddot_B2(C, Eps), Sig));
-    }
+SECTION("Tangent (purely elastic response only) - Cusp")
+{
+    double K = 12.3;
+    double G = 45.6;
 
-    // Smooth
-    {
-        GM::Smooth mat(K, G, {10000.0});
-        mat.setStrain(Eps);
-        auto Sig = mat.Stress();
-        auto C = mat.Tangent();
-        REQUIRE(xt::allclose(A4_ddot_B2(C, Eps), Sig));
-    }
+    xt::xtensor<double, 2> Eps = xt::random::randn<double>({2, 2});
+    xt::xtensor<double, 4> Is = GM::I4s();
+    Eps = A4_ddot_B2(Is, Eps);
+
+    GM::Cusp mat(K, G, {10000.0});
+    mat.setStrain(Eps);
+    auto Sig = mat.Stress();
+    auto C = mat.Tangent();
+    REQUIRE(xt::allclose(A4_ddot_B2(C, Eps), Sig));
+}
+
+SECTION("Tangent (purely elastic response only) - Smooth")
+{
+    double K = 12.3;
+    double G = 45.6;
+
+    xt::xtensor<double, 2> Eps = xt::random::randn<double>({2, 2});
+    xt::xtensor<double, 4> Is = GM::I4s();
+    Eps = A4_ddot_B2(Is, Eps);
+
+    GM::Smooth mat(K, G, {10000.0});
+    mat.setStrain(Eps);
+    auto Sig = mat.Stress();
+    auto C = mat.Tangent();
+    REQUIRE(xt::allclose(A4_ddot_B2(C, Eps), Sig));
 }
 
 SECTION("Array")
@@ -241,9 +260,19 @@ SECTION("Array")
     double epsm = 0.12;
     size_t nelem = 3;
     size_t nip = 2;
+    size_t ndim = 2;
+
     xt::xtensor<double, 2> Eps = {
         {epsm, gamma},
         {gamma, epsm}};
+
+    xt::xtensor<double, 2> Sig_elas = {
+        {K * epsm, G * gamma},
+        {G * gamma, K * epsm}};
+
+    xt::xtensor<double, 2> Sig_plas = {
+        {K * epsm, 0.0},
+        {0.0, K * epsm}};
 
     GM::Array<2> mat({nelem, nip});
 
@@ -267,46 +296,29 @@ SECTION("Array")
         mat.setCusp(I, K, G, epsy);
     }
 
-    auto eps = xt::xtensor<double,4>::from_shape({nelem, nip, 2ul, 2ul});
+    xt::xtensor<double, 4> eps = xt::empty<double>({nelem, nip, ndim, ndim});
+    xt::xtensor<double, 4> sig = xt::empty<double>({nelem, nip, ndim, ndim});
+    xt::xtensor<double, 2> epsp = xt::empty<double>({nelem, nip});
 
     for (size_t e = 0; e < nelem; ++e) {
         for (size_t q = 0; q < nip; ++q) {
             double fac = static_cast<double>((e + 1) * nip + (q + 1));
             xt::view(eps, e, q) = fac * Eps;
+            if (e == 0) {
+                xt::view(sig, e, q) = fac * Sig_elas;
+                epsp(e, q) = 0.0;
+            }
+            else {
+                xt::view(sig, e, q) = fac * Sig_plas;
+                epsp(e, q) = fac * gamma;
+            }
         }
     }
 
     mat.setStrain(eps);
-    auto sig = mat.Stress();
-    auto epsp = mat.Epsp();
 
-    for (size_t q = 0; q < nip; ++q) {
-
-        size_t e = 0;
-        double fac = static_cast<double>((e + 1) * nip + (q + 1));
-        ISCLOSE(sig(e, q, 0, 0), fac * K * epsm);
-        ISCLOSE(sig(e, q, 1, 1), fac * K * epsm);
-        ISCLOSE(sig(e, q, 0, 1), fac * G * gamma);
-        ISCLOSE(sig(e, q, 1, 0), fac * G * gamma);
-        ISCLOSE(epsp(e, q), 0.0);
-
-        e = 1;
-        fac = static_cast<double>((e + 1) * nip + (q + 1));
-        ISCLOSE(sig(e, q, 0, 0), fac * K * epsm);
-        ISCLOSE(sig(e, q, 1, 1), fac * K * epsm);
-        ISCLOSE(sig(e, q, 0, 1), 0.0);
-        ISCLOSE(sig(e, q, 1, 0), 0.0);
-        ISCLOSE(epsp(e, q), fac * gamma);
-
-        e = 2;
-        fac = static_cast<double>((e + 1) * nip + (q + 1));
-        ISCLOSE(sig(e, q, 0, 0), fac * K * epsm);
-        ISCLOSE(sig(e, q, 1, 1), fac * K * epsm);
-        ISCLOSE(sig(e, q, 0, 1), 0.0);
-        ISCLOSE(sig(e, q, 1, 0), 0.0);
-        ISCLOSE(epsp(e, q), fac * gamma);
-    }
-
+    REQUIRE(xt::allclose(mat.Stress(), sig));
+    REQUIRE(xt::allclose(mat.Epsp(), epsp));
     REQUIRE(mat.checkYieldBoundLeft());
     REQUIRE(mat.checkYieldBoundRight());
 }
