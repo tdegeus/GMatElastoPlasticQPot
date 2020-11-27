@@ -111,9 +111,11 @@ SECTION("Elastic - stress")
     double G = 45.6;
     double gamma = 0.02;
     double epsm = 0.12;
+
     xt::xtensor<double, 2> Eps = {
         {epsm, gamma},
         {gamma, epsm}};
+
     xt::xtensor<double, 2> Sig = {
         {K * epsm, G * gamma},
         {G * gamma, K * epsm}};
@@ -131,9 +133,11 @@ SECTION("Cusp - stress (1)")
     double G = 45.6;
     double gamma = 0.02;
     double epsm = 0.12;
+
     xt::xtensor<double, 2> Eps = {
         {epsm, gamma},
         {gamma, epsm}};
+
     xt::xtensor<double, 2> Sig = {
         {K * epsm, 0.0},
         {0.0, K * epsm}};
@@ -155,9 +159,11 @@ SECTION("Cusp - stress (2)")
     double G = 45.6;
     double gamma = 1.9 * 0.02;
     double epsm = 2.0 * 0.12;
+
     xt::xtensor<double, 2> Eps = {
         {epsm, gamma},
         {gamma, epsm}};
+
     xt::xtensor<double, 2> Sig = {
         {K * epsm, G * (gamma - 0.04)},
         {G * (gamma - 0.04), K * epsm}};
@@ -179,9 +185,11 @@ SECTION("Smooth - stress")
     double G = 45.6;
     double gamma = 0.02;
     double epsm = 0.12;
+
     xt::xtensor<double, 2> Eps = {
         {epsm, gamma},
         {gamma, epsm}};
+
     xt::xtensor<double, 2> Sig = {
         {K * epsm, 0.0},
         {0.0, K * epsm}};
@@ -196,7 +204,7 @@ SECTION("Smooth - stress")
     REQUIRE(mat.checkYieldBoundRight());
 }
 
-SECTION("Tangent (purely elastic response only)")
+SECTION("Tangent (purely elastic response only) - Elastic")
 {
     double K = 12.3;
     double G = 45.6;
@@ -205,32 +213,43 @@ SECTION("Tangent (purely elastic response only)")
     xt::xtensor<double, 4> Is = GM::I4s();
     Eps = A4_ddot_B2(Is, Eps);
 
-    // Elastic
-    {
-        GM::Elastic mat(K, G);
-        mat.setStrain(Eps);
-        auto Sig = mat.Stress();
-        auto C = mat.Tangent();
-        REQUIRE(xt::allclose(A4_ddot_B2(C, Eps), Sig));
-    }
+    GM::Elastic mat(K, G);
+    mat.setStrain(Eps);
+    auto Sig = mat.Stress();
+    auto C = mat.Tangent();
+    REQUIRE(xt::allclose(A4_ddot_B2(C, Eps), Sig));
+}
 
-    // Cusp
-    {
-        GM::Cusp mat(K, G, {10000.0});
-        mat.setStrain(Eps);
-        auto Sig = mat.Stress();
-        auto C = mat.Tangent();
-        REQUIRE(xt::allclose(A4_ddot_B2(C, Eps), Sig));
-    }
+SECTION("Tangent (purely elastic response only) - Cusp")
+{
+    double K = 12.3;
+    double G = 45.6;
 
-    // Smooth
-    {
-        GM::Smooth mat(K, G, {10000.0});
-        mat.setStrain(Eps);
-        auto Sig = mat.Stress();
-        auto C = mat.Tangent();
-        REQUIRE(xt::allclose(A4_ddot_B2(C, Eps), Sig));
-    }
+    xt::xtensor<double, 2> Eps = xt::random::randn<double>({2, 2});
+    xt::xtensor<double, 4> Is = GM::I4s();
+    Eps = A4_ddot_B2(Is, Eps);
+
+    GM::Cusp mat(K, G, {10000.0});
+    mat.setStrain(Eps);
+    auto Sig = mat.Stress();
+    auto C = mat.Tangent();
+    REQUIRE(xt::allclose(A4_ddot_B2(C, Eps), Sig));
+}
+
+SECTION("Tangent (purely elastic response only) - Smooth")
+{
+    double K = 12.3;
+    double G = 45.6;
+
+    xt::xtensor<double, 2> Eps = xt::random::randn<double>({2, 2});
+    xt::xtensor<double, 4> Is = GM::I4s();
+    Eps = A4_ddot_B2(Is, Eps);
+
+    GM::Smooth mat(K, G, {10000.0});
+    mat.setStrain(Eps);
+    auto Sig = mat.Stress();
+    auto C = mat.Tangent();
+    REQUIRE(xt::allclose(A4_ddot_B2(C, Eps), Sig));
 }
 
 SECTION("Array")
@@ -242,12 +261,15 @@ SECTION("Array")
     size_t nelem = 3;
     size_t nip = 2;
     size_t ndim = 2;
+
     xt::xtensor<double, 2> Eps = {
         {epsm, gamma},
         {gamma, epsm}};
+
     xt::xtensor<double, 2> Sig_elas = {
         {K * epsm, G * gamma},
         {G * gamma, K * epsm}};
+
     xt::xtensor<double, 2> Sig_plas = {
         {K * epsm, 0.0},
         {0.0, K * epsm}};
