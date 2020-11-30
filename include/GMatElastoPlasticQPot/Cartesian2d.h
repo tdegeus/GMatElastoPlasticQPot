@@ -362,7 +362,8 @@ public:
     xt::xtensor<double, N> Epsp() const;
     xt::xtensor<double, N> Energy() const;
 
-    // underlying model
+    // Get copy or reference to the underlying model at on point
+
     auto getElastic(const std::array<size_t, N>& index) const;
     auto getCusp(const std::array<size_t, N>& index) const;
     auto getSmooth(const std::array<size_t, N>& index) const;
