@@ -69,6 +69,18 @@ jobs:
         python test/compare_versions/Cartesian2d_generate.py
         python test/compare_versions/Cartesian2d_check_main.py
 
+    - name: Check consistency with v0.9.0
+      if: runner.os == 'Linux'
+      run: |
+        conda install -c conda-forge python=3.8.5 python-gmatelastoplasticqpot=0.9.0
+        python test/compare_versions/Cartesian2d_check_v0.6.3.py
+
+    - name: Check consistency with v0.8.0
+      if: runner.os == 'Linux'
+      run: |
+        conda install -c conda-forge python=3.8.5 python-gmatelastoplasticqpot=0.8.0
+        python test/compare_versions/Cartesian2d_check_v0.6.3.py
+
     - name: Check consistency with v0.7.0
       if: runner.os == 'Linux'
       run: |
