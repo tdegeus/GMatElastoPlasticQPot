@@ -104,7 +104,7 @@ At the material point level different models are implemented with different clas
 +   `Cusp`: the elasto-plastic material model defined by cusp potentials.
 +   `Smooth`: the elasto-plastic material model defined by smoothed potentials. 
 
-There is a `Matrix` class that allows you to combine all these material models and 
+There is an `Array` class that allows you to combine all these material models and 
 have a single API for a matrix of material points. 
 
 >   Note that all strain tensors are presumed symmetric. 
@@ -154,6 +154,8 @@ namespace GMat = GMatElastoPlasticQPot::Cartesian2d;
 
 int main()
 {
+    size_t ndim = 2;
+
     // a array, of shape [nelem, nip], of material points
     GMat::Array<2> array({nelem, nip});
 
@@ -165,7 +167,7 @@ int main()
     ...
 
     // set strain tensor (follows e.g. from FEM discretisation)
-    xt::xtensor<double,4> eps = xt::empty<double>({nelem, nip, 2ul, 2ul});
+    xt::xtensor<double,4> eps = xt::empty<double>({nelem, nip, ndim, ndim});
     ... 
     array.setStrain(eps);
 

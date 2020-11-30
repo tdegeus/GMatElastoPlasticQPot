@@ -100,6 +100,7 @@ class Test_main(unittest.TestCase):
         nelem = 3
         nip = 2
         mat = GMat.Array2d([nelem, nip])
+        ndim = 2
 
         I = np.zeros([nelem, nip], dtype='int')
         I[0,:] = 1
@@ -113,8 +114,8 @@ class Test_main(unittest.TestCase):
         I[2,:] = 1
         mat.setSmooth(I, K, G, 0.01 + 0.02 * np.arange(100))
 
-        eps = np.zeros((nelem, nip, 2, 2))
-        sig = np.zeros((nelem, nip, 2, 2))
+        eps = np.zeros((nelem, nip, ndim, ndim))
+        sig = np.zeros((nelem, nip, ndim, ndim))
         epsp = np.zeros((nelem, nip))
 
         for e in range(nelem):
