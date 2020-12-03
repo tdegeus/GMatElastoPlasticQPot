@@ -28,9 +28,10 @@ inline double Elastic::G() const
 
 inline double Elastic::energy() const
 {
+    namespace GT = GMatTensor::Cartesian2d::pointer;
     std::array<double, 4> Epsd;
-    double epsm = GMatTensor::Cartesian2d::pointer::hydrostatic_deviatoric(&m_Eps[0], &Epsd[0]);
-    double epsd = std::sqrt(0.5 * GMatTensor::Cartesian2d::pointer::A2_ddot_B2(&Epsd[0], &Epsd[0]));
+    double epsm = GT::hydrostatic_deviatoric(&m_Eps[0], &Epsd[0]);
+    double epsd = std::sqrt(0.5 * GT::A2_ddot_B2(&Epsd[0], &Epsd[0]));
     double U = m_K * std::pow(epsm, 2.0);
     double V = m_G * std::pow(epsd, 2.0);
     return U + V;
