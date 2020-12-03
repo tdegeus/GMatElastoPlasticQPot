@@ -33,15 +33,17 @@ conveniently compiled to this [PDF](docs/readme.pdf).
         - [Optimisation](#optimisation)
     - [By hand](#by-hand)
     - [Using pkg-config](#using-pkg-config)
-- [References / Credits](#references--credits)
 - [Testing & Benchmarking](#testing--benchmarking)
     - [Basic testing](#basic-testing)
     - [Basic benchmarking](#basic-benchmarking)
     - [Extensive testing](#extensive-testing)
+- [References / Credits](#references--credits)
 - [Upgrading instructions](#upgrading-instructions)
+    - [Upgrading to v0.10.*](#upgrading-to-v010)
     - [Upgrading to >v0.8.*](#upgrading-to-v08)
     - [Upgrading to >v0.6.*](#upgrading-to-v06)
 - [Change-log](#change-log)
+    - [v0.10.0](#v0100)
     - [v0.9.0](#v090)
     - [v0.8.0](#v080)
     - [v0.7.0](#v070)
@@ -373,17 +375,6 @@ c++ `pkg-config --cflags GMatElastoPlasticQPot` ...
 Note that you have to take care of the *xtensor* dependency, the C++ version, optimization, 
 enabling *xsimd*, ...
 
-# References / Credits
-
-*   The model is described in 
-    *T.W.J. de Geus, M. Popović, W. Ji, A. Rosso, M. Wyart. 
-    How collective asperity detachments nucleate slip at frictional interfaces. 
-    Proceedings of the National Academy of Sciences, 2019, 201906551. 
-    [doi: 10.1073/pnas.1906551116](https://doi.org/10.1073/pnas.1906551116), 
-    [arXiv: 1904.07635](http://arxiv.org/abs/1904.07635)*.
-
-*   [xtensor](https://github.com/QuantStack/xtensor) is used under the hood.
-
 # Testing & Benchmarking
 
 ## Basic testing
@@ -443,10 +434,31 @@ etc.
 
 See [ci.yaml](.github/workflows/ci.yml) for details.
 
-If no assertions are found each time the code should be behaving as supposed to. 
 Please feel free to contribute additional tests. 
 
+# References / Credits
+
+*   The model is described in 
+    *T.W.J. de Geus, M. Popović, W. Ji, A. Rosso, M. Wyart. 
+    How collective asperity detachments nucleate slip at frictional interfaces. 
+    Proceedings of the National Academy of Sciences, 2019, 201906551. 
+    [doi: 10.1073/pnas.1906551116](https://doi.org/10.1073/pnas.1906551116), 
+    [arXiv: 1904.07635](http://arxiv.org/abs/1904.07635)*.
+
+*   [xtensor](https://github.com/QuantStack/xtensor) is used under the hood.
+
 # Upgrading instructions
+
+## Upgrading to v0.10.*
+
+`Array<rank>.check` should be replaced by something like:
+```cpp
+if (xt::any(xt::equal(array.type(), Type::Unset))) {
+    throw std::runtime_error("Please set all points");
+}
+```
+Note however that it is no longer required to set all points, 
+unset points are filled-up with zeros.
 
 ## Upgrading to >v0.8.*
 
@@ -484,6 +496,16 @@ This requires the following changes:
     The library therefore now depends on [QPot](https://www.github.com/tdegeus/QPot).
 
 # Change-log
+
+## v0.10.0
+
+*   `Array` now sets zeros for all `Type::Unset` points. 
+    The function `check` is deprecated accordingly.
+*   The methods `setStrainIterator`, `strainIterator`, and `stressIterator` are replaced
+    by `setStrainPtr`, `strainPtr`, and `stressPtr`, while `tangentPtr` is added.
+    These methods now require a pointer input.
+*   `Array` now sets zeros for all `Type::Unset` points. 
+    The function `check` is deprecated accordingly.
 
 ## v0.9.0
 

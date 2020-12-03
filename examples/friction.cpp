@@ -180,7 +180,6 @@ public:
             m_material.setCusp(I, idx, K * unit, G * unit, epsy);
         }
 
-        m_material.check();
         m_material.setStrain(m_Eps);
 
         // -----------

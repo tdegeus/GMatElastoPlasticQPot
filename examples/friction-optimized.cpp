@@ -235,10 +235,6 @@ public:
             m_material_plas.setCusp(I, idx, K * unit, G * unit, epsy);
         }
 
-        m_material.check();
-        m_material_elas.check();
-        m_material_plas.check();
-
         m_material.setStrain(m_Eps);
         m_material_elas.setStrain(m_Eps_elas);
         m_material_plas.setStrain(m_Eps_plas);
