@@ -78,6 +78,7 @@ with h5py.File('Cartesian2d_random.hdf5', 'w') as data:
         mat.setStrain(Eps)
 
         data['/random/{0:d}/Stress'.format(i)] = mat.Stress()
+        data['/random/{0:d}/Tangent'.format(i)] = mat.Tangent()
         data['/random/{0:d}/CurrentIndex'.format(i)] = mat.CurrentIndex()
         data['/random/{0:d}/CurrentYieldLeft'.format(i)] = mat.CurrentYieldLeft()
         data['/random/{0:d}/CurrentYieldRight'.format(i)] = mat.CurrentYieldRight()

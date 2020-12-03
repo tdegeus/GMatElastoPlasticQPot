@@ -73,94 +73,6 @@ inline double Cusp::epsp() const
     return 0.5 * (m_yield.currentYieldLeft() + m_yield.currentYieldRight());
 }
 
-template <class T>
-inline void Cusp::setStrain(const T& a)
-{
-    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(a, {2, 2}));
-    return this->setStrainIterator(a.cbegin());
-}
-
-template <class T>
-inline void Cusp::setStrainIterator(const T& begin)
-{
-    std::copy(begin, begin + 4, m_Eps.begin());
-
-    std::array<double, 4> Epsd;
-    double epsm = GMatTensor::Cartesian2d::pointer::hydrostatic_deviatoric(&m_Eps[0], &Epsd[0]);
-    double epsd = std::sqrt(0.5 * GMatTensor::Cartesian2d::pointer::A2_ddot_B2(&Epsd[0], &Epsd[0]));
-    m_yield.setPosition(epsd);
-
-    m_Sig[0] = m_Sig[3] = m_K * epsm;
-
-    if (epsd <= 0.0) {
-        m_Sig[1] = m_Sig[2] = 0.0;
-        return;
-    }
-
-    double eps_min = 0.5 * (m_yield.currentYieldRight() + m_yield.currentYieldLeft());
-
-    double g = m_G * (1.0 - eps_min / epsd);
-    m_Sig[0] += g * Epsd[0];
-    m_Sig[1] = g * Epsd[1];
-    m_Sig[2] = g * Epsd[2];
-    m_Sig[3] += g * Epsd[3];
-}
-
-template <class T>
-inline void Cusp::strain(T& a) const
-{
-    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(a, {2, 2}));
-    return this->strainIterator(a.begin());
-}
-
-template <class T>
-inline void Cusp::strainIterator(const T& begin) const
-{
-    std::copy(m_Eps.begin(), m_Eps.end(), begin);
-}
-
-inline xt::xtensor<double, 2> Cusp::Strain() const
-{
-    xt::xtensor<double, 2> ret = xt::empty<double>({2, 2});
-    this->strainIterator(ret.begin());
-    return ret;
-}
-
-template <class T>
-inline void Cusp::stress(T& a) const
-{
-    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(a, {2, 2}));
-    return this->stressIterator(a.begin());
-}
-
-template <class T>
-inline void Cusp::stressIterator(const T& begin) const
-{
-    std::copy(m_Sig.begin(), m_Sig.end(), begin);
-}
-
-inline xt::xtensor<double, 2> Cusp::Stress() const
-{
-    xt::xtensor<double, 2> ret = xt::empty<double>({2, 2});
-    this->stressIterator(ret.begin());
-    return ret;
-}
-
-template <class T>
-inline void Cusp::tangent(T& C) const
-{
-    auto II = Cartesian2d::II();
-    auto I4d = Cartesian2d::I4d();
-    xt::noalias(C) = 0.5 * m_K * II + m_G * I4d;
-}
-
-inline xt::xtensor<double, 4> Cusp::Tangent() const
-{
-    xt::xtensor<double, 4> ret = xt::zeros<double>({2, 2, 2, 2});
-    this->tangent(ret);
-    return ret;
-}
-
 inline double Cusp::energy() const
 {
     std::array<double, 4> Epsd;
@@ -185,6 +97,102 @@ inline bool Cusp::checkYieldBoundLeft(size_t n) const
 inline bool Cusp::checkYieldBoundRight(size_t n) const
 {
     return m_yield.checkYieldBoundRight(n);
+}
+
+template <class T>
+inline void Cusp::setStrainPtr(const T* arg)
+{
+    std::copy(arg, arg + 4, m_Eps.begin());
+
+    std::array<double, 4> Epsd;
+    double epsm = GMatTensor::Cartesian2d::pointer::hydrostatic_deviatoric(&m_Eps[0], &Epsd[0]);
+    double epsd = std::sqrt(0.5 * GMatTensor::Cartesian2d::pointer::A2_ddot_B2(&Epsd[0], &Epsd[0]));
+    m_yield.setPosition(epsd);
+
+    m_Sig[0] = m_Sig[3] = m_K * epsm;
+
+    if (epsd <= 0.0) {
+        m_Sig[1] = m_Sig[2] = 0.0;
+        return;
+    }
+
+    double eps_min = 0.5 * (m_yield.currentYieldRight() + m_yield.currentYieldLeft());
+
+    double g = m_G * (1.0 - eps_min / epsd);
+    m_Sig[0] += g * Epsd[0];
+    m_Sig[1] = g * Epsd[1];
+    m_Sig[2] = g * Epsd[2];
+    m_Sig[3] += g * Epsd[3];
+}
+
+template <class T>
+inline void Cusp::strainPtr(T* ret) const
+{
+    std::copy(m_Eps.begin(), m_Eps.end(), ret);
+}
+
+template <class T>
+inline void Cusp::stressPtr(T* ret) const
+{
+    std::copy(m_Sig.begin(), m_Sig.end(), ret);
+}
+
+template <class T>
+inline void Cusp::tangentPtr(T* ret) const
+{
+    auto II = Cartesian2d::II();
+    auto I4d = Cartesian2d::I4d();
+    auto C = 0.5 * m_K * II + m_G * I4d;
+    std::copy(C.cbegin(), C.cend(), ret);
+}
+
+template <class T>
+inline void Cusp::setStrain(const T& arg)
+{
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(arg, {2, 2}));
+    return this->setStrainPtr(arg.data());
+}
+
+template <class T>
+inline void Cusp::strain(T& ret) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, {2, 2}));
+    return this->strainPtr(ret.data());
+}
+
+template <class T>
+inline void Cusp::stress(T& ret) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, {2, 2}));
+    return this->stressPtr(ret.data());
+}
+
+template <class T>
+inline void Cusp::tangent(T& ret) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, {2, 2, 2, 2}));
+    return this->tangentPtr(ret.data());
+}
+
+inline xt::xtensor<double, 2> Cusp::Strain() const
+{
+    xt::xtensor<double, 2> ret = xt::empty<double>({2, 2});
+    this->strainPtr(ret.data());
+    return ret;
+}
+
+inline xt::xtensor<double, 2> Cusp::Stress() const
+{
+    xt::xtensor<double, 2> ret = xt::empty<double>({2, 2});
+    this->stressPtr(ret.data());
+    return ret;
+}
+
+inline xt::xtensor<double, 4> Cusp::Tangent() const
+{
+    xt::xtensor<double, 4> ret = xt::empty<double>({2, 2, 2, 2});
+    this->tangentPtr(ret.data());
+    return ret;
 }
 
 } // namespace Cartesian2d

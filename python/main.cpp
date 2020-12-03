@@ -35,7 +35,6 @@ auto construct_Array(T& self)
         .def("isPlastic", &S::isPlastic, "Boolean-matrix: true for Cusp/Smooth.")
         .def("isCusp", &S::isCusp, "Boolean-matrix: true for Cusp.")
         .def("isSmooth", &S::isSmooth, "Boolean-matrix: true for Smooth.")
-        .def("check", &S::check, "Throws if any unset point is found.")
 
         .def(
             "setElastic",
@@ -241,14 +240,9 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
         .def("K", &SM::Elastic::K, "Returns the bulk modulus.")
         .def("G", &SM::Elastic::G, "Returns the shear modulus.")
         .def("setStrain", &SM::Elastic::setStrain<xt::xtensor<double, 2>>, "Set current strain tensor.")
-        .def("Stress", &SM::Elastic::Stress, "Returns stress tensor.")
         .def("Strain", &SM::Elastic::Strain, "Returns strain tensor.")
-
-        .def(
-            "Tangent",
-            &SM::Elastic::Tangent,
-            "Returns stress and tangent stiffness tensors, for last known strain.")
-
+        .def("Stress", &SM::Elastic::Stress, "Returns stress tensor.")
+        .def("Tangent", &SM::Elastic::Tangent, "Returns tangent stiffness.")
         .def("energy", &SM::Elastic::energy, "Returns the energy, for last known strain.")
 
         .def("__repr__", [](const SM::Elastic&) {
@@ -272,13 +266,9 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
         .def("epsy", &SM::Cusp::epsy, "Returns the yield strains.")
         .def("getQPot", &SM::Cusp::getQPot, "Returns underlying QPot model.")
         .def("setStrain", &SM::Cusp::setStrain<xt::xtensor<double, 2>>, "Set current strain tensor.")
-        .def("Stress", &SM::Cusp::Stress, "Returns stress tensor.")
         .def("Strain", &SM::Cusp::Strain, "Returns strain tensor.")
-
-        .def(
-            "Tangent",
-            &SM::Cusp::Tangent,
-            "Returns stress and tangent stiffness tensors, for last known strain.")
+        .def("Stress", &SM::Cusp::Stress, "Returns stress tensor.")
+        .def("Tangent", &SM::Cusp::Tangent, "Returns tangent stiffness.")
 
         .def(
             "currentIndex",
@@ -307,9 +297,7 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
             "Check that 'the particle' is at least 'n' wells from the far-right.",
             py::arg("n") = 0)
 
-        .def(
-            "epsp", &SM::Cusp::epsp, "Returns the equivalent plastic strain for last known strain.")
-
+        .def("epsp", &SM::Cusp::epsp, "Returns equivalent plastic strain.")
         .def("energy", &SM::Cusp::energy, "Returns the energy, for last known strain.")
 
         .def("__repr__", [](const SM::Cusp&) {
@@ -333,13 +321,9 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
         .def("epsy", &SM::Smooth::epsy, "Returns the yield strains.")
         .def("getQPot", &SM::Smooth::getQPot, "Returns underlying QPot model.")
         .def("setStrain", &SM::Smooth::setStrain<xt::xtensor<double, 2>>, "Set current strain tensor.")
-        .def("Stress", &SM::Smooth::Stress, "Returns stress tensor.")
         .def("Strain", &SM::Smooth::Strain, "Returns strain tensor.")
-
-        .def(
-            "Tangent",
-            &SM::Smooth::Tangent,
-            "Returns stress and tangent stiffness tensors, for last known strain.")
+        .def("Stress", &SM::Smooth::Stress, "Returns stress tensor.")
+        .def("Tangent", &SM::Smooth::Tangent, "Returns tangent stiffness.")
 
         .def(
             "currentIndex",
@@ -368,11 +352,7 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
             "Check that 'the particle' is at least 'n' wells from the far-right.",
             py::arg("n") = 0)
 
-        .def(
-            "epsp",
-            &SM::Smooth::epsp,
-            "Returns the equivalent plastic strain for last known strain.")
-
+        .def("epsp", &SM::Smooth::epsp, "Returns equivalent plastic strain.")
         .def("energy", &SM::Smooth::energy, "Returns the energy, for last known strain.")
 
         .def("__repr__", [](const SM::Smooth&) {
