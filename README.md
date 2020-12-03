@@ -156,7 +156,7 @@ int main()
 {
     size_t ndim = 2;
 
-    // a array, of shape [nelem, nip], of material points
+    // array, of shape [nelem, nip], of material points
     GMat::Array<2> array({nelem, nip});
 
     // set materials:

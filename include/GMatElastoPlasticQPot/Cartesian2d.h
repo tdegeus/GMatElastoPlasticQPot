@@ -57,50 +57,31 @@ inline auto Sigd(const T& A);
 class Elastic
 {
 public:
-    // Constructors
     Elastic() = default;
     Elastic(double K, double G);
 
-    // Parameters
-    double K() const;
-    double G() const;
+    double K() const; // return bulk modulus
+    double G() const; // return shear modulus
 
-    // Set strain
-    template <class T>
-    void setStrain(const T& Eps);
+    double energy() const; // return potential energy
 
-    template <class T>
-    void setStrainIterator(const T& begin); // presumes: contiguous + row-major & symmetric
+    template <class T> void setStrain(const T& arg);
+    template <class T> void strain(T& ret) const;
+    template <class T> void stress(T& ret) const;
+    template <class T> void tangent(T& ret) const;
 
-    // Read stored strain
-    template <class T>
-    void strain(T& Eps) const;
+    template <class T> void setStrainPtr(const T* arg);
+    template <class T> void strainPtr(T* ret) const;
+    template <class T> void stressPtr(T* ret) const;
+    template <class T> void tangentPtr(T* ret) const;
 
-    template <class T>
-    void strainIterator(const T& begin) const; // presumes: contiguous + row-major & symmetric
-
-    // Stress (no allocation, overwrites "Sig" / writes to "begin")
-    template <class T>
-    void stress(T& Sig) const;
-
-    template <class T>
-    void stressIterator(const T& begin) const; // presumes: contiguous + row-major
-
-    // Tangent (no allocation, overwrites "C")
-    template <class T>
-    void tangent(T& C) const;
-
-    // Auto-allocation
     xt::xtensor<double, 2> Strain() const;
     xt::xtensor<double, 2> Stress() const;
     xt::xtensor<double, 4> Tangent() const;
 
-    // Return current state
-    double energy() const; // potential energy
-
 private:
-    double m_K;                  // bulk modulus
-    double m_G;                  // shear modulus
+    double m_K; // bulk modulus
+    double m_G; // shear modulus
     std::array<double, 4> m_Eps; // strain tensor [xx, xy, yx, yy]
     std::array<double, 4> m_Sig; // stress tensor [xx, xy, yx, yy]
 };
@@ -110,57 +91,39 @@ private:
 class Cusp
 {
 public:
-    // Constructors
     Cusp() = default;
     Cusp(double K, double G, const xt::xtensor<double, 1>& epsy, bool init_elastic = true);
 
-    // Parameters
-    double K() const;
-    double G() const;
-    xt::xtensor<double, 1> epsy() const;
-    auto getQPot() const;
-    auto* refQPot();
+    double K() const; // return bulk modulus
+    double G() const; // return shear modulus
+    xt::xtensor<double, 1> epsy() const; // return yield strains
 
-    // Set strain
-    template <class T>
-    void setStrain(const T& Eps);
+    auto getQPot() const; // return underlying QPot model
+    auto* refQPot(); // return reference to underlying QPot model
 
-    template <class T>
-    void setStrainIterator(const T& begin); // presumes: contiguous + row-major & symmetric
-
-    // Read stored strain
-    template <class T>
-    void strain(T& Eps) const;
-
-    template <class T>
-    void strainIterator(const T& begin) const; // presumes: contiguous + row-major & symmetric
-
-    // Stress (no allocation, overwrites "Sig" / writes to "begin")
-    template <class T>
-    void stress(T& Sig) const;
-
-    template <class T>
-    void stressIterator(const T& begin) const; // presumes: contiguous + row-major
-
-    // Tangent (no allocation, overwrites "C")
-    template <class T>
-    void tangent(T& C) const;
-
-    // Auto-allocation
-    xt::xtensor<double, 2> Strain() const;
-    xt::xtensor<double, 2> Stress() const;
-    xt::xtensor<double, 4> Tangent() const;
-
-    // Return current state
-    size_t currentIndex() const;      // yield index
-    double currentYieldLeft() const;  // yield strain left epsy[index]
-    double currentYieldRight() const; // yield strain right epsy[index + 1]
-    double epsp() const;   // "plastic strain" (mean of currentYieldLeft and currentYieldRight)
-    double energy() const; // potential energy
+    size_t currentIndex() const;      // return yield index
+    double currentYieldLeft() const;  // return yield strain left epsy[index]
+    double currentYieldRight() const; // return yield strain right epsy[index + 1]
+    double epsp() const;   // return "plastic strain" = 0.5 * (currentYieldLeft + currentYieldRight)
+    double energy() const; // return potential energy
 
     // Check that 'the particle' is at least "n" wells from the far-left/right
     bool checkYieldBoundLeft(size_t n = 0) const;
     bool checkYieldBoundRight(size_t n = 0) const;
+
+    template <class T> void setStrain(const T& arg);
+    template <class T> void strain(T& ret) const;
+    template <class T> void stress(T& ret) const;
+    template <class T> void tangent(T& ret) const;
+
+    template <class T> void setStrainPtr(const T* arg);
+    template <class T> void strainPtr(T* ret) const;
+    template <class T> void stressPtr(T* ret) const;
+    template <class T> void tangentPtr(T* ret) const;
+
+    xt::xtensor<double, 2> Strain() const;
+    xt::xtensor<double, 2> Stress() const;
+    xt::xtensor<double, 4> Tangent() const;
 
 private:
     double m_K;                  // bulk modulus
@@ -175,57 +138,39 @@ private:
 class Smooth
 {
 public:
-    // Constructors
     Smooth() = default;
     Smooth(double K, double G, const xt::xtensor<double, 1>& epsy, bool init_elastic = true);
 
-    // Parameters
-    double K() const;
-    double G() const;
-    xt::xtensor<double, 1> epsy() const;
-    auto getQPot() const;
-    auto* refQPot();
+    double K() const; // return bulk modulus
+    double G() const; // return shear modulus
+    xt::xtensor<double, 1> epsy() const; // return yield strains
 
-    // Set strain
-    template <class T>
-    void setStrain(const T& Eps);
+    auto getQPot() const; // return underlying QPot model
+    auto* refQPot(); // return reference to underlying QPot model
 
-    template <class T>
-    void setStrainIterator(const T& begin); // presumes: contiguous + row-major & symmetric
-
-    // Read stored strain
-    template <class T>
-    void strain(T& Eps) const;
-
-    template <class T>
-    void strainIterator(const T& begin) const; // presumes: contiguous + row-major & symmetric
-
-    // Stress (no allocation, overwrites "Sig" / writes to "begin")
-    template <class T>
-    void stress(T& Sig) const;
-
-    template <class T>
-    void stressIterator(const T& begin) const; // presumes: contiguous + row-major
-
-    // Tangent (no allocation, overwrites "C")
-    template <class T>
-    void tangent(T& C) const;
-
-    // Auto-allocation
-    xt::xtensor<double, 2> Strain() const;
-    xt::xtensor<double, 2> Stress() const;
-    xt::xtensor<double, 4> Tangent() const;
-
-    // Return current state
-    size_t currentIndex() const;      // yield index
-    double currentYieldLeft() const;  // yield strain left epsy[index]
-    double currentYieldRight() const; // yield strain right epsy[index + 1]
-    double epsp() const;   // "plastic strain" (mean of currentYieldLeft and currentYieldRight)
-    double energy() const; // potential energy
+    size_t currentIndex() const;      // return yield index
+    double currentYieldLeft() const;  // return yield strain left epsy[index]
+    double currentYieldRight() const; // return yield strain right epsy[index + 1]
+    double epsp() const;   // return "plastic strain" = 0.5 * (currentYieldLeft + currentYieldRight)
+    double energy() const; // return potential energy
 
     // Check that 'the particle' is at least "n" wells from the far-left/right
     bool checkYieldBoundLeft(size_t n = 0) const;
     bool checkYieldBoundRight(size_t n = 0) const;
+
+    template <class T> void setStrain(const T& arg);
+    template <class T> void strain(T& ret) const;
+    template <class T> void stress(T& ret) const;
+    template <class T> void tangent(T& ret) const;
+
+    template <class T> void setStrainPtr(const T* arg);
+    template <class T> void strainPtr(T* ret) const;
+    template <class T> void stressPtr(T* ret) const;
+    template <class T> void tangentPtr(T* ret) const;
+
+    xt::xtensor<double, 2> Strain() const;
+    xt::xtensor<double, 2> Stress() const;
+    xt::xtensor<double, 4> Tangent() const;
 
 private:
     double m_K;                  // bulk modulus
@@ -259,18 +204,9 @@ public:
     Array() = default;
     Array(const std::array<size_t, N>& shape);
 
-    // Overloaded methods
-
-    /*
-    std::array<size_t, N> shape() const;
-
-    xt::xtensor<double, N + 2> I2() const;
-    xt::xtensor<double, N + 4> II() const;
-    xt::xtensor<double, N + 4> I4() const;
-    xt::xtensor<double, N + 4> I4rt() const;
-    xt::xtensor<double, N + 4> I4s() const;
-    xt::xtensor<double, N + 4> I4d() const;
-    */
+    // Overloaded methods:
+    // - "shape"
+    // - unit tensors: "I2", "II", "I4", "I4rt", "I4s", "I4d"
 
     // Type
 
@@ -284,10 +220,6 @@ public:
 
     xt::xtensor<double, N> K() const;
     xt::xtensor<double, N> G() const;
-
-    // Check that a type has been set everywhere (throws if unset points are found)
-
-    void check() const;
 
     // Set parameters for a batch of points
     // (uniform for all points specified: that have "I(i, j) == 1")
@@ -339,17 +271,17 @@ public:
 
     // Set strain tensor, get the response
 
-    void setStrain(const xt::xtensor<double, N + 2>& Eps);
-    void strain(xt::xtensor<double, N + 2>& Eps) const;
-    void stress(xt::xtensor<double, N + 2>& Sig) const;
-    void tangent(xt::xtensor<double, N + 4>& C) const;
-    void currentIndex(xt::xtensor<size_t, N>& arg) const;
-    void currentYieldLeft(xt::xtensor<double, N>& arg) const;
-    void currentYieldRight(xt::xtensor<double, N>& arg) const;
+    void setStrain(const xt::xtensor<double, N + 2>& arg);
+    void strain(xt::xtensor<double, N + 2>& ret) const;
+    void stress(xt::xtensor<double, N + 2>& ret) const;
+    void tangent(xt::xtensor<double, N + 4>& ret) const;
+    void currentIndex(xt::xtensor<size_t, N>& ret) const;
+    void currentYieldLeft(xt::xtensor<double, N>& ret) const;
+    void currentYieldRight(xt::xtensor<double, N>& ret) const;
     bool checkYieldBoundLeft(size_t n = 0) const;
     bool checkYieldBoundRight(size_t n = 0) const;
-    void epsp(xt::xtensor<double, N>& arg) const;
-    void energy(xt::xtensor<double, N>& arg) const;
+    void epsp(xt::xtensor<double, N>& ret) const;
+    void energy(xt::xtensor<double, N>& ret) const;
 
     // Auto-allocation of the functions above
 
@@ -389,10 +321,6 @@ private:
     using GMatTensor::Cartesian2d::Array<N>::m_shape;
     using GMatTensor::Cartesian2d::Array<N>::m_shape_tensor2;
     using GMatTensor::Cartesian2d::Array<N>::m_shape_tensor4;
-
-    // Internal check
-    bool m_allSet = false; // true if all points have a material assigned
-    void checkAllSet();    // check if all points have a material assigned (modifies "m_allSet")
 };
 
 } // namespace Cartesian2d
