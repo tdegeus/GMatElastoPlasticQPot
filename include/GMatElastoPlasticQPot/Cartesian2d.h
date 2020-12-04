@@ -22,6 +22,8 @@ namespace Cartesian2d {
 
 // Unit tensors
 
+using GMatTensor::Cartesian2d::O2;
+using GMatTensor::Cartesian2d::O4;
 using GMatTensor::Cartesian2d::I2;
 using GMatTensor::Cartesian2d::II;
 using GMatTensor::Cartesian2d::I4;

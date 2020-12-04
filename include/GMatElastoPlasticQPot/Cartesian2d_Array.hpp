@@ -351,7 +351,7 @@ inline void Array<N>::setElastic(
     GMATELASTOPLASTICQPOT_ASSERT(xt::amax(idx)() == K.size() - 1);
     GMATELASTOPLASTICQPOT_ASSERT(K.size() == G.size());
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
-    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, idx.shape()));
     GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(I, 0ul) || xt::equal(I, 1ul)));
     GMATELASTOPLASTICQPOT_ASSERT(
         xt::all(xt::equal(xt::where(xt::equal(I, 1ul), m_type, Type::Unset), Type::Unset)));
@@ -379,7 +379,7 @@ inline void Array<N>::setCusp(
     GMATELASTOPLASTICQPOT_ASSERT(K.size() == G.size());
     GMATELASTOPLASTICQPOT_ASSERT(K.size() == epsy.shape(0));
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
-    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, idx.shape()));
     GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(I, 0ul) || xt::equal(I, 1ul)));
     GMATELASTOPLASTICQPOT_ASSERT(
         xt::all(xt::equal(xt::where(xt::equal(I, 1ul), m_type, Type::Unset), Type::Unset)));
@@ -407,7 +407,7 @@ inline void Array<N>::setSmooth(
     GMATELASTOPLASTICQPOT_ASSERT(K.size() == G.size());
     GMATELASTOPLASTICQPOT_ASSERT(K.size() == epsy.shape(0));
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
-    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, idx.shape()));
     GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(I, 0ul) || xt::equal(I, 1ul)));
     GMATELASTOPLASTICQPOT_ASSERT(
         xt::all(xt::equal(xt::where(xt::equal(I, 1ul), m_type, Type::Unset), Type::Unset)));

@@ -2,35 +2,16 @@
 #include <catch2/catch.hpp>
 #include <xtensor/xrandom.hpp>
 #include <GMatElastoPlasticQPot/Cartesian2d.h>
-
-#define ISCLOSE(a,b) REQUIRE_THAT((a), Catch::WithinAbs((b), 1e-12));
+#include <GMatTensor/Cartesian2d.h>
 
 namespace GM = GMatElastoPlasticQPot::Cartesian2d;
-
-template <class T, class S>
-S A4_ddot_B2(const T& A, const S& B)
-{
-    S C = xt::empty<double>({2, 2});
-    C.fill(0.0);
-
-    for (size_t i = 0; i < 2; i++) {
-        for (size_t j = 0; j < 2; j++) {
-            for (size_t k = 0; k < 2; k++) {
-                for (size_t l = 0; l < 2; l++) {
-                    C(i, j) += A(i, j, k, l) * B(l, k);
-                }
-            }
-        }
-    }
-
-    return C;
-}
+namespace GT = GMatTensor::Cartesian2d;
 
 TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
 {
     SECTION("Epsd - Tensor2")
     {
-        xt::xtensor<double, 2> A = xt::zeros<double>({2, 2});
+        auto A = GT::O2();
         A(0, 1) = 1.0;
         A(1, 0) = 1.0;
         REQUIRE(GM::Epsd(A)() == Approx(1.0));
@@ -38,7 +19,7 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
 
     SECTION("Epsd - List")
     {
-        xt::xtensor<double, 2> A = xt::zeros<double>({2, 2});
+        auto A = GT::O2();
         A(0, 1) = 1.0;
         A(1, 0) = 1.0;
         auto M = xt::xtensor<double,3>::from_shape({3, 2, 2});
@@ -52,7 +33,7 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
 
     SECTION("Epsd - Matrix")
     {
-        xt::xtensor<double, 2> A = xt::zeros<double>({2, 2});
+        auto A = GT::O2();
         A(0, 1) = 1.0;
         A(1, 0) = 1.0;
         auto M = xt::xtensor<double,4>::from_shape({3, 4, 2, 2});
@@ -68,7 +49,7 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
 
     SECTION("Sigd - Tensor2")
     {
-        xt::xtensor<double, 2> A = xt::zeros<double>({2, 2});
+        auto A = GT::O2();
         A(0, 1) = 1.0;
         A(1, 0) = 1.0;
         REQUIRE(GM::Sigd(A)() == Approx(2.0));
@@ -76,7 +57,7 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
 
     SECTION("Sigd - List")
     {
-        xt::xtensor<double, 2> A = xt::zeros<double>({2, 2});
+        auto A = GT::O2();
         A(0, 1) = 1.0;
         A(1, 0) = 1.0;
         auto M = xt::xtensor<double,3>::from_shape({3, 2, 2});
@@ -90,7 +71,7 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
 
     SECTION("Sigd - Matrix")
     {
-        xt::xtensor<double, 2> A = xt::zeros<double>({2, 2});
+        auto A = GT::O2();
         A(0, 1) = 1.0;
         A(1, 0) = 1.0;
         auto M = xt::xtensor<double,4>::from_shape({3, 4, 2, 2});
@@ -210,13 +191,13 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
 
         xt::xtensor<double, 2> Eps = xt::random::randn<double>({2, 2});
         xt::xtensor<double, 4> Is = GM::I4s();
-        Eps = A4_ddot_B2(Is, Eps);
+        Eps = GT::A4_ddot_B2(Is, Eps);
 
         GM::Elastic mat(K, G);
         mat.setStrain(Eps);
         auto Sig = mat.Stress();
         auto C = mat.Tangent();
-        REQUIRE(xt::allclose(A4_ddot_B2(C, Eps), Sig));
+        REQUIRE(xt::allclose(GT::A4_ddot_B2(C, Eps), Sig));
     }
 
     SECTION("Tangent (purely elastic response only) - Cusp")
@@ -226,13 +207,13 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
 
         xt::xtensor<double, 2> Eps = xt::random::randn<double>({2, 2});
         xt::xtensor<double, 4> Is = GM::I4s();
-        Eps = A4_ddot_B2(Is, Eps);
+        Eps = GT::A4_ddot_B2(Is, Eps);
 
         GM::Cusp mat(K, G, {10000.0});
         mat.setStrain(Eps);
         auto Sig = mat.Stress();
         auto C = mat.Tangent();
-        REQUIRE(xt::allclose(A4_ddot_B2(C, Eps), Sig));
+        REQUIRE(xt::allclose(GT::A4_ddot_B2(C, Eps), Sig));
     }
 
     SECTION("Tangent (purely elastic response only) - Smooth")
@@ -242,13 +223,13 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
 
         xt::xtensor<double, 2> Eps = xt::random::randn<double>({2, 2});
         xt::xtensor<double, 4> Is = GM::I4s();
-        Eps = A4_ddot_B2(Is, Eps);
+        Eps = GT::A4_ddot_B2(Is, Eps);
 
         GM::Smooth mat(K, G, {10000.0});
         mat.setStrain(Eps);
         auto Sig = mat.Stress();
         auto C = mat.Tangent();
-        REQUIRE(xt::allclose(A4_ddot_B2(C, Eps), Sig));
+        REQUIRE(xt::allclose(GT::A4_ddot_B2(C, Eps), Sig));
     }
 
     SECTION("Array")
