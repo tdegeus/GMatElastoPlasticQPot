@@ -222,6 +222,12 @@ public:
     xt::xtensor<double, N> K() const;
     xt::xtensor<double, N> G() const;
 
+    // Set purely elastic
+
+    void setElastic(
+        const xt::xtensor<double, N>& K,
+        const xt::xtensor<double, N>& G);
+
     // Set parameters for a batch of points
     // (uniform for all points specified: that have "I(i, j) == 1")
 

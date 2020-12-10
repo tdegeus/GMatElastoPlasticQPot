@@ -281,6 +281,20 @@ inline xt::xtensor<size_t, N> Array<N>::isSmooth() const
 }
 
 template <size_t N>
+inline void Array<N>::setElastic(const xt::xtensor<double, N>& K, const xt::xtensor<double, N>& G)
+{
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, K.shape()));
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, G.shape()));
+    GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(m_type, m_type)));
+
+    for (size_t i = 0; i < m_size; ++i) {
+        m_type.data()[i] = Type::Elastic;
+        m_index.data()[i] = m_Elastic.size();
+        m_Elastic.push_back(Elastic(K.data()[i], G.data()[i]));
+    }
+}
+
+template <size_t N>
 inline void Array<N>::setElastic(const xt::xtensor<size_t, N>& I, double K, double G)
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));

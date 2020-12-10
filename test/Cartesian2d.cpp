@@ -371,4 +371,68 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
             }
         }
     }
+
+    SECTION("Equivalent Elastic Array")
+    {
+        double K = 12.3;
+        double G = 45.6;
+        double gamma = 0.02;
+        double epsm = 0.12;
+
+        xt::xtensor<double, 2> Eps = {
+            {epsm, gamma},
+            {gamma, epsm}};
+
+        xt::xtensor<double, 2> Sig_elas = {
+            {K * epsm, G * gamma},
+            {G * gamma, K * epsm}};
+
+        size_t nelem = 3;
+        size_t nip = 2;
+        size_t ndim = 2;
+
+        GM::Array<2> mat({nelem, nip});
+
+        {
+            xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
+            xt::view(I, 0, xt::all()) = 1;
+            mat.setElastic(I, K, G);
+        }
+
+        {
+            xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
+            xt::xtensor<double,1> epsy = 0.01 + 0.02 * xt::arange<double>(100);
+            xt::view(I, 1, xt::all()) = 1;
+            mat.setCusp(I, K, G, epsy);
+        }
+
+        {
+            xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
+            xt::xtensor<double,1> epsy = 0.01 + 0.02 * xt::arange<double>(100);
+            xt::view(I, 2, xt::all()) = 1;
+            mat.setSmooth(I, K, G, epsy);
+        }
+
+        GM::Array<2> elas(mat.shape());
+        elas.setElastic(mat.K(), mat.G());
+
+        xt::xtensor<double, 4> eps = xt::empty<double>({nelem, nip, ndim, ndim});
+        xt::xtensor<double, 4> sig = xt::empty<double>({nelem, nip, ndim, ndim});
+        xt::xtensor<double, 2> epsp = xt::zeros<double>({nelem, nip});
+
+        for (size_t e = 0; e < nelem; ++e) {
+            for (size_t q = 0; q < nip; ++q) {
+                double fac = static_cast<double>((e + 1) * nip + (q + 1));
+                xt::view(eps, e, q) = fac * Eps;
+                xt::view(sig, e, q) = fac * Sig_elas;
+            }
+        }
+
+        elas.setStrain(eps);
+
+        REQUIRE(xt::allclose(elas.Stress(), sig));
+        REQUIRE(xt::allclose(elas.Epsp(), epsp));
+        REQUIRE(xt::allclose(elas.K(), mat.K()));
+        REQUIRE(xt::allclose(elas.G(), mat.G()));
+    }
 }
