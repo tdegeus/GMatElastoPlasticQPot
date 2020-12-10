@@ -39,6 +39,15 @@ auto construct_Array(T& self)
         .def(
             "setElastic",
             py::overload_cast<
+                const xt::xtensor<double, S::rank>&,
+                const xt::xtensor<double, S::rank>&>(&S::setElastic),
+            "Set all points 'Elastic'.",
+            py::arg("K"),
+            py::arg("G"))
+
+        .def(
+            "setElastic",
+            py::overload_cast<
                 const xt::xtensor<size_t, S::rank>&,
                 const xt::xtensor<size_t, S::rank>&,
                 const xt::xtensor<double, 1>&,
