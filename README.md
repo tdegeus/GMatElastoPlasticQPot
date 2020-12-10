@@ -43,6 +43,7 @@ conveniently compiled to this [PDF](docs/readme.pdf).
     - [Upgrading to >v0.8.*](#upgrading-to-v08)
     - [Upgrading to >v0.6.*](#upgrading-to-v06)
 - [Change-log](#change-log)
+    - [v0.11.0](#v0110)
     - [v0.10.0](#v0100)
     - [v0.9.0](#v090)
     - [v0.8.0](#v080)
@@ -496,6 +497,14 @@ This requires the following changes:
     The library therefore now depends on [QPot](https://www.github.com/tdegeus/QPot).
 
 # Change-log
+
+## v0.11.0
+
+Create pure elastic Array from elasto-plastic Array by:
+```cpp
+GM::Array<2> elas(mat.shape());
+elas.setElastic(mat.K(), mat.G());
+```
 
 ## v0.10.0
 
