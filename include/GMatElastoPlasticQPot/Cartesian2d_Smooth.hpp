@@ -79,7 +79,6 @@ inline double Smooth::energy() const
     std::array<double, 4> Epsd;
     double epsm = GT::Hydrostatic_deviatoric(&m_Eps[0], &Epsd[0]);
     double epsd = std::sqrt(0.5 * GT::A2s_ddot_B2s(&Epsd[0], &Epsd[0]));
-
     double U = m_K * std::pow(epsm, 2.0);
 
     double eps_min = 0.5 * (m_yield.currentYieldRight() + m_yield.currentYieldLeft());

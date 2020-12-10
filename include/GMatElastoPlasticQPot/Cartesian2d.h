@@ -41,7 +41,7 @@ using GMatTensor::Cartesian2d::Deviatoric;
 // Equivalent strain
 
 template <class T, class U>
-inline void epsd(const T& A, U& B);
+inline void epsd(const T& A, U& ret);
 
 template <class T>
 inline auto Epsd(const T& A);
@@ -49,7 +49,7 @@ inline auto Epsd(const T& A);
 // Equivalent stress
 
 template <class T, class U>
-inline void sigd(const T& A, U& B);
+inline void sigd(const T& A, U& ret);
 
 template <class T>
 inline auto Sigd(const T& A);
@@ -62,10 +62,9 @@ public:
     Elastic() = default;
     Elastic(double K, double G);
 
-    double K() const; // return bulk modulus
-    double G() const; // return shear modulus
-
-    double energy() const; // return potential energy
+    double K() const;      // bulk modulus
+    double G() const;      // shear modulus
+    double energy() const; // potential energy
 
     template <class T> void setStrain(const T& arg);
     template <class T> void strain(T& ret) const;
@@ -85,7 +84,7 @@ private:
     double m_K; // bulk modulus
     double m_G; // shear modulus
     std::array<double, 4> m_Eps; // strain tensor [xx, xy, yx, yy]
-    std::array<double, 4> m_Sig; // stress tensor [xx, xy, yx, yy]
+    std::array<double, 4> m_Sig; // stress tensor ,,
 };
 
 // Material point
@@ -96,18 +95,18 @@ public:
     Cusp() = default;
     Cusp(double K, double G, const xt::xtensor<double, 1>& epsy, bool init_elastic = true);
 
-    double K() const; // return bulk modulus
-    double G() const; // return shear modulus
-    xt::xtensor<double, 1> epsy() const; // return yield strains
+    double K() const; // bulk modulus
+    double G() const; // shear modulus
+    xt::xtensor<double, 1> epsy() const; // yield strains
 
-    auto getQPot() const; // return underlying QPot model
-    auto* refQPot(); // return reference to underlying QPot model
+    auto getQPot() const; // underlying QPot model
+    auto* refQPot();      // reference to underlying QPot model
 
-    size_t currentIndex() const;      // return yield index
-    double currentYieldLeft() const;  // return yield strain left epsy[index]
-    double currentYieldRight() const; // return yield strain right epsy[index + 1]
-    double epsp() const;   // return "plastic strain" = 0.5 * (currentYieldLeft + currentYieldRight)
-    double energy() const; // return potential energy
+    size_t currentIndex() const;      // yield index
+    double currentYieldLeft() const;  // yield strain left epsy[index]
+    double currentYieldRight() const; // yield strain right epsy[index + 1]
+    double epsp() const;   // "plastic strain" = 0.5 * (currentYieldLeft + currentYieldRight)
+    double energy() const; // potential energy
 
     // Check that 'the particle' is at least "n" wells from the far-left/right
     bool checkYieldBoundLeft(size_t n = 0) const;
@@ -132,7 +131,7 @@ private:
     double m_G;                  // shear modulus
     QPot::Static m_yield;        // potential energy landscape
     std::array<double, 4> m_Eps; // strain tensor [xx, xy, yx, yy]
-    std::array<double, 4> m_Sig; // stress tensor [xx, xy, yx, yy]
+    std::array<double, 4> m_Sig; // stress tensor ,,
 };
 
 // Material point
@@ -143,18 +142,18 @@ public:
     Smooth() = default;
     Smooth(double K, double G, const xt::xtensor<double, 1>& epsy, bool init_elastic = true);
 
-    double K() const; // return bulk modulus
-    double G() const; // return shear modulus
-    xt::xtensor<double, 1> epsy() const; // return yield strains
+    double K() const; // bulk modulus
+    double G() const; // shear modulus
+    xt::xtensor<double, 1> epsy() const; // yield strains
 
-    auto getQPot() const; // return underlying QPot model
-    auto* refQPot(); // return reference to underlying QPot model
+    auto getQPot() const; // underlying QPot model
+    auto* refQPot();      // reference to underlying QPot model
 
-    size_t currentIndex() const;      // return yield index
-    double currentYieldLeft() const;  // return yield strain left epsy[index]
-    double currentYieldRight() const; // return yield strain right epsy[index + 1]
-    double epsp() const;   // return "plastic strain" = 0.5 * (currentYieldLeft + currentYieldRight)
-    double energy() const; // return potential energy
+    size_t currentIndex() const;      // yield index
+    double currentYieldLeft() const;  // yield strain left epsy[index]
+    double currentYieldRight() const; // yield strain right epsy[index + 1]
+    double epsp() const;   // "plastic strain" = 0.5 * (currentYieldLeft + currentYieldRight)
+    double energy() const; // potential energy
 
     // Check that 'the particle' is at least "n" wells from the far-left/right
     bool checkYieldBoundLeft(size_t n = 0) const;
@@ -179,7 +178,7 @@ private:
     double m_G;                  // shear modulus
     QPot::Static m_yield;        // potential energy landscape
     std::array<double, 4> m_Eps; // strain tensor [xx, xy, yx, yy]
-    std::array<double, 4> m_Sig; // stress tensor [xx, xy, yx, yy]
+    std::array<double, 4> m_Sig; // stress tensor ,,
 };
 
 // Material identifier

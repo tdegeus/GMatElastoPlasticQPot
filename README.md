@@ -506,6 +506,7 @@ This requires the following changes:
     These methods now require a pointer input.
 *   `Array` now sets zeros for all `Type::Unset` points. 
     The function `check` is deprecated accordingly.
+*   Updated to latest GMatTensor.
 
 ## v0.9.0
 
