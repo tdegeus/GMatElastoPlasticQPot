@@ -108,7 +108,7 @@ At the material point level different models are implemented with different clas
 +   `Smooth`: the elasto-plastic material model defined by smoothed potentials. 
 
 There is an `Array` class that allows you to combine all these material models and 
-have a single API for a matrix of material points. 
+have a single API for an array of material points. 
 
 >   Note that all strain tensors are presumed symmetric. 
 >   No checks are made to ensure this.
