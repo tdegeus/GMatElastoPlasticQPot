@@ -13,10 +13,10 @@ namespace GMatElastoPlasticQPot {
 namespace Cartesian2d {
 
 template <class T, class U>
-inline void epsd(const T& A, U& B)
+inline void epsd(const T& A, U& ret)
 {
-    GMatTensor::Cartesian2d::norm_deviatoric(A, B);
-    B *= std::sqrt(0.5);
+    GMatTensor::Cartesian2d::norm_deviatoric(A, ret);
+    ret *= std::sqrt(0.5);
 }
 
 template <class T>
@@ -26,10 +26,10 @@ inline auto Epsd(const T& A)
 }
 
 template <class T, class U>
-inline void sigd(const T& A, U& B)
+inline void sigd(const T& A, U& ret)
 {
-    GMatTensor::Cartesian2d::norm_deviatoric(A, B);
-    B *= std::sqrt(2.0);
+    GMatTensor::Cartesian2d::norm_deviatoric(A, ret);
+    ret *= std::sqrt(2.0);
 }
 
 template <class T>
