@@ -136,8 +136,29 @@ auto construct_Array(T& self)
         .def("Stress", &S::Stress, "Get stress tensors.")
         .def("Tangent", &S::Tangent, "Get stiffness tensors.")
         .def("CurrentIndex", &S::CurrentIndex, "Get potential indices.")
-        .def("CurrentYieldLeft", &S::CurrentYieldLeft, "Get left yield strains.")
-        .def("CurrentYieldRight", &S::CurrentYieldRight, "Get right yield strains.")
+
+        .def(
+            "CurrentYieldLeft",
+            py::overload_cast<>(&S::CurrentYieldLeft, py::const_),
+            "Returns the yield strain to the left, for last known strain.")
+
+        .def(
+            "CurrentYieldRight",
+            py::overload_cast<>(&S::CurrentYieldRight, py::const_),
+            "Returns the yield strain to the right, for last known strain.")
+
+        .def(
+            "CurrentYieldLeft",
+            py::overload_cast<size_t>(&S::CurrentYieldLeft, py::const_),
+            "Returns the yield strain to the left, for last known strain.",
+            py::arg("shift"))
+
+        .def(
+            "CurrentYieldRight",
+            py::overload_cast<size_t>(&S::CurrentYieldRight, py::const_),
+            "Returns the yield strain to the right, for last known strain.",
+            py::arg("shift"))
+
         .def("Epsp", &S::Epsp, "Get equivalent plastic strains.")
         .def("Energy", &S::Energy, "Get energies.")
         .def("getElastic", &S::getElastic, "Returns underlying Elastic model.")
@@ -286,13 +307,25 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
 
         .def(
             "currentYieldLeft",
-            &SM::Cusp::currentYieldLeft,
+            py::overload_cast<>(&SM::Cusp::currentYieldLeft, py::const_),
             "Returns the yield strain to the left, for last known strain.")
 
         .def(
             "currentYieldRight",
-            &SM::Cusp::currentYieldRight,
+            py::overload_cast<>(&SM::Cusp::currentYieldRight, py::const_),
             "Returns the yield strain to the right, for last known strain.")
+
+        .def(
+            "currentYieldLeft",
+            py::overload_cast<size_t>(&SM::Cusp::currentYieldLeft, py::const_),
+            "Returns the yield strain to the left, for last known strain.",
+            py::arg("shift"))
+
+        .def(
+            "currentYieldRight",
+            py::overload_cast<size_t>(&SM::Cusp::currentYieldRight, py::const_),
+            "Returns the yield strain to the right, for last known strain.",
+            py::arg("shift"))
 
         .def(
             "checkYieldBoundLeft",
@@ -341,13 +374,25 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
 
         .def(
             "currentYieldLeft",
-            &SM::Smooth::currentYieldLeft,
+            py::overload_cast<>(&SM::Smooth::currentYieldLeft, py::const_),
             "Returns the yield strain to the left, for last known strain.")
 
         .def(
             "currentYieldRight",
-            &SM::Smooth::currentYieldRight,
+            py::overload_cast<>(&SM::Smooth::currentYieldRight, py::const_),
             "Returns the yield strain to the right, for last known strain.")
+
+        .def(
+            "currentYieldLeft",
+            py::overload_cast<size_t>(&SM::Smooth::currentYieldLeft, py::const_),
+            "Returns the yield strain to the left, for last known strain.",
+            py::arg("shift"))
+
+        .def(
+            "currentYieldRight",
+            py::overload_cast<size_t>(&SM::Smooth::currentYieldRight, py::const_),
+            "Returns the yield strain to the right, for last known strain.",
+            py::arg("shift"))
 
         .def(
             "checkYieldBoundLeft",
