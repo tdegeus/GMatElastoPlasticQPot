@@ -199,6 +199,54 @@ inline void Array<N>::currentYieldRight(xt::xtensor<double, N>& ret) const
 }
 
 template <size_t N>
+inline void Array<N>::currentYieldLeft(xt::xtensor<double, N>& ret, size_t shift) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
+
+    #pragma omp parallel for
+    for (size_t i = 0; i < m_size; ++i) {
+        switch (m_type.data()[i]) {
+        case Type::Unset:
+            ret.data()[i] = 0.0;
+            break;
+        case Type::Elastic:
+            ret.data()[i] = std::numeric_limits<double>::infinity();
+            break;
+        case Type::Cusp:
+            ret.data()[i] = m_Cusp[m_index.data()[i]].currentYieldLeft(shift);
+            break;
+        case Type::Smooth:
+            ret.data()[i] = m_Smooth[m_index.data()[i]].currentYieldLeft(shift);
+            break;
+        }
+    }
+}
+
+template <size_t N>
+inline void Array<N>::currentYieldRight(xt::xtensor<double, N>& ret, size_t shift) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
+
+    #pragma omp parallel for
+    for (size_t i = 0; i < m_size; ++i) {
+        switch (m_type.data()[i]) {
+        case Type::Unset:
+            ret.data()[i] = 0.0;
+            break;
+        case Type::Elastic:
+            ret.data()[i] = std::numeric_limits<double>::infinity();
+            break;
+        case Type::Cusp:
+            ret.data()[i] = m_Cusp[m_index.data()[i]].currentYieldRight(shift);
+            break;
+        case Type::Smooth:
+            ret.data()[i] = m_Smooth[m_index.data()[i]].currentYieldRight(shift);
+            break;
+        }
+    }
+}
+
+template <size_t N>
 inline void Array<N>::epsp(xt::xtensor<double, N>& ret) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
@@ -576,6 +624,22 @@ inline xt::xtensor<double, N> Array<N>::CurrentYieldRight() const
 {
     xt::xtensor<double, N> ret = xt::empty<double>(m_shape);
     this->currentYieldRight(ret);
+    return ret;
+}
+
+template <size_t N>
+inline xt::xtensor<double, N> Array<N>::CurrentYieldLeft(size_t shift) const
+{
+    xt::xtensor<double, N> ret = xt::empty<double>(m_shape);
+    this->currentYieldLeft(ret, shift);
+    return ret;
+}
+
+template <size_t N>
+inline xt::xtensor<double, N> Array<N>::CurrentYieldRight(size_t shift) const
+{
+    xt::xtensor<double, N> ret = xt::empty<double>(m_shape);
+    this->currentYieldRight(ret, shift);
     return ret;
 }
 

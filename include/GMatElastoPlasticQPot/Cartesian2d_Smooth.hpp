@@ -68,6 +68,16 @@ inline double Smooth::currentYieldRight() const
     return m_yield.currentYieldRight();
 }
 
+inline double Smooth::currentYieldLeft(size_t shift) const
+{
+    return m_yield.currentYieldLeft(shift);
+}
+
+inline double Smooth::currentYieldRight(size_t shift) const
+{
+    return m_yield.currentYieldRight(shift);
+}
+
 inline double Smooth::epsp() const
 {
     return 0.5 * (m_yield.currentYieldLeft() + m_yield.currentYieldRight());
