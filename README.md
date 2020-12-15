@@ -43,6 +43,7 @@ conveniently compiled to this [PDF](docs/readme.pdf).
     - [Upgrading to >v0.8.*](#upgrading-to-v08)
     - [Upgrading to >v0.6.*](#upgrading-to-v06)
 - [Change-log](#change-log)
+    - [v0.12.0](#v0120)
     - [v0.11.0](#v0110)
     - [v0.10.0](#v0100)
     - [v0.9.0](#v090)
@@ -497,6 +498,11 @@ This requires the following changes:
     The library therefore now depends on [QPot](https://www.github.com/tdegeus/QPot).
 
 # Change-log
+
+## v0.12.0
+
+*   Added overloads `currentYieldRight` and `currentYieldLeft` that allow for a shift. 
+    Uses latests QPot extension.
 
 ## v0.11.0
 
