@@ -159,6 +159,12 @@ auto construct_Array(T& self)
             "Returns the yield strain to the right, for last known strain.",
             py::arg("shift"))
 
+        .def(
+            "NextYield",
+            &S::NextYield,
+            "Returns the next yield strain to either direction, for last known strain.",
+            py::arg("shift"))
+
         .def("Epsp", &S::Epsp, "Get equivalent plastic strains.")
         .def("Energy", &S::Energy, "Get energies.")
         .def("getElastic", &S::getElastic, "Returns underlying Elastic model.")
@@ -328,6 +334,12 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
             py::arg("shift"))
 
         .def(
+            "nextYield",
+            &SM::Cusp::nextYield,
+            "Returns the next yield strain to either direction, for last known strain.",
+            py::arg("shift"))
+
+        .def(
             "checkYieldBoundLeft",
             &SM::Cusp::checkYieldBoundLeft,
             "Check that 'the particle' is at least 'n' wells from the far-left.",
@@ -392,6 +404,12 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
             "currentYieldRight",
             py::overload_cast<size_t>(&SM::Smooth::currentYieldRight, py::const_),
             "Returns the yield strain to the right, for last known strain.",
+            py::arg("shift"))
+
+        .def(
+            "nextYield",
+            &SM::Smooth::nextYield,
+            "Returns the next yield strain to either direction, for last known strain.",
             py::arg("shift"))
 
         .def(

@@ -68,14 +68,19 @@ inline double Cusp::currentYieldRight() const
     return m_yield.currentYieldRight();
 }
 
-inline double Cusp::currentYieldLeft(size_t shift) const
+inline double Cusp::currentYieldLeft(size_t offset) const
 {
-    return m_yield.currentYieldLeft(shift);
+    return m_yield.currentYieldLeft(offset);
 }
 
-inline double Cusp::currentYieldRight(size_t shift) const
+inline double Cusp::currentYieldRight(size_t offset) const
 {
-    return m_yield.currentYieldRight(shift);
+    return m_yield.currentYieldRight(offset);
+}
+
+inline double Cusp::nextYield(int offset) const
+{
+    return m_yield.nextYield(offset);
 }
 
 inline double Cusp::epsp() const

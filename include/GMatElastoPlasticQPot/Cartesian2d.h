@@ -105,8 +105,9 @@ public:
     size_t currentIndex() const;      // yield index
     double currentYieldLeft() const;  // epsy[current_index]
     double currentYieldRight() const; // epsy[current_index + 1]
-    double currentYieldLeft(size_t shift) const;  // epsy[current_index - shift]
-    double currentYieldRight(size_t shift) const; // epsy[current_index + shift + 1]
+    double currentYieldLeft(size_t offset) const;  // epsy[current_index - offset]
+    double currentYieldRight(size_t offset) const; // epsy[current_index + offset + 1]
+    double nextYield(int offset) const; // offset > 0: epsy[current_index + offset], offset < 0: epsy[current_index + offset + 1]
     double epsp() const;   // "plastic strain" = 0.5 * (currentYieldLeft + currentYieldRight)
     double energy() const; // potential energy
 
@@ -154,8 +155,9 @@ public:
     size_t currentIndex() const;      // yield index
     double currentYieldLeft() const;  // epsy[current_index]
     double currentYieldRight() const; // epsy[current_index + 1]
-    double currentYieldLeft(size_t shift) const;  // epsy[current_index - shift]
-    double currentYieldRight(size_t shift) const; // epsy[current_index + shift + 1]
+    double currentYieldLeft(size_t offset) const;  // epsy[current_index - offset]
+    double currentYieldRight(size_t offset) const; // epsy[current_index + offset + 1]
+    double nextYield(int offset) const; // offset > 0: epsy[current_index + offset], offset < 0: epsy[current_index + offset + 1]
     double epsp() const;   // "plastic strain" = 0.5 * (currentYieldLeft + currentYieldRight)
     double energy() const; // potential energy
 
@@ -289,8 +291,9 @@ public:
     void currentIndex(xt::xtensor<size_t, N>& ret) const;
     void currentYieldLeft(xt::xtensor<double, N>& ret) const;
     void currentYieldRight(xt::xtensor<double, N>& ret) const;
-    void currentYieldLeft(xt::xtensor<double, N>& ret, size_t shift) const;
-    void currentYieldRight(xt::xtensor<double, N>& ret, size_t shift) const;
+    void currentYieldLeft(xt::xtensor<double, N>& ret, size_t offset) const;
+    void currentYieldRight(xt::xtensor<double, N>& ret, size_t offset) const;
+    void nextYield(xt::xtensor<double, N>& ret, int offset) const;
     bool checkYieldBoundLeft(size_t n = 0) const;
     bool checkYieldBoundRight(size_t n = 0) const;
     void epsp(xt::xtensor<double, N>& ret) const;
@@ -304,8 +307,9 @@ public:
     xt::xtensor<size_t, N> CurrentIndex() const;
     xt::xtensor<double, N> CurrentYieldLeft() const;
     xt::xtensor<double, N> CurrentYieldRight() const;
-    xt::xtensor<double, N> CurrentYieldLeft(size_t shift) const;
-    xt::xtensor<double, N> CurrentYieldRight(size_t shift) const;
+    xt::xtensor<double, N> CurrentYieldLeft(size_t offset) const;
+    xt::xtensor<double, N> CurrentYieldRight(size_t offset) const;
+    xt::xtensor<double, N> NextYield(int offset) const;
     xt::xtensor<double, N> Epsp() const;
     xt::xtensor<double, N> Energy() const;
 

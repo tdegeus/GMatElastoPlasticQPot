@@ -199,7 +199,7 @@ inline void Array<N>::currentYieldRight(xt::xtensor<double, N>& ret) const
 }
 
 template <size_t N>
-inline void Array<N>::currentYieldLeft(xt::xtensor<double, N>& ret, size_t shift) const
+inline void Array<N>::currentYieldLeft(xt::xtensor<double, N>& ret, size_t offset) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
 
@@ -213,17 +213,17 @@ inline void Array<N>::currentYieldLeft(xt::xtensor<double, N>& ret, size_t shift
             ret.data()[i] = std::numeric_limits<double>::infinity();
             break;
         case Type::Cusp:
-            ret.data()[i] = m_Cusp[m_index.data()[i]].currentYieldLeft(shift);
+            ret.data()[i] = m_Cusp[m_index.data()[i]].currentYieldLeft(offset);
             break;
         case Type::Smooth:
-            ret.data()[i] = m_Smooth[m_index.data()[i]].currentYieldLeft(shift);
+            ret.data()[i] = m_Smooth[m_index.data()[i]].currentYieldLeft(offset);
             break;
         }
     }
 }
 
 template <size_t N>
-inline void Array<N>::currentYieldRight(xt::xtensor<double, N>& ret, size_t shift) const
+inline void Array<N>::currentYieldRight(xt::xtensor<double, N>& ret, size_t offset) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
 
@@ -237,10 +237,34 @@ inline void Array<N>::currentYieldRight(xt::xtensor<double, N>& ret, size_t shif
             ret.data()[i] = std::numeric_limits<double>::infinity();
             break;
         case Type::Cusp:
-            ret.data()[i] = m_Cusp[m_index.data()[i]].currentYieldRight(shift);
+            ret.data()[i] = m_Cusp[m_index.data()[i]].currentYieldRight(offset);
             break;
         case Type::Smooth:
-            ret.data()[i] = m_Smooth[m_index.data()[i]].currentYieldRight(shift);
+            ret.data()[i] = m_Smooth[m_index.data()[i]].currentYieldRight(offset);
+            break;
+        }
+    }
+}
+
+template <size_t N>
+inline void Array<N>::nextYield(xt::xtensor<double, N>& ret, int offset) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
+
+    #pragma omp parallel for
+    for (size_t i = 0; i < m_size; ++i) {
+        switch (m_type.data()[i]) {
+        case Type::Unset:
+            ret.data()[i] = 0.0;
+            break;
+        case Type::Elastic:
+            ret.data()[i] = std::numeric_limits<double>::infinity();
+            break;
+        case Type::Cusp:
+            ret.data()[i] = m_Cusp[m_index.data()[i]].nextYield(offset);
+            break;
+        case Type::Smooth:
+            ret.data()[i] = m_Smooth[m_index.data()[i]].nextYield(offset);
             break;
         }
     }
@@ -628,18 +652,26 @@ inline xt::xtensor<double, N> Array<N>::CurrentYieldRight() const
 }
 
 template <size_t N>
-inline xt::xtensor<double, N> Array<N>::CurrentYieldLeft(size_t shift) const
+inline xt::xtensor<double, N> Array<N>::CurrentYieldLeft(size_t offset) const
 {
     xt::xtensor<double, N> ret = xt::empty<double>(m_shape);
-    this->currentYieldLeft(ret, shift);
+    this->currentYieldLeft(ret, offset);
     return ret;
 }
 
 template <size_t N>
-inline xt::xtensor<double, N> Array<N>::CurrentYieldRight(size_t shift) const
+inline xt::xtensor<double, N> Array<N>::CurrentYieldRight(size_t offset) const
 {
     xt::xtensor<double, N> ret = xt::empty<double>(m_shape);
-    this->currentYieldRight(ret, shift);
+    this->currentYieldRight(ret, offset);
+    return ret;
+}
+
+template <size_t N>
+inline xt::xtensor<double, N> Array<N>::NextYield(int offset) const
+{
+    xt::xtensor<double, N> ret = xt::empty<double>(m_shape);
+    this->nextYield(ret, offset);
     return ret;
 }
 
