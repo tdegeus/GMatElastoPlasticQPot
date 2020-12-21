@@ -68,14 +68,19 @@ inline double Smooth::currentYieldRight() const
     return m_yield.currentYieldRight();
 }
 
-inline double Smooth::currentYieldLeft(size_t shift) const
+inline double Smooth::currentYieldLeft(size_t offset) const
 {
-    return m_yield.currentYieldLeft(shift);
+    return m_yield.currentYieldLeft(offset);
 }
 
-inline double Smooth::currentYieldRight(size_t shift) const
+inline double Smooth::currentYieldRight(size_t offset) const
 {
-    return m_yield.currentYieldRight(shift);
+    return m_yield.currentYieldRight(offset);
+}
+
+inline double Smooth::nextYield(int offset) const
+{
+    return m_yield.nextYield(offset);
 }
 
 inline double Smooth::epsp() const
