@@ -1,10 +1,23 @@
 channels:
   - conda-forge
 dependencies:
+  # dependencies
   - qpot
   - gmattensor
-  - cmake
   - xtensor
+
+  # optional dependencies
   - xsimd
+
+  # build tools
+  - cmake
+
+  # Python API
   - python
   - pyxtensor
+
+  # to run tests
+  - catch2
+  - goosefem
+  - numpy
+  - h5py
