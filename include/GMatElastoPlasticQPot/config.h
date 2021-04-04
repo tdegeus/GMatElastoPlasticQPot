@@ -1,42 +1,59 @@
-/*
+/**
+Basic configuration
 
-(c - MIT) T.W.J. de Geus (Tom) | www.geus.me | github.com/tdegeus/GMatElastoPlasticQPot
-
+\file config.h
+\copyright Copyright 2017. Tom de Geus. All rights reserved.
+\license This project is released under the MIT License.
 */
 
 #ifndef GMATELASTOPLASTICQPOT_CONFIG_H
 #define GMATELASTOPLASTICQPOT_CONFIG_H
 
+/**
+\cond
+*/
+#define Q(x) #x
+#define QUOTE(x) Q(x)
+
+#define GMATELASTOPLASTICQPOT_ASSERT_IMPL(expr, file, line) \
+    if (!(expr)) { \
+        throw std::runtime_error( \
+            std::string(file) + ':' + std::to_string(line) + \
+            ": assertion failed (" #expr ") \n\t"); \
+    }
+
+/**
+\endcond
+*/
+
+
+/**
+All assertions are implementation as::
+
+    GMATELASTOPLASTICQPOT_ASSERT(...)
+
+They can be enabled by::
+
+    #define GMATELASTOPLASTICQPOT_ENABLE_ASSERT
+
+(before including GMatElastoPlasticQPot).
+The advantage is that:
+
+-   File and line-number are displayed if the assertion fails.
+-   GMatElastoPlasticQPot's assertions can be enabled/disabled
+    independently from those of other libraries.
+
+\throw std::runtime_error
+*/
 #ifdef GMATELASTOPLASTICQPOT_ENABLE_ASSERT
-
-    #define GMATELASTOPLASTICQPOT_ASSERT(expr) \
-        GMATELASTOPLASTICQPOT_ASSERT_IMPL(expr, __FILE__, __LINE__)
-
-    #define GMATELASTOPLASTICQPOT_ASSERT_IMPL(expr, file, line) \
-        if (!(expr)) { \
-            throw std::runtime_error( \
-                std::string(file) + ':' + std::to_string(line) + \
-                ": assertion failed (" #expr ") \n\t"); \
-        }
-
+#define GMATELASTOPLASTICQPOT_ASSERT(expr) GMATELASTOPLASTICQPOT_ASSERT_IMPL(expr, __FILE__, __LINE__)
 #else
-
-    #define GMATELASTOPLASTICQPOT_ASSERT(expr)
-
+#define GMATELASTOPLASTICQPOT_ASSERT(expr)
 #endif
 
-#define GMATELASTOPLASTICQPOT_VERSION_MAJOR 0
-#define GMATELASTOPLASTICQPOT_VERSION_MINOR 13
-#define GMATELASTOPLASTICQPOT_VERSION_PATCH 0
-
-#define GMATELASTOPLASTICQPOT_VERSION_AT_LEAST(x,y,z) \
-    (GMATELASTOPLASTICQPOT_VERSION_MAJOR > x || (GMATELASTOPLASTICQPOT_VERSION_MAJOR >= x && \
-    (GMATELASTOPLASTICQPOT_VERSION_MINOR > y || (GMATELASTOPLASTICQPOT_VERSION_MINOR >= y && \
-                                                 GMATELASTOPLASTICQPOT_VERSION_PATCH >= z))))
-
-#define GMATELASTOPLASTICQPOT_VERSION(x,y,z) \
-    (GMATELASTOPLASTICQPOT_VERSION_MAJOR == x && \
-     GMATELASTOPLASTICQPOT_VERSION_MINOR == y && \
-     GMATELASTOPLASTICQPOT_VERSION_PATCH == z)
+/**
+Material model based on a sequence of parabolic potentials.
+*/
+namespace GMatElastoPlasticQPot { }
 
 #endif
