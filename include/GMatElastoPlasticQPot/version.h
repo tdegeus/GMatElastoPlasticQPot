@@ -2,7 +2,7 @@
 Version information.
 
 \file version.h
-\copyright Copyright 2017. Tom de Geus. All rights reserved.
+\copyright Copyright 2018. Tom de Geus. All rights reserved.
 \license This project is released under the MIT License.
 */
 
@@ -37,8 +37,7 @@ to overwrite the automatic version.
 namespace GMatElastoPlasticQPot {
 
 /**
-Return version string, e.g.::
-
+Return version string, e.g.
 
     "0.8.0"
 
@@ -48,7 +47,7 @@ inline std::string version();
 
 /**
 Return versions of this library and of all of its dependencies.
-The output is a list of strings, e.g.::
+The output is a list of strings, e.g.
 
     "gmatelastoplasticqpot=0.7.0",
     "xtensor=0.20.1"
