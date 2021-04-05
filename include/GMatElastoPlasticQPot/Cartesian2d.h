@@ -1,7 +1,9 @@
-/*
+/**
+Implementation in a 2-d Cartesian coordinate frame.
 
-(c - MIT) T.W.J. de Geus (Tom) | www.geus.me | github.com/tdegeus/GMatElastoPlasticQPot
-
+\file GMatElastoPlasticQPot/Cartesian2d.h
+\copyright Copyright 2018. Tom de Geus. All rights reserved.
+\license This project is released under the MIT License.
 */
 
 #ifndef GMATELASTOPLASTICQPOT_CARTESIAN2D_H
@@ -18,9 +20,25 @@
 #include "config.h"
 
 namespace GMatElastoPlasticQPot {
-namespace Cartesian2d {
 
-// Unit tensors
+/**
+Implementation in a 2-d Cartesian coordinate frame.
+
+Note that for convenience this namespace include aliases to:
+-   GMatTensor::Cartesian2d::O2()
+-   GMatTensor::Cartesian2d::O4()
+-   GMatTensor::Cartesian2d::I2()
+-   GMatTensor::Cartesian2d::II()
+-   GMatTensor::Cartesian2d::I4()
+-   GMatTensor::Cartesian2d::I4rt()
+-   GMatTensor::Cartesian2d::I4s()
+-   GMatTensor::Cartesian2d::I4d()
+-   GMatTensor::Cartesian2d::Hydrostatic()
+-   GMatTensor::Cartesian2d::hydrostatic()
+-   GMatTensor::Cartesian2d::Deviatoric()
+-   GMatTensor::Cartesian2d::deviatoric()
+*/
+namespace Cartesian2d {
 
 using GMatTensor::Cartesian2d::O2;
 using GMatTensor::Cartesian2d::O4;
@@ -30,61 +48,179 @@ using GMatTensor::Cartesian2d::I4;
 using GMatTensor::Cartesian2d::I4rt;
 using GMatTensor::Cartesian2d::I4s;
 using GMatTensor::Cartesian2d::I4d;
-
-// Tensor decomposition
-
-using GMatTensor::Cartesian2d::hydrostatic;
 using GMatTensor::Cartesian2d::Hydrostatic;
-using GMatTensor::Cartesian2d::deviatoric;
+using GMatTensor::Cartesian2d::hydrostatic;
 using GMatTensor::Cartesian2d::Deviatoric;
+using GMatTensor::Cartesian2d::deviatoric;
 
-// Equivalent strain
+/**
+Equivalent strain: norm of strain deviator
 
-template <class T, class U>
-inline void epsd(const T& A, U& ret);
+\f$ \sqrt{\frac{1}{2} (dev(A))_{ij} (dev(A))_{ji}} \f$
 
+To write to allocated data use epsd().
+
+\param A [..., 2, 2] array.
+\return [...] array.
+*/
 template <class T>
 inline auto Epsd(const T& A);
 
-// Equivalent stress
+/**
+Same as Epsd(), but writes to externally allocated output.
 
+\param A [..., 2, 2] array.
+\param ret output [...] array
+*/
 template <class T, class U>
-inline void sigd(const T& A, U& ret);
+inline void epsd(const T& A, U& ret);
 
+/**
+Equivalent strain: norm of strain deviator
+
+\f$ \sqrt{2 (dev(A))_{ij} (dev(A))_{ji}} \f$
+
+To write to allocated data use sigd().
+
+\param A [..., 2, 2] array.
+\return [...] array.
+*/
 template <class T>
 inline auto Sigd(const T& A);
 
-// Material point
+/**
+Same as Sigd(), but writes to externally allocated output.
 
+\param A [..., 2, 2] array.
+\param ret output [...] array
+*/
+template <class T, class U>
+inline void sigd(const T& A, U& ret);
+
+/**
+Elastic material point.
+*/
 class Elastic
 {
 public:
+
     Elastic() = default;
+
+    /**
+    Constructor.
+
+    \param K Bulk modulus.
+    \param G Shear modulus.
+    */
     Elastic(double K, double G);
 
-    double K() const;      // bulk modulus
-    double G() const;      // shear modulus
-    double energy() const; // potential energy
+    /**
+    \return Bulk modulus.
+    */
+    double K() const;
 
-    template <class T> void setStrain(const T& arg);
-    template <class T> void strain(T& ret) const;
-    template <class T> void stress(T& ret) const;
-    template <class T> void tangent(T& ret) const;
+    /**
+    \return Shear modulus.
+    */
+    double G() const;
 
-    template <class T> void setStrainPtr(const T* arg);
-    template <class T> void strainPtr(T* ret) const;
-    template <class T> void stressPtr(T* ret) const;
-    template <class T> void tangentPtr(T* ret) const;
+    /**
+    Get the potential energy for the current state (see setStrain()).
 
+    \return Potential energy.
+    */
+    double energy() const;
+
+    /**
+    Set the current strain tensor.
+
+    \param arg xtensor array [2, 2].
+    */
+    template <class T>
+    void setStrain(const T& arg);
+
+    /**
+    Same as setStrain(), but reads from a pointer assuming row-major storage (no bound check).
+
+    \param arg Pointer to array (xx, xy, yx, yy).
+    */
+    template <class T>
+    void setStrainPtr(const T* arg);
+
+    /**
+    Get the current strain tensor.
+
+    \return [2, 2] array.
+    */
     xt::xtensor<double, 2> Strain() const;
+
+    /**
+    Same as Strain(), but write to allocated data.
+
+    \param arg xtensor array [2, 2], overwritten.
+    */
+    template <class T>
+    void strain(T& ret) const;
+
+    /**
+    Same as Strain(), but write to a pointer assuming row-major storage (no bound check).
+
+    \param ret Pointer to array (xx, xy, yx, yy), overwritten.
+    */
+    template <class T>
+    void strainPtr(T* ret) const;
+
+    /**
+    Get the current stress tensor.
+
+    \return [2, 2] array.
+    */
     xt::xtensor<double, 2> Stress() const;
+
+    /**
+    Same as Stress(), but write to allocated data.
+
+    \param arg xtensor array [2, 2], overwritten.
+    */
+    template <class T>
+    void stress(T& ret) const;
+
+    /**
+    Same as Stress(), but write to a pointer assuming row-major storage (no bound check).
+
+    \param ret Pointer to array (xx, xy, yx, yy), overwritten.
+    */
+    template <class T>
+    void stressPtr(T* ret) const;
+
+    /**
+    Get the tangent tensor (strain independent).
+
+    \return [2, 2, 2, 2] array.
+    */
     xt::xtensor<double, 4> Tangent() const;
 
+    /**
+    Same as Tangent(), but write to allocated data.
+
+    \param arg xtensor array [2, 2, 2, 2], overwritten.
+    */
+    template <class T>
+    void tangent(T& ret) const;
+
+    /**
+    Same as Tangent(), but write to a pointer assuming row-major storage (no bound check).
+
+    \param ret Pointer to array of size 2 * 2 * 2 * 2, overwritten.
+    */
+    template <class T>
+    void tangentPtr(T* ret) const;
+
 private:
-    double m_K; // bulk modulus
-    double m_G; // shear modulus
-    std::array<double, 4> m_Eps; // strain tensor [xx, xy, yx, yy]
-    std::array<double, 4> m_Sig; // stress tensor ,,
+    double m_K; ///< bulk modulus
+    double m_G; ///< shear modulus
+    std::array<double, 4> m_Eps; ///< strain tensor [xx, xy, yx, yy]
+    std::array<double, 4> m_Sig; ///< stress tensor ,,
 };
 
 // Material point
@@ -115,19 +251,35 @@ public:
     bool checkYieldBoundLeft(size_t n = 0) const;
     bool checkYieldBoundRight(size_t n = 0) const;
 
-    template <class T> void setStrain(const T& arg);
-    template <class T> void strain(T& ret) const;
-    template <class T> void stress(T& ret) const;
-    template <class T> void tangent(T& ret) const;
+    template <class T>
+    void setStrain(const T& arg);
 
-    template <class T> void setStrainPtr(const T* arg);
-    template <class T> void strainPtr(T* ret) const;
-    template <class T> void stressPtr(T* ret) const;
-    template <class T> void tangentPtr(T* ret) const;
+    template <class T>
+    void setStrainPtr(const T* arg);
 
     xt::xtensor<double, 2> Strain() const;
+
+    template <class T>
+    void strain(T& ret) const;
+
+    template <class T>
+    void strainPtr(T* ret) const;
+
     xt::xtensor<double, 2> Stress() const;
+
+    template <class T>
+    void stress(T& ret) const;
+
+    template <class T>
+    void stressPtr(T* ret) const;
+
     xt::xtensor<double, 4> Tangent() const;
+
+    template <class T>
+    void tangent(T& ret) const;
+
+    template <class T>
+    void tangentPtr(T* ret) const;
 
 private:
     double m_K;                  // bulk modulus
@@ -297,6 +449,12 @@ public:
     bool checkYieldBoundLeft(size_t n = 0) const;
     bool checkYieldBoundRight(size_t n = 0) const;
     void epsp(xt::xtensor<double, N>& ret) const;
+
+    /**
+    Return the elastic energy.
+
+    \returns [shape()]
+    */
     void energy(xt::xtensor<double, N>& ret) const;
 
     // Auto-allocation of the functions above
@@ -311,6 +469,10 @@ public:
     xt::xtensor<double, N> CurrentYieldRight(size_t offset) const;
     xt::xtensor<double, N> NextYield(int offset) const;
     xt::xtensor<double, N> Epsp() const;
+
+    /**
+    Same as energy(), but returns allocated output.
+    */
     xt::xtensor<double, N> Energy() const;
 
     // Get copy or reference to the underlying model at on point

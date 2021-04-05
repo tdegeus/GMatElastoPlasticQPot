@@ -1,7 +1,9 @@
-/*
+/**
+Partial implementation of GMatElastoPlasticQPot/Cartesian2d.h
 
-(c - MIT) T.W.J. de Geus (Tom) | www.geus.me | github.com/tdegeus/GMatElastoPlasticQPot
-
+\file GMatElastoPlasticQPot/Cartesian2d_Smooth.hpp
+\copyright Copyright 2018. Tom de Geus. All rights reserved.
+\license This project is released under the MIT License.
 */
 
 #ifndef GMATELASTOPLASTICQPOT_CARTESIAN2D_SMOOTH_HPP
