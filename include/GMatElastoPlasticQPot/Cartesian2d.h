@@ -231,9 +231,20 @@ public:
     Cusp() = default;
     Cusp(double K, double G, const xt::xtensor<double, 1>& epsy, bool init_elastic = true);
 
-    double K() const; // bulk modulus
-    double G() const; // shear modulus
-    xt::xtensor<double, 1> epsy() const; // yield strains
+    /**
+    \return Bulk modulus.
+    */
+    double K() const;
+
+    /**
+    \return Shear modulus.
+    */
+    double G() const;
+
+    /**
+    \return Yield strains.
+    */
+    xt::xtensor<double, 1> epsy() const;
 
     auto getQPot() const; // underlying QPot model
     auto* refQPot();      // reference to underlying QPot model
@@ -251,33 +262,88 @@ public:
     bool checkYieldBoundLeft(size_t n = 0) const;
     bool checkYieldBoundRight(size_t n = 0) const;
 
+    /**
+    Set the current strain tensor.
+
+    \param arg xtensor array [2, 2].
+    */
     template <class T>
     void setStrain(const T& arg);
 
+    /**
+    Same as setStrain(), but reads from a pointer assuming row-major storage (no bound check).
+
+    \param arg Pointer to array (xx, xy, yx, yy).
+    */
     template <class T>
     void setStrainPtr(const T* arg);
 
+    /**
+    Get the current strain tensor.
+
+    \return [2, 2] array.
+    */
     xt::xtensor<double, 2> Strain() const;
 
+    /**
+    Same as Strain(), but write to allocated data.
+
+    \param arg xtensor array [2, 2], overwritten.
+    */
     template <class T>
     void strain(T& ret) const;
 
+    /**
+    Same as Strain(), but write to a pointer assuming row-major storage (no bound check).
+
+    \param ret Pointer to array (xx, xy, yx, yy), overwritten.
+    */
     template <class T>
     void strainPtr(T* ret) const;
 
+    /**
+    Get the current stress tensor.
+
+    \return [2, 2] array.
+    */
     xt::xtensor<double, 2> Stress() const;
 
+    /**
+    Same as Stress(), but write to allocated data.
+
+    \param arg xtensor array [2, 2], overwritten.
+    */
     template <class T>
     void stress(T& ret) const;
 
+    /**
+    Same as Stress(), but write to a pointer assuming row-major storage (no bound check).
+
+    \param ret Pointer to array (xx, xy, yx, yy), overwritten.
+    */
     template <class T>
     void stressPtr(T* ret) const;
 
+    /**
+    Get the tangent tensor (strain independent).
+
+    \return [2, 2, 2, 2] array.
+    */
     xt::xtensor<double, 4> Tangent() const;
 
+    /**
+    Same as Tangent(), but write to allocated data.
+
+    \param arg xtensor array [2, 2, 2, 2], overwritten.
+    */
     template <class T>
     void tangent(T& ret) const;
 
+    /**
+    Same as Tangent(), but write to a pointer assuming row-major storage (no bound check).
+
+    \param ret Pointer to array of size 2 * 2 * 2 * 2, overwritten.
+    */
     template <class T>
     void tangentPtr(T* ret) const;
 
@@ -297,9 +363,20 @@ public:
     Smooth() = default;
     Smooth(double K, double G, const xt::xtensor<double, 1>& epsy, bool init_elastic = true);
 
-    double K() const; // bulk modulus
-    double G() const; // shear modulus
-    xt::xtensor<double, 1> epsy() const; // yield strains
+    /**
+    \return Bulk modulus.
+    */
+    double K() const;
+
+    /**
+    \return Shear modulus.
+    */
+    double G() const;
+
+    /**
+    \return Yield strains.
+    */
+    xt::xtensor<double, 1> epsy() const;
 
     auto getQPot() const; // underlying QPot model
     auto* refQPot();      // reference to underlying QPot model
@@ -317,19 +394,90 @@ public:
     bool checkYieldBoundLeft(size_t n = 0) const;
     bool checkYieldBoundRight(size_t n = 0) const;
 
-    template <class T> void setStrain(const T& arg);
-    template <class T> void strain(T& ret) const;
-    template <class T> void stress(T& ret) const;
-    template <class T> void tangent(T& ret) const;
+    /**
+    Set the current strain tensor.
 
-    template <class T> void setStrainPtr(const T* arg);
-    template <class T> void strainPtr(T* ret) const;
-    template <class T> void stressPtr(T* ret) const;
-    template <class T> void tangentPtr(T* ret) const;
+    \param arg xtensor array [2, 2].
+    */
+    template <class T>
+    void setStrain(const T& arg);
 
+    /**
+    Same as setStrain(), but reads from a pointer assuming row-major storage (no bound check).
+
+    \param arg Pointer to array (xx, xy, yx, yy).
+    */
+    template <class T>
+    void setStrainPtr(const T* arg);
+
+    /**
+    Get the current strain tensor.
+
+    \return [2, 2] array.
+    */
     xt::xtensor<double, 2> Strain() const;
+
+    /**
+    Same as Strain(), but write to allocated data.
+
+    \param arg xtensor array [2, 2], overwritten.
+    */
+    template <class T>
+    void strain(T& ret) const;
+
+    /**
+    Same as Strain(), but write to a pointer assuming row-major storage (no bound check).
+
+    \param ret Pointer to array (xx, xy, yx, yy), overwritten.
+    */
+    template <class T>
+    void strainPtr(T* ret) const;
+
+    /**
+    Get the current stress tensor.
+
+    \return [2, 2] array.
+    */
     xt::xtensor<double, 2> Stress() const;
+
+    /**
+    Same as Stress(), but write to allocated data.
+
+    \param arg xtensor array [2, 2], overwritten.
+    */
+    template <class T>
+    void stress(T& ret) const;
+
+    /**
+    Same as Stress(), but write to a pointer assuming row-major storage (no bound check).
+
+    \param ret Pointer to array (xx, xy, yx, yy), overwritten.
+    */
+    template <class T>
+    void stressPtr(T* ret) const;
+
+    /**
+    Get the tangent tensor (strain independent).
+
+    \return [2, 2, 2, 2] array.
+    */
     xt::xtensor<double, 4> Tangent() const;
+
+    /**
+    Same as Tangent(), but write to allocated data.
+
+    \param arg xtensor array [2, 2, 2, 2], overwritten.
+    */
+    template <class T>
+    void tangent(T& ret) const;
+
+    /**
+    Same as Tangent(), but write to a pointer assuming row-major storage (no bound check).
+
+    \param ret Pointer to array of size 2 * 2 * 2 * 2, overwritten.
+    */
+    template <class T>
+    void tangentPtr(T* ret) const;
 
 private:
     double m_K;                  // bulk modulus
