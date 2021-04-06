@@ -1,7 +1,7 @@
 /**
 Implementation of version.h
 
-\file GMatElastoPlasticQPot/version.hpp
+\file
 \copyright Copyright 2018. Tom de Geus. All rights reserved.
 \license This project is released under the MIT License.
 */
