@@ -1,6 +1,9 @@
 # GMatElastoPlasticQPot
 
 [![CI](https://github.com/tdegeus/GMatElastoPlasticQPot/workflows/CI/badge.svg)](https://github.com/tdegeus/GMatElastoPlasticQPot/actions)
+[![Doxygen -> gh-pages](https://github.com/tdegeus/GMatElastoPlasticQPot/workflows/gh-pages/badge.svg)](https://tdegeus.github.io/GMatElastoPlasticQPot)
+[![Conda Version](https://img.shields.io/conda/vn/conda-forge/gmatelastoplasticqpot.svg)](https://anaconda.org/conda-forge/gmatelastoplasticqpot)
+[![Conda Version](https://img.shields.io/conda/vn/conda-forge/python-gmatelastoplasticqpot.svg)](https://anaconda.org/conda-forge/python-gmatelastoplasticqpot)
 
 Elasto-plastic material model based on a manifold of quadratic potentials. 
 An overview of the theory can be found in `docs/readme.tex` 
