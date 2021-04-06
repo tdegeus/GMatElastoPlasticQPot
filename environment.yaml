@@ -17,8 +17,12 @@ dependencies:
   - python
   - pyxtensor
 
-  # to run tests
+  # run tests
   - catch2
   - goosefem
   - numpy
   - h5py
+
+  # build docs
+  - doxygen
+  - mathjax
