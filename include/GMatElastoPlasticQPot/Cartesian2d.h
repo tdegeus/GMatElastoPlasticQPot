@@ -125,9 +125,7 @@ public:
     double G() const;
 
     /**
-    Get the potential energy for the current state (see setStrain()).
-
-    \return Potential energy.
+    \return Current potential energy.
     */
     double energy() const;
 
@@ -157,7 +155,7 @@ public:
     /**
     Same as Strain(), but write to allocated data.
 
-    \param arg xtensor array [2, 2], overwritten.
+    \param ret xtensor array [2, 2], overwritten.
     */
     template <class T>
     void strain(T& ret) const;
@@ -180,7 +178,7 @@ public:
     /**
     Same as Stress(), but write to allocated data.
 
-    \param arg xtensor array [2, 2], overwritten.
+    \param ret xtensor array [2, 2], overwritten.
     */
     template <class T>
     void stress(T& ret) const;
@@ -203,7 +201,7 @@ public:
     /**
     Same as Tangent(), but write to allocated data.
 
-    \param arg xtensor array [2, 2, 2, 2], overwritten.
+    \param ret xtensor array [2, 2, 2, 2], overwritten.
     */
     template <class T>
     void tangent(T& ret) const;
@@ -223,12 +221,25 @@ private:
     std::array<double, 4> m_Sig; ///< stress tensor ,,
 };
 
-// Material point
-
+/**
+Material elasto-plastic material point,
+defined by a potential energy landscape consisting of a sequence of parabolic potentials.
+*/
 class Cusp
 {
 public:
+
     Cusp() = default;
+
+    /**
+    Constructor.
+
+    \param K Bulk modulus.
+    \param G Shear modulus.
+    \param epsy Sequence of yield strains.
+    \param init_elastic Initialise in minimum at zero strain
+        (prepends epsy with  ``- epsy(0)`` if needed).
+    */
     Cusp(double K, double G, const xt::xtensor<double, 1>& epsy, bool init_elastic = true);
 
     /**
@@ -246,20 +257,66 @@ public:
     */
     xt::xtensor<double, 1> epsy() const;
 
-    auto getQPot() const; // underlying QPot model
-    auto* refQPot();      // reference to underlying QPot model
+    /**
+    \return Copy to the underlying #QPot::Static model.
+    */
+    auto getQPot() const;
 
-    size_t currentIndex() const;      // yield index
-    double currentYieldLeft() const;  // epsy[current_index]
-    double currentYieldRight() const; // epsy[current_index + 1]
-    double currentYieldLeft(size_t offset) const;  // epsy[current_index - offset]
-    double currentYieldRight(size_t offset) const; // epsy[current_index + offset + 1]
-    double nextYield(int offset) const; // offset > 0: epsy[current_index + offset], offset < 0: epsy[current_index + offset + 1]
-    double epsp() const;   // "plastic strain" = 0.5 * (currentYieldLeft + currentYieldRight)
-    double energy() const; // potential energy
+    /**
+    \return Reference to the underlying #QPot::Static model.
+    */
+    auto* refQPot();
 
-    // Check that 'the particle' is at least "n" wells from the far-left/right
+    /**
+    \return Current yield index, see QPot::Static::currentIndex().
+    */
+    size_t currentIndex() const;
+
+    /**
+    \return Current yield strain left, see QPot::Static::currentYieldLeft().
+    */
+    double currentYieldLeft() const;
+
+    /**
+    \return Current yield strain right, see QPot::Static::currentYieldRight().
+    */
+    double currentYieldRight() const;
+
+    /**
+    \return Current yield strain at an offset left,
+    see QPot::Static::currentYieldLeft(size_t) const
+    */
+    double currentYieldLeft(size_t offset) const;
+
+    /**
+    \return Current yield strain at an offset right,
+    see QPot::Static::currentYieldRight(size_t) const
+    */
+    double currentYieldRight(size_t offset) const;
+
+    /**
+    \return Current yield strain at an offset, see QPot::Static::nextYield()
+    */
+    double nextYield(int offset) const;
+
+    /**
+    \return Plastic strain = 0.5 * (currentYieldLeft() + currentYieldRight())
+    */
+    double epsp() const;
+
+    /**
+    \return Current potential energy.
+    */
+    double energy() const;
+
+    /**
+    \return See QPot::Static::checkYieldBoundLeft()
+    */
     bool checkYieldBoundLeft(size_t n = 0) const;
+
+    /**
+    \return See QPot::Static::checkYieldBoundRight()
+    */
     bool checkYieldBoundRight(size_t n = 0) const;
 
     /**
@@ -288,7 +345,7 @@ public:
     /**
     Same as Strain(), but write to allocated data.
 
-    \param arg xtensor array [2, 2], overwritten.
+    \param ret xtensor array [2, 2], overwritten.
     */
     template <class T>
     void strain(T& ret) const;
@@ -311,7 +368,7 @@ public:
     /**
     Same as Stress(), but write to allocated data.
 
-    \param arg xtensor array [2, 2], overwritten.
+    \param ret xtensor array [2, 2], overwritten.
     */
     template <class T>
     void stress(T& ret) const;
@@ -334,7 +391,7 @@ public:
     /**
     Same as Tangent(), but write to allocated data.
 
-    \param arg xtensor array [2, 2, 2, 2], overwritten.
+    \param ret xtensor array [2, 2, 2, 2], overwritten.
     */
     template <class T>
     void tangent(T& ret) const;
@@ -348,19 +405,32 @@ public:
     void tangentPtr(T* ret) const;
 
 private:
-    double m_K;                  // bulk modulus
-    double m_G;                  // shear modulus
-    QPot::Static m_yield;        // potential energy landscape
-    std::array<double, 4> m_Eps; // strain tensor [xx, xy, yx, yy]
-    std::array<double, 4> m_Sig; // stress tensor ,,
+    double m_K; ///< bulk modulus
+    double m_G; ///< shear modulus
+    QPot::Static m_yield; ///< potential energy landscape
+    std::array<double, 4> m_Eps; ///< strain tensor [xx, xy, yx, yy]
+    std::array<double, 4> m_Sig; ///< stress tensor ,,
 };
 
-// Material point
-
+/**
+Material elasto-plastic material point,
+defined by a potential energy landscape consisting of a sequence of smoothed parabolic potentials.
+*/
 class Smooth
 {
 public:
+
     Smooth() = default;
+
+    /**
+    Constructor.
+
+    \param K Bulk modulus.
+    \param G Shear modulus.
+    \param epsy Sequence of yield strains.
+    \param init_elastic Initialise in minimum at zero strain
+        (prepends epsy with  ``- epsy(0)`` if needed).
+    */
     Smooth(double K, double G, const xt::xtensor<double, 1>& epsy, bool init_elastic = true);
 
     /**
@@ -378,20 +448,66 @@ public:
     */
     xt::xtensor<double, 1> epsy() const;
 
-    auto getQPot() const; // underlying QPot model
-    auto* refQPot();      // reference to underlying QPot model
+    /**
+    \return Copy to the underlying #QPot::Static model.
+    */
+    auto getQPot() const;
 
-    size_t currentIndex() const;      // yield index
-    double currentYieldLeft() const;  // epsy[current_index]
-    double currentYieldRight() const; // epsy[current_index + 1]
-    double currentYieldLeft(size_t offset) const;  // epsy[current_index - offset]
-    double currentYieldRight(size_t offset) const; // epsy[current_index + offset + 1]
-    double nextYield(int offset) const; // offset > 0: epsy[current_index + offset], offset < 0: epsy[current_index + offset + 1]
-    double epsp() const;   // "plastic strain" = 0.5 * (currentYieldLeft + currentYieldRight)
-    double energy() const; // potential energy
+    /**
+    \return Reference to the underlying #QPot::Static model.
+    */
+    auto* refQPot();
 
-    // Check that 'the particle' is at least "n" wells from the far-left/right
+    /**
+    \return Current yield index, see QPot::Static::currentIndex().
+    */
+    size_t currentIndex() const;
+
+    /**
+    \return Current yield strain left, see QPot::Static::currentYieldLeft().
+    */
+    double currentYieldLeft() const;
+
+    /**
+    \return Current yield strain right, see QPot::Static::currentYieldRight().
+    */
+    double currentYieldRight() const;
+
+    /**
+    \return Current yield strain at an offset left,
+    see QPot::Static::currentYieldLeft(size_t) const
+    */
+    double currentYieldLeft(size_t offset) const;
+
+    /**
+    \return Current yield strain at an offset right,
+    see QPot::Static::currentYieldRight(size_t) const
+    */
+    double currentYieldRight(size_t offset) const;
+
+    /**
+    \return Current yield strain at an offset, see QPot::Static::nextYield()
+    */
+    double nextYield(int offset) const;
+
+    /**
+    \return Plastic strain = 0.5 * (currentYieldLeft() + currentYieldRight())
+    */
+    double epsp() const;
+
+    /**
+    \return Current potential energy.
+    */
+    double energy() const;
+
+    /**
+    \return See QPot::Static::checkYieldBoundLeft()
+    */
     bool checkYieldBoundLeft(size_t n = 0) const;
+
+    /**
+    \return See QPot::Static::checkYieldBoundRight()
+    */
     bool checkYieldBoundRight(size_t n = 0) const;
 
     /**
@@ -420,7 +536,7 @@ public:
     /**
     Same as Strain(), but write to allocated data.
 
-    \param arg xtensor array [2, 2], overwritten.
+    \param ret xtensor array [2, 2], overwritten.
     */
     template <class T>
     void strain(T& ret) const;
@@ -443,7 +559,7 @@ public:
     /**
     Same as Stress(), but write to allocated data.
 
-    \param arg xtensor array [2, 2], overwritten.
+    \param ret xtensor array [2, 2], overwritten.
     */
     template <class T>
     void stress(T& ret) const;
@@ -466,7 +582,7 @@ public:
     /**
     Same as Tangent(), but write to allocated data.
 
-    \param arg xtensor array [2, 2, 2, 2], overwritten.
+    \param ret xtensor array [2, 2, 2, 2], overwritten.
     */
     template <class T>
     void tangent(T& ret) const;
@@ -480,68 +596,120 @@ public:
     void tangentPtr(T* ret) const;
 
 private:
-    double m_K;                  // bulk modulus
-    double m_G;                  // shear modulus
-    QPot::Static m_yield;        // potential energy landscape
-    std::array<double, 4> m_Eps; // strain tensor [xx, xy, yx, yy]
-    std::array<double, 4> m_Sig; // stress tensor ,,
+    double m_K; ///< bulk modulus
+    double m_G; ///< shear modulus
+    QPot::Static m_yield; ///< potential energy landscape
+    std::array<double, 4> m_Eps; ///< strain tensor [xx, xy, yx, yy]
+    std::array<double, 4> m_Sig; ///< stress tensor ,,
 };
 
-// Material identifier
-
+/**
+Material identifier.
+*/
 struct Type {
+    /**
+    Type value.
+    */
     enum Value {
-        Unset,
-        Elastic,
-        Cusp,
-        Smooth,
+        Unset,   ///< Unset
+        Elastic, ///< See Elastic
+        Cusp,    ///< See Cusp
+        Smooth,  ///< See Smooth
     };
 };
 
-// Array of material points
+/**
+Array of material points.
 
+\tparam N Rank of the array.
+*/
 template <size_t N>
 class Array : public GMatTensor::Cartesian2d::Array<N>
 {
 public:
+
     using GMatTensor::Cartesian2d::Array<N>::rank;
 
-    // Constructors
-
     Array() = default;
+
+    /**
+    Basic constructor.
+    Note that before usage material properties still have to be assigned to all items.
+    This can be done per item or by groups of items, using:
+    -   setElastic()
+    -   setCusp()
+    -   setSmooth()
+
+    \param shape The shape of the array.
+    */
     Array(const std::array<size_t, N>& shape);
 
-    // Overloaded methods:
-    // - "shape"
-    // - unit tensors: "I2", "II", "I4", "I4rt", "I4s", "I4d"
-
-    // Type
-
+    /**
+    \return Type-id per item. Follows order set in Type.
+    */
     xt::xtensor<size_t, N> type() const;
+
+    /**
+    \return Per item, 1 if Elastic, otherwise 0.
+    */
     xt::xtensor<size_t, N> isElastic() const;
+
+    /**
+    \return Per item, 1 if Cusp or Smooth, otherwise 0.
+    */
     xt::xtensor<size_t, N> isPlastic() const;
+
+    /**
+    \return Per item, 1 if Cusp, otherwise 0.
+    */
     xt::xtensor<size_t, N> isCusp() const;
+
+    /**
+    \return Per item, 1 if Smooth, otherwise 0.
+    */
     xt::xtensor<size_t, N> isSmooth() const;
 
-    // Parameters
-
+    /**
+    \return Bulk modulus per item.
+    */
     xt::xtensor<double, N> K() const;
+
+    /**
+    \return Shear modulus per item.
+    */
     xt::xtensor<double, N> G() const;
 
-    // Set purely elastic
+    /**
+    Set all items Elastic, specifying material parameters per item.
 
+    \param K Bulk modulus per item [shape()].
+    \param G Shear modulus per item [shape()].
+    */
     void setElastic(
         const xt::xtensor<double, N>& K,
         const xt::xtensor<double, N>& G);
 
-    // Set parameters for a batch of points
-    // (uniform for all points specified: that have "I(i, j) == 1")
+    /**
+    Set a batch of items Elastic, with the material parameters the same for all set items.
 
+    \param I Per item, 1 to set Elastic, 0 to skip.
+    \param K Bulk modulus.
+    \param G Shear modulus.
+    */
     void setElastic(
         const xt::xtensor<size_t, N>& I,
         double K,
         double G);
 
+    /**
+    Set a batch of items Cusp, with the material parameters the same for all set items.
+
+    \param I Per item, 1 to set Cusp, 0 to skip.
+    \param K Bulk modulus.
+    \param G Shear modulus.
+    \param epsy Sequence of yield strains.
+    \param init_elastic Initialise in minimum at zero strain.
+    */
     void setCusp(
         const xt::xtensor<size_t, N>& I,
         double K,
@@ -549,6 +717,15 @@ public:
         const xt::xtensor<double, 1>& epsy,
         bool init_elastic = true);
 
+    /**
+    Set a batch of items Smooth, with the material parameters the same for all set items.
+
+    \param I Per item, 1 to set Smooth, 0 to skip.
+    \param K Bulk modulus.
+    \param G Shear modulus.
+    \param epsy Sequence of yield strains.
+    \param init_elastic Initialise in minimum at zero strain.
+    */
     void setSmooth(
         const xt::xtensor<size_t, N>& I,
         double K,
@@ -556,16 +733,34 @@ public:
         const xt::xtensor<double, 1>& epsy,
         bool init_elastic = true);
 
-    // Set parameters for a batch of points:
-    // each to the same material, but with different parameters:
-    // the matrix "idx" refers to a which entry to use: "K(idx)", "G(idx)", or "epsy(idx,:)"
+    /**
+    Set a batch of items Elastic, with the material parameters (possibly) different.
+    To this end, and addition array ``idx`` is used that refers to a which entry to use:
+    ``K(idx)``, ``G(idx)``, and ``epsy(idx, :)``.
 
+    \param I Per item, 1 to set Elastic, 0 to skip.
+    \param idx Per item, index in supplied material parameters.
+    \param K Bulk modulus.
+    \param G Shear modulus.
+    */
     void setElastic(
         const xt::xtensor<size_t, N>& I,
         const xt::xtensor<size_t, N>& idx,
         const xt::xtensor<double, 1>& K,
         const xt::xtensor<double, 1>& G);
 
+    /**
+    Set a batch of items Cusp, with the material parameters (possibly) different.
+    To this end, and addition array ``idx`` is used that refers to a which entry to use:
+    ``K(idx)``, ``G(idx)``, and ``epsy(idx, :)``.
+
+    \param I Per item, 1 to set Cusp, 0 to skip.
+    \param idx Per item, index in supplied material parameters.
+    \param K Bulk modulus.
+    \param G Shear modulus.
+    \param epsy Sequence of yield strains.
+    \param init_elastic Initialise in minimum at zero strain.
+    */
     void setCusp(
         const xt::xtensor<size_t, N>& I,
         const xt::xtensor<size_t, N>& idx,
@@ -574,6 +769,18 @@ public:
         const xt::xtensor<double, 2>& epsy,
         bool init_elastic = true);
 
+    /**
+    Set a batch of items Smooth, with the material parameters (possibly) different.
+    To this end, and addition array ``idx`` is used that refers to a which entry to use:
+    ``K(idx)``, ``G(idx)``, and ``epsy(idx, :)``.
+
+    \param I Per item, 1 to set Smooth, 0 to skip.
+    \param idx Per item, index in supplied material parameters.
+    \param K Bulk modulus.
+    \param G Shear modulus.
+    \param epsy Sequence of yield strains.
+    \param init_elastic Initialise in minimum at zero strain.
+    */
     void setSmooth(
         const xt::xtensor<size_t, N>& I,
         const xt::xtensor<size_t, N>& idx,
@@ -582,67 +789,237 @@ public:
         const xt::xtensor<double, 2>& epsy,
         bool init_elastic = true);
 
-    // Set strain tensor, get the response
+    /**
+    Set strain tensors.
 
+    \param arg Strain tensor per item [shape(), 2, 2].
+    */
     void setStrain(const xt::xtensor<double, N + 2>& arg);
-    void strain(xt::xtensor<double, N + 2>& ret) const;
-    void stress(xt::xtensor<double, N + 2>& ret) const;
-    void tangent(xt::xtensor<double, N + 4>& ret) const;
-    void currentIndex(xt::xtensor<size_t, N>& ret) const;
-    void currentYieldLeft(xt::xtensor<double, N>& ret) const;
-    void currentYieldRight(xt::xtensor<double, N>& ret) const;
-    void currentYieldLeft(xt::xtensor<double, N>& ret, size_t offset) const;
-    void currentYieldRight(xt::xtensor<double, N>& ret, size_t offset) const;
-    void nextYield(xt::xtensor<double, N>& ret, int offset) const;
-    bool checkYieldBoundLeft(size_t n = 0) const;
-    bool checkYieldBoundRight(size_t n = 0) const;
-    void epsp(xt::xtensor<double, N>& ret) const;
 
     /**
-    Return the elastic energy.
-
-    \returns [shape()]
+    \return Strain tensor per item [shape(), 2, 2].
     */
-    void energy(xt::xtensor<double, N>& ret) const;
-
-    // Auto-allocation of the functions above
-
     xt::xtensor<double, N + 2> Strain() const;
+
+    /**
+    Same as Strain(), but write to allocated data.
+
+    \param ret [shape(), 2, 2], overwritten.
+    */
+    void strain(xt::xtensor<double, N + 2>& ret) const;
+
+    /**
+    \return Stress tensor per item [shape(), 2, 2].
+    */
     xt::xtensor<double, N + 2> Stress() const;
+
+    /**
+    Same as Stress(), but write to allocated data.
+
+    \param ret [shape(), 2, 2], overwritten.
+    */
+    void stress(xt::xtensor<double, N + 2>& ret) const;
+
+    /**
+    \return Tangent tensor per item [shape(), 2, 2].
+    */
     xt::xtensor<double, N + 4> Tangent() const;
+
+    /**
+    Same as Tangent(), but write to allocated data.
+
+    \param ret [shape(), 2, 2, 2, 2], overwritten.
+    */
+    void tangent(xt::xtensor<double, N + 4>& ret) const;
+
+    /**
+    \return Yield index per item [shape()], see QPot::Static::currentIndex().
+    */
     xt::xtensor<size_t, N> CurrentIndex() const;
+
+    /**
+    Same as CurrentIndex(), but write to allocated data.
+
+    \param ret [shape()], overwritten.
+    */
+    void currentIndex(xt::xtensor<size_t, N>& ret) const;
+
+    /**
+    \return Yield strain left [shape()], see QPot::Static::currentYieldLeft().
+    */
     xt::xtensor<double, N> CurrentYieldLeft() const;
+
+    /**
+    Same as CurrentYieldLeft(), but write to allocated data.
+
+    \param ret [shape()], overwritten.
+    */
+    void currentYieldLeft(xt::xtensor<double, N>& ret) const;
+
+    /**
+    \return Yield strain right [shape()], see QPot::Static::currentYieldRight().
+    */
     xt::xtensor<double, N> CurrentYieldRight() const;
+
+    /**
+    Same as CurrentYieldRight(), but write to allocated data.
+
+    \param ret [shape()], overwritten.
+    */
+    void currentYieldRight(xt::xtensor<double, N>& ret) const;
+
+    /**
+    \return Yield strain at an offset left [shape()], see QPot::Static::currentYieldLeft().
+    */
     xt::xtensor<double, N> CurrentYieldLeft(size_t offset) const;
+
+    /**
+    Same as CurrentYieldLeft(), but write to allocated data.
+
+    \param ret [shape()], overwritten.
+    \param offset
+    */
+    void currentYieldLeft(xt::xtensor<double, N>& ret, size_t offset) const;
+
+    /**
+    \param offset
+    \return Yield strain at an offset right [shape()], see QPot::Static::currentYieldRight().
+    */
     xt::xtensor<double, N> CurrentYieldRight(size_t offset) const;
+
+    /**
+    Same as CurrentYieldRight(), but write to allocated data.
+
+    \param ret [shape()], overwritten.
+    \param offset
+    */
+    void currentYieldRight(xt::xtensor<double, N>& ret, size_t offset) const;
+
+    /**
+    \param offset
+    \return Next yield strain at an offset [shape()], see QPot::Static::nextYield().
+    */
     xt::xtensor<double, N> NextYield(int offset) const;
+
+    /**
+    Same as NextYield(), but write to allocated data.
+
+    \param ret [shape()], overwritten.
+    \param offset
+    */
+    void nextYield(xt::xtensor<double, N>& ret, int offset) const;
+
+    /**
+    \param n Number of potentials that should be remaining to the left.
+    \return Bound check, see QPot::Static::checkYieldBoundLeft().
+    */
+    bool checkYieldBoundLeft(size_t n = 0) const;
+
+    /**
+    \param n Number of potentials that should be remaining to the right.
+    \return Bound check, see QPot::Static::checkYieldBoundRight().
+    */
+    bool checkYieldBoundRight(size_t n = 0) const;
+
+    /**
+    \return Plastic strain [shape()].
+    */
     xt::xtensor<double, N> Epsp() const;
 
     /**
-    Same as energy(), but returns allocated output.
+    Same as Epsp(), but write to allocated data.
+
+    \param ret [shape()], overwritten.
+    */
+    void epsp(xt::xtensor<double, N>& ret) const;
+
+    /**
+    \return Elastic energy item [shape()].
     */
     xt::xtensor<double, N> Energy() const;
 
-    // Get copy or reference to the underlying model at on point
+    /**
+    Same as Energy(), but write to allocated data.
 
+    \param ret [shape()], overwritten.
+    */
+    void energy(xt::xtensor<double, N>& ret) const;
+
+    /**
+    Copy to the underlying Elastic model of an item.
+
+    \param index The index of the item.
+    \return Copy to the model.
+    */
     auto getElastic(const std::array<size_t, N>& index) const;
+
+    /**
+    Copy to the underlying Cusp model of an item.
+
+    \param index The index of the item.
+    \return Copy to the model.
+    */
     auto getCusp(const std::array<size_t, N>& index) const;
+
+    /**
+    Copy to the underlying Smooth model of an item.
+
+    \param index The index of the item.
+    \return Copy to the model.
+    */
     auto getSmooth(const std::array<size_t, N>& index) const;
+
+    /**
+    Reference to the underlying Elastic model of an item.
+
+    \param index The index of the item.
+    \return Reference to the model.
+    */
     auto* refElastic(const std::array<size_t, N>& index);
+
+    /**
+    Reference to the underlying Cusp model of an item.
+
+    \param index The index of the item.
+    \return Reference to the model.
+    */
     auto* refCusp(const std::array<size_t, N>& index);
+
+    /**
+    Reference to the underlying Smooth model of an item.
+
+    \param index The index of the item.
+    \return Reference to the model.
+    */
     auto* refSmooth(const std::array<size_t, N>& index);
 
 private:
-    // Material vectors
+
+    /**
+    Elastic material vectors: each item has one entry in one of the material vectors.
+    */
     std::vector<Elastic> m_Elastic;
+
+    /**
+    Cusp material vectors: each item has one entry in one of the material vectors.
+    */
     std::vector<Cusp> m_Cusp;
+
+    /**
+    Smooth material vectors: each item has one entry in one of the material vectors.
+    */
     std::vector<Smooth> m_Smooth;
 
-    // Identifiers for each matrix entry
-    xt::xtensor<size_t, N> m_type;  // type (e.g. "Type::Elastic")
-    xt::xtensor<size_t, N> m_index; // index from the relevant material vector (e.g. "m_Elastic")
+    /**
+    Type of each entry, see Type.
+    */
+    xt::xtensor<size_t, N> m_type;
 
-    // Shape
+    /**
+    Index in the relevant material vector (#m_Elastic, #m_Cusp, #m_Smooth)
+    */
+    xt::xtensor<size_t, N> m_index;
+
     using GMatTensor::Cartesian2d::Array<N>::m_ndim;
     using GMatTensor::Cartesian2d::Array<N>::m_stride_tensor2;
     using GMatTensor::Cartesian2d::Array<N>::m_stride_tensor4;
