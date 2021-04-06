@@ -61,8 +61,8 @@ set(_${PROJECT_NAME} ${CMAKE_SIZEOF_VOID_P})
 unset(CMAKE_SIZEOF_VOID_P)
 
 write_basic_package_version_file(
-    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Version.cmake"
-    VERSION ${${PROJECT_NAME}_VERSION}
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+    VERSION "${${PROJECT_NAME}_VERSION}"
     COMPATIBILITY AnyNewerVersion)
 
 set(CMAKE_SIZEOF_VOID_P ${_${PROJECT_NAME}})
@@ -105,6 +105,18 @@ if(BUILD_DOCS)
     get_target_property(QPot_INCLUDE QPot INTERFACE_INCLUDE_DIRECTORIES)
     get_target_property(GMatTensor_INCLUDE GMatTensor INTERFACE_INCLUDE_DIRECTORIES)
 
+    set(${PROJECT_NAME}_DOCS_INCL
+        "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}"
+        "${QPot_INCLUDE}/QPot"
+        "${GMatTensor_INCLUDE}/GMatTensor")
+
+    set(${PROJECT_NAME}_DOCS_STRIP
+        "${CMAKE_CURRENT_SOURCE_DIR}/include"
+        "${QPot_INCLUDE}"
+        "${GMatTensor_INCLUDE}")
+
+    list(REMOVE_DUPLICATES ${PROJECT_NAME}_DOCS_STRIP)
+
     set(DOXYGEN_EXCLUDE_SYMBOLS detail)
     set(DOXYGEN_CASE_SENSE_NAMES YES)
     set(DOXYGEN_USE_MATHJAX YES)
@@ -112,7 +124,6 @@ if(BUILD_DOCS)
     set(DOXYGEN_JAVADOC_AUTOBRIEF YES)
     set(DOXYGEN_MACRO_EXPANSION YES)
     set(DOXYGEN_SOURCE_BROWSER YES)
-    set(DOXYGEN_RECURSIVE YES)
     set(DOXYGEN_QUIET YES)
     set(DOXYGEN_WARN_IF_UNDOCUMENTED YES)
 
@@ -125,18 +136,7 @@ if(BUILD_DOCS)
         "endrst=\\endverbatim"
         "license=@par License:")
 
-    set(DOXYGEN_STRIP_FROM_INC_PATH
-        "${CMAKE_CURRENT_SOURCE_DIR}/include"
-        "${QPot_INCLUDE}"
-        "${GMatTensor_INCLUDE}")
-
-    set(DOXYGEN_STRIP_FROM_PATH
-        "${CMAKE_CURRENT_SOURCE_DIR}/include"
-        "${QPot_INCLUDE}"
-        "${GMatTensor_INCLUDE}")
-
-    doxygen_add_docs(docs
-        "${CMAKE_CURRENT_SOURCE_DIR}/include"
-        "${QPot_INCLUDE}/QPot"
-        "${GMatTensor_INCLUDE}/GMatTensor")
+    set(DOXYGEN_STRIP_FROM_INC_PATH ${${PROJECT_NAME}_DOCS_STRIP})
+    set(DOXYGEN_STRIP_FROM_PATH ${${PROJECT_NAME}_DOCS_STRIP})
+    doxygen_add_docs(docs ${${PROJECT_NAME}_DOCS_INCL})
 endif()

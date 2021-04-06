@@ -1,7 +1,7 @@
 /**
-Basic configuration.
+Macros used in the library.
 
-\file GMatElastoPlasticQPot/config.h
+\file
 \copyright Copyright 2018. Tom de Geus. All rights reserved.
 \license This project is released under the MIT License.
 */
@@ -21,11 +21,9 @@ Basic configuration.
             std::string(file) + ':' + std::to_string(line) + \
             ": assertion failed (" #expr ") \n\t"); \
     }
-
 /**
 \endcond
 */
-
 
 /**
 All assertions are implementation as::
