@@ -222,8 +222,8 @@ private:
 };
 
 /**
-Material elasto-plastic material point,
-defined by a potential energy landscape consisting of a sequence of parabolic potentials.
+Elasto-plastic material point.
+Defined by a potential energy landscape consisting of a sequence of parabolic potentials.
 */
 class Cusp
 {
@@ -413,8 +413,8 @@ private:
 };
 
 /**
-Material elasto-plastic material point,
-defined by a potential energy landscape consisting of a sequence of smoothed parabolic potentials.
+Elasto-plastic material point.
+Defined by a potential energy landscape consisting of a sequence of smoothed parabolic potentials.
 */
 class Smooth
 {

@@ -42,7 +42,7 @@ inline double Smooth::G() const
 
 inline xt::xtensor<double, 1> Smooth::epsy() const
 {
-    return m_yield.yield();
+    return m_yield.yieldPosition();
 }
 
 inline auto Smooth::getQPot() const

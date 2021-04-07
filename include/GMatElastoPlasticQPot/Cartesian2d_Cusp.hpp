@@ -42,7 +42,7 @@ inline double Cusp::G() const
 
 inline xt::xtensor<double, 1> Cusp::epsy() const
 {
-    return m_yield.yield();
+    return m_yield.yieldPosition();
 }
 
 inline auto Cusp::getQPot() const
