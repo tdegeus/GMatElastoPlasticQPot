@@ -9,23 +9,21 @@ on:
 
 jobs:
 
-  default-shell:
+  standard:
 
     strategy:
-
       fail-fast: false
-
       matrix:
         runs-on: [ubuntu-latest, macos-latest, windows-latest]
         include:
           - runs-on: ubuntu-latest
-            config: -DBUILD_TESTS=1 -DBUILD_EXAMPLES=1
-            prop: tests & examples
+            config: -DBUILD_TESTS=1 -DBUILD_EXAMPLES=1 -DBUILD_DOCS=1
+            prop: tests, examples & docs
           - runs-on: macos-latest
-            config: -DBUILD_TESTS=1 -DBUILD_EXAMPLES=0
+            config: -DBUILD_TESTS=1
             prop: tests
           - runs-on: windows-latest
-            config: -DBUILD_TESTS=1 -DBUILD_EXAMPLES=0
+            config: -DBUILD_TESTS=1
             prop: tests
 
     defaults:
@@ -55,23 +53,28 @@ jobs:
         channels: conda-forge,defaults
         channel-priority: true
         environment-file: environment.yaml
-        activate-environment: test
+        activate-environment: myenv
         auto-activate-base: false
+
+    - name: Set dummy version
+      run: echo "SETUPTOOLS_SCM_PRETEND_VERSION=ci" >> $GITHUB_ENV
 
     - name: Configure using CMake (!Windows)
       if: runner.os != 'Windows'
-      run: cmake . ${{ matrix.config }}
+      run: cmake -Bbuild ${{ matrix.config }}
 
     - name: Configure using CMake (Windows)
       if: runner.os == 'Windows'
       run: |
         conda install -c conda-forge clang_win-64 ninja
-        cmake . -G Ninja ${{ matrix.config }} -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+        cmake -Bbuild -G Ninja ${{ matrix.config }} -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
 
     - name: Build C++ ${{ matrix.prop }}
+      working-directory: build
       run: cmake --build .
 
     - name: Run C++ ${{ matrix.prop }}
+      working-directory: build
       run: ctest --output-on-failure
 
     - name: Build and install Python module
@@ -80,59 +83,73 @@ jobs:
         python setup.py install
 
     - name: Run Python tests
-      run: python ./test/Cartesian2d.py
+      working-directory: test
+      run: python Cartesian2d.py
 
     - name: Generate consistency data based on current commit
       if: runner.os == 'Linux'
+      working-directory: test/compare_versions
       run: |
-        python test/compare_versions/Cartesian2d_generate.py
-        python test/compare_versions/Cartesian2d_check_main.py
+        python Cartesian2d_generate.py
+        python Cartesian2d_check_main.py
 
     - name: Check consistency with v0.9.0
       if: runner.os == 'Linux'
+      working-directory: test/compare_versions
       run: |
         conda install -c conda-forge python=3.8.5 python-gmatelastoplasticqpot=0.9.0
-        python test/compare_versions/Cartesian2d_check_v0.6.3.py
+        python Cartesian2d_check_v0.6.3.py
 
     - name: Check consistency with v0.8.0
       if: runner.os == 'Linux'
+      working-directory: test/compare_versions
       run: |
         conda install -c conda-forge python=3.8.5 python-gmatelastoplasticqpot=0.8.0
-        python test/compare_versions/Cartesian2d_check_v0.6.3.py
+        python Cartesian2d_check_v0.6.3.py
 
     - name: Check consistency with v0.7.0
       if: runner.os == 'Linux'
+      working-directory: test/compare_versions
       run: |
         conda install -c conda-forge python=3.8.5 python-gmatelastoplasticqpot=0.7.0
-        python test/compare_versions/Cartesian2d_check_v0.6.3.py
+        python Cartesian2d_check_v0.6.3.py
 
     - name: Check consistency with v0.6.3
       if: runner.os == 'Linux'
+      working-directory: test/compare_versions
       run: |
         conda install -c conda-forge python=3.8.5 python-gmatelastoplasticqpot=0.6.3
-        python test/compare_versions/Cartesian2d_check_v0.6.3.py
+        python Cartesian2d_check_v0.6.3.py
 
     - name: Check consistency with v0.5.0
       if: runner.os == 'Linux'
+      working-directory: test/compare_versions
       run: |
         conda install -c conda-forge python=3.8.5 python-gmatelastoplasticqpot=0.5.0
-        python test/compare_versions/Cartesian2d_check_v0.5.0.py
+        python Cartesian2d_check_v0.5.0.py
 
     - name: Check consistency with v0.4.0
       if: runner.os == 'Linux'
+      working-directory: test/compare_versions
       run: |
         conda install -c conda-forge python=3.8.5 python-gmatelastoplasticqpot=0.4.0
-        python test/compare_versions/Cartesian2d_check_v0.2.2.py
+        python Cartesian2d_check_v0.2.2.py
 
     - name: Check consistency with v0.3.0
       if: runner.os == 'Linux'
+      working-directory: test/compare_versions
       run: |
         conda install -c conda-forge python=3.8.5 python-gmatelastoplasticqpot=0.3.0
-        python test/compare_versions/Cartesian2d_check_v0.2.2.py
+        python Cartesian2d_check_v0.2.2.py
 
     - name: Check consistency with v0.2.2
       if: runner.os == 'Linux'
+      working-directory: test/compare_versions
       run: |
         conda install -c conda-forge python=3.8.5 python-gmatelastoplasticqpot=0.2.2
-        python test/compare_versions/Cartesian2d_check_v0.2.2.py
+        python Cartesian2d_check_v0.2.2.py
 
+    - name: Build doxygen-docs
+      if: runner.os == 'Linux'
+      working-directory: build
+      run: make docs
