@@ -260,12 +260,19 @@ public:
     /**
     \return Copy to the underlying #QPot::Static model.
     */
+    [[ deprecated ]]
     auto getQPot() const;
 
     /**
     \return Reference to the underlying #QPot::Static model.
     */
+    [[ deprecated ]]
     auto* refQPot();
+
+    /**
+    \return Reference to the underlying #QPot::Static model.
+    */
+    QPot::Static& refQPotStatic();
 
     /**
     \return Current yield index, see QPot::Static::currentIndex().
@@ -451,12 +458,19 @@ public:
     /**
     \return Copy to the underlying #QPot::Static model.
     */
+    [[ deprecated ]]
     auto getQPot() const;
 
     /**
     \return Reference to the underlying #QPot::Static model.
     */
+    [[ deprecated ]]
     auto* refQPot();
+
+    /**
+    \return Reference to the underlying #QPot::Static model.
+    */
+    QPot::Static& refQPotStatic();
 
     /**
     \return Current yield index, see QPot::Static::currentIndex().
@@ -951,6 +965,7 @@ public:
     \param index The index of the item.
     \return Copy to the model.
     */
+    [[ deprecated ]]
     auto getElastic(const std::array<size_t, N>& index) const;
 
     /**
@@ -959,6 +974,7 @@ public:
     \param index The index of the item.
     \return Copy to the model.
     */
+    [[ deprecated ]]
     auto getCusp(const std::array<size_t, N>& index) const;
 
     /**
@@ -967,6 +983,7 @@ public:
     \param index The index of the item.
     \return Copy to the model.
     */
+    [[ deprecated ]]
     auto getSmooth(const std::array<size_t, N>& index) const;
 
     /**
@@ -975,7 +992,7 @@ public:
     \param index The index of the item.
     \return Reference to the model.
     */
-    auto* refElastic(const std::array<size_t, N>& index);
+    Elastic& refElastic(const std::array<size_t, N>& index);
 
     /**
     Reference to the underlying Cusp model of an item.
@@ -983,7 +1000,7 @@ public:
     \param index The index of the item.
     \return Reference to the model.
     */
-    auto* refCusp(const std::array<size_t, N>& index);
+    Cusp& refCusp(const std::array<size_t, N>& index);
 
     /**
     Reference to the underlying Smooth model of an item.
@@ -991,7 +1008,7 @@ public:
     \param index The index of the item.
     \return Reference to the model.
     */
-    auto* refSmooth(const std::array<size_t, N>& index);
+    Smooth& refSmooth(const std::array<size_t, N>& index);
 
 private:
 

@@ -47,12 +47,19 @@ inline xt::xtensor<double, 1> Smooth::epsy() const
 
 inline auto Smooth::getQPot() const
 {
+    GMATELASTOPLASTICQPOT_WARNING_PYTHON("Deprecated, only refQPotStatic will be supported");
     return m_yield;
 }
 
 inline auto* Smooth::refQPot()
 {
+    GMATELASTOPLASTICQPOT_WARNING_PYTHON("Deprecated, only refQPotStatic will be supported");
     return &m_yield;
+}
+
+inline QPot::Static& Smooth::refQPotStatic()
+{
+    return m_yield;
 }
 
 inline size_t Smooth::currentIndex() const

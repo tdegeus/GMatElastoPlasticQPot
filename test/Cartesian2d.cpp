@@ -126,8 +126,12 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
         mat.setStrain(Eps);
 
         REQUIRE(xt::allclose(mat.Stress(), Sig));
-        REQUIRE(mat.epsp() == Approx(0.02));
         REQUIRE(mat.currentIndex() == 1);
+        REQUIRE(mat.epsp() == 0.02);
+        REQUIRE(mat.currentYieldLeft() == 0.01);
+        REQUIRE(mat.currentYieldRight() == 0.03);
+        REQUIRE(mat.currentYieldLeft() == mat.refQPotStatic().currentYieldLeft());
+        REQUIRE(mat.currentYieldRight() == mat.refQPotStatic().currentYieldRight());
         REQUIRE(mat.checkYieldBoundLeft());
         REQUIRE(mat.checkYieldBoundRight());
         REQUIRE(mat.energy() == Approx(K * std::pow(epsm, 2.0) + G * (0.0 - std::pow(0.01, 2.0))));
@@ -152,8 +156,12 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
         mat.setStrain(Eps);
 
         REQUIRE(xt::allclose(mat.Stress(), Sig));
-        REQUIRE(mat.epsp() == Approx(0.04));
         REQUIRE(mat.currentIndex() == 2);
+        REQUIRE(mat.epsp() == 0.04);
+        REQUIRE(mat.currentYieldLeft() == 0.03);
+        REQUIRE(mat.currentYieldRight() == 0.05);
+        REQUIRE(mat.currentYieldLeft() == mat.refQPotStatic().currentYieldLeft());
+        REQUIRE(mat.currentYieldRight() == mat.refQPotStatic().currentYieldRight());
         REQUIRE(mat.checkYieldBoundLeft());
         REQUIRE(mat.checkYieldBoundRight());
         REQUIRE(mat.energy() == Approx(K * std::pow(epsm, 2.0) + G * (std::pow(gamma - 0.04, 2.0) - std::pow(0.01, 2.0))));
@@ -178,8 +186,12 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
         mat.setStrain(Eps);
 
         REQUIRE(xt::allclose(mat.Stress(), Sig));
-        REQUIRE(mat.epsp() == Approx(0.02));
         REQUIRE(mat.currentIndex() == 1);
+        REQUIRE(mat.epsp() == 0.02);
+        REQUIRE(mat.currentYieldLeft() == 0.01);
+        REQUIRE(mat.currentYieldRight() == 0.03);
+        REQUIRE(mat.currentYieldLeft() == mat.refQPotStatic().currentYieldLeft());
+        REQUIRE(mat.currentYieldRight() == mat.refQPotStatic().currentYieldRight());
         REQUIRE(mat.checkYieldBoundLeft());
         REQUIRE(mat.checkYieldBoundRight());
     }
@@ -304,7 +316,7 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
         REQUIRE(mat.checkYieldBoundRight());
     }
 
-    SECTION("Array - Model")
+    SECTION("Array - reference to underlying model")
     {
         double K = 12.3;
         double G = 45.6;
@@ -352,18 +364,18 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
             for (size_t q = 0; q < nip; ++q) {
                 double fac = static_cast<double>((e + 1) * nip + (q + 1));
                 if (e == 0) {
-                    auto model = mat.getElastic({e, q});
+                    auto model = mat.refElastic({e, q});
                     model.setStrain(xt::eval(fac * Eps));
                     REQUIRE(xt::allclose(model.Stress(), fac * Sig_elas));
                 }
                 else if (e == 1) {
-                    auto model = mat.getCusp({e, q});
+                    auto model = mat.refCusp({e, q});
                     model.setStrain(xt::eval(fac * Eps));
                     REQUIRE(xt::allclose(model.Stress(), fac * Sig_plas));
                     REQUIRE(xt::allclose(model.epsp(), fac * gamma));
                 }
                 else if (e == 2) {
-                    auto model = mat.getSmooth({e, q});
+                    auto model = mat.refSmooth({e, q});
                     model.setStrain(xt::eval(fac * Eps));
                     REQUIRE(xt::allclose(model.Stress(), fac * Sig_plas));
                     REQUIRE(xt::allclose(model.epsp(), fac * gamma));

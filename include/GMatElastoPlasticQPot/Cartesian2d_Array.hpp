@@ -696,6 +696,7 @@ inline xt::xtensor<double, N> Array<N>::Energy() const
 template <size_t N>
 inline auto Array<N>::getElastic(const std::array<size_t, N>& index) const
 {
+    GMATELASTOPLASTICQPOT_WARNING_PYTHON("Deprecated, only refElastic will be supported");
     GMATELASTOPLASTICQPOT_ASSERT(m_type[index] == Type::Elastic);
     return m_Elastic[m_index[index]];
 }
@@ -703,6 +704,7 @@ inline auto Array<N>::getElastic(const std::array<size_t, N>& index) const
 template <size_t N>
 inline auto Array<N>::getCusp(const std::array<size_t, N>& index) const
 {
+    GMATELASTOPLASTICQPOT_WARNING_PYTHON("Deprecated, only refCusp will be supported");
     GMATELASTOPLASTICQPOT_ASSERT(m_type[index] == Type::Cusp);
     return m_Cusp[m_index[index]];
 }
@@ -710,29 +712,30 @@ inline auto Array<N>::getCusp(const std::array<size_t, N>& index) const
 template <size_t N>
 inline auto Array<N>::getSmooth(const std::array<size_t, N>& index) const
 {
+    GMATELASTOPLASTICQPOT_WARNING_PYTHON("Deprecated, only refSmooth will be supported");
     GMATELASTOPLASTICQPOT_ASSERT(m_type[index] == Type::Smooth);
     return m_Smooth[m_index[index]];
 }
 
 template <size_t N>
-inline auto* Array<N>::refElastic(const std::array<size_t, N>& index)
+inline Elastic& Array<N>::refElastic(const std::array<size_t, N>& index)
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_type[index] == Type::Elastic);
-    return &m_Elastic[m_index[index]];
+    return m_Elastic[m_index[index]];
 }
 
 template <size_t N>
-inline auto* Array<N>::refCusp(const std::array<size_t, N>& index)
+inline Cusp& Array<N>::refCusp(const std::array<size_t, N>& index)
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_type[index] == Type::Cusp);
-    return &m_Cusp[m_index[index]];
+    return m_Cusp[m_index[index]];
 }
 
 template <size_t N>
-inline auto* Array<N>::refSmooth(const std::array<size_t, N>& index)
+inline Smooth& Array<N>::refSmooth(const std::array<size_t, N>& index)
 {
     GMATELASTOPLASTICQPOT_ASSERT(m_type[index] == Type::Smooth);
-    return &m_Smooth[m_index[index]];
+    return m_Smooth[m_index[index]];
 }
 
 } // namespace Cartesian2d

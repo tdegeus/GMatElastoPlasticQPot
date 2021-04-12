@@ -6,9 +6,6 @@ dependencies:
   - gmattensor
   - xtensor
 
-  # optional dependencies
-  - xsimd
-
   # build tools
   - cmake
   - setuptools_scm
@@ -22,6 +19,7 @@ dependencies:
   - goosefem
   - numpy
   - h5py
+  - python-qpot
 
   # build docs
   - doxygen

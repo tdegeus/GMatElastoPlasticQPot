@@ -1,6 +1,7 @@
 import unittest
 import numpy as np
 import GMatElastoPlasticQPot.Cartesian2d as GMat
+import QPot
 
 class Test_main(unittest.TestCase):
 
@@ -49,8 +50,12 @@ class Test_main(unittest.TestCase):
         mat.setStrain(Eps)
 
         self.assertTrue(np.allclose(mat.Stress(), Sig))
-        self.assertTrue(np.isclose(mat.epsp(), 0.02))
         self.assertTrue(mat.currentIndex() == 1)
+        self.assertTrue(np.isclose(mat.epsp(), 0.02))
+        self.assertTrue(np.isclose(mat.currentYieldLeft(), 0.01))
+        self.assertTrue(np.isclose(mat.currentYieldRight(), 0.03))
+        self.assertTrue(np.isclose(mat.currentYieldLeft(), mat.refQPotStatic().currentYieldLeft()))
+        self.assertTrue(np.isclose(mat.currentYieldRight(), mat.refQPotStatic().currentYieldRight()))
 
     def test_Smooth(self):
 
@@ -74,8 +79,12 @@ class Test_main(unittest.TestCase):
         mat.setStrain(Eps)
 
         self.assertTrue(np.allclose(mat.Stress(), Sig))
-        self.assertTrue(np.isclose(mat.epsp(), 0.02))
         self.assertTrue(mat.currentIndex() == 1)
+        self.assertTrue(np.isclose(mat.epsp(), 0.02))
+        self.assertTrue(np.isclose(mat.currentYieldLeft(), 0.01))
+        self.assertTrue(np.isclose(mat.currentYieldRight(), 0.03))
+        self.assertTrue(np.isclose(mat.currentYieldLeft(), mat.refQPotStatic().currentYieldLeft()))
+        self.assertTrue(np.isclose(mat.currentYieldRight(), mat.refQPotStatic().currentYieldRight()))
 
     def test_Array2d(self):
 
@@ -103,15 +112,15 @@ class Test_main(unittest.TestCase):
         ndim = 2
 
         I = np.zeros([nelem, nip], dtype='int')
-        I[0,:] = 1
+        I[0, :] = 1
         mat.setElastic(I, K, G)
 
         I = np.zeros([nelem, nip], dtype='int')
-        I[1,:] = 1
+        I[1, :] = 1
         mat.setCusp(I, K, G, 0.01 + 0.02 * np.arange(100))
 
         I = np.zeros([nelem, nip], dtype='int')
-        I[2,:] = 1
+        I[2, :] = 1
         mat.setSmooth(I, K, G, 0.01 + 0.02 * np.arange(100))
 
         eps = np.zeros((nelem, nip, ndim, ndim))
@@ -133,6 +142,61 @@ class Test_main(unittest.TestCase):
 
         self.assertTrue(np.allclose(mat.Stress(), sig))
         self.assertTrue(np.allclose(mat.Epsp(), epsp))
+
+    def test_Array2d_refModel(self):
+
+        K = 12.3
+        G = 45.6
+
+        gamma = 0.02
+        epsm = 0.12
+
+        Eps = np.array(
+            [[epsm, gamma],
+             [gamma, epsm]])
+
+        Sig_elas = np.array(
+            [[K * epsm, G * gamma],
+             [G * gamma, K * epsm]])
+
+        Sig_plas = np.array(
+            [[K * epsm, 0.0],
+             [0.0, K * epsm]])
+
+        nelem = 3
+        nip = 2
+        mat = GMat.Array2d([nelem, nip])
+        ndim = 2
+
+        I = np.zeros([nelem, nip], dtype='int')
+        I[0, :] = 1
+        mat.setElastic(I, K, G)
+
+        I = np.zeros([nelem, nip], dtype='int')
+        I[1, :] = 1
+        mat.setCusp(I, K, G, 0.01 + 0.02 * np.arange(100))
+
+        I = np.zeros([nelem, nip], dtype='int')
+        I[2, :] = 1
+        mat.setSmooth(I, K, G, 0.01 + 0.02 * np.arange(100))
+
+        for e in range(nelem):
+            for q in range(nip):
+                fac = float((e + 1) * nip + (q + 1))
+                if e == 0:
+                    model = mat.refElastic([e, q])
+                    model.setStrain(fac * Eps)
+                    self.assertTrue(np.allclose(model.Stress(), fac * Sig_elas))
+                elif e == 1:
+                    model = mat.refCusp([e, q])
+                    model.setStrain(fac * Eps)
+                    self.assertTrue(np.allclose(model.Stress(), fac * Sig_plas))
+                    self.assertTrue(np.allclose(model.epsp(), fac * gamma))
+                elif e == 2:
+                    model = mat.refSmooth([e, q])
+                    model.setStrain(fac * Eps)
+                    self.assertTrue(np.allclose(model.Stress(), fac * Sig_plas))
+                    self.assertTrue(np.allclose(model.epsp(), fac * gamma))
 
 if __name__ == '__main__':
 
