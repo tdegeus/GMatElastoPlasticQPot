@@ -268,26 +268,31 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
         size_t ndim = 2;
 
         GM::Array<2> mat({nelem, nip});
+        xt::xtensor<bool, 2> isElastic = xt::zeros<bool>({nelem, nip});
+        xt::xtensor<bool, 2> isCusp = xt::zeros<bool>({nelem, nip});
+        xt::xtensor<bool, 2> isSmooth = xt::zeros<bool>({nelem, nip});
 
         {
-            xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
-            xt::view(I, 0, xt::all()) = 1;
-            mat.setElastic(I, K, G);
+            xt::view(isElastic, 0, xt::all()) = true;
+            mat.setElastic(isElastic, K, G);
         }
 
         {
-            xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
-            xt::xtensor<double,1> epsy = 0.01 + 0.02 * xt::arange<double>(100);
-            xt::view(I, 1, xt::all()) = 1;
-            mat.setCusp(I, K, G, epsy);
+            xt::xtensor<double, 1> epsy = 0.01 + 0.02 * xt::arange<double>(100);
+            xt::view(isCusp, 1, xt::all()) = true;
+            mat.setCusp(isCusp, K, G, epsy);
         }
 
         {
-            xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
-            xt::xtensor<double,1> epsy = 0.01 + 0.02 * xt::arange<double>(100);
-            xt::view(I, 2, xt::all()) = 1;
-            mat.setCusp(I, K, G, epsy);
+            xt::xtensor<double, 1> epsy = 0.01 + 0.02 * xt::arange<double>(100);
+            xt::view(isSmooth, 2, xt::all()) = true;
+            mat.setSmooth(isSmooth, K, G, epsy);
         }
+
+        REQUIRE(xt::all(xt::equal(mat.isElastic(), isElastic)));
+        REQUIRE(xt::all(xt::equal(mat.isCusp(), isCusp)));
+        REQUIRE(xt::all(xt::equal(mat.isSmooth(), isSmooth)));
+        REQUIRE(xt::all(xt::equal(mat.isPlastic(), isSmooth || isCusp)));
 
         xt::xtensor<double, 4> eps = xt::empty<double>({nelem, nip, ndim, ndim});
         xt::xtensor<double, 4> sig = xt::empty<double>({nelem, nip, ndim, ndim});
@@ -341,22 +346,22 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
         GM::Array<2> mat({nelem, nip});
 
         {
-            xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
-            xt::view(I, 0, xt::all()) = 1;
+            xt::xtensor<bool, 2> I = xt::zeros<bool>({nelem, nip});
+            xt::view(I, 0, xt::all()) = true;
             mat.setElastic(I, K, G);
         }
 
         {
-            xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
-            xt::xtensor<double,1> epsy = 0.01 + 0.02 * xt::arange<double>(100);
-            xt::view(I, 1, xt::all()) = 1;
+            xt::xtensor<bool, 2> I = xt::zeros<bool>({nelem, nip});
+            xt::xtensor<double, 1> epsy = 0.01 + 0.02 * xt::arange<double>(100);
+            xt::view(I, 1, xt::all()) = true;
             mat.setCusp(I, K, G, epsy);
         }
 
         {
-            xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
-            xt::xtensor<double,1> epsy = 0.01 + 0.02 * xt::arange<double>(100);
-            xt::view(I, 2, xt::all()) = 1;
+            xt::xtensor<bool, 2> I = xt::zeros<bool>({nelem, nip});
+            xt::xtensor<double, 1> epsy = 0.01 + 0.02 * xt::arange<double>(100);
+            xt::view(I, 2, xt::all()) = true;
             mat.setSmooth(I, K, G, epsy);
         }
 
@@ -406,22 +411,22 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
         GM::Array<2> mat({nelem, nip});
 
         {
-            xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
-            xt::view(I, 0, xt::all()) = 1;
+            xt::xtensor<bool, 2> I = xt::zeros<bool>({nelem, nip});
+            xt::view(I, 0, xt::all()) = true;
             mat.setElastic(I, K, G);
         }
 
         {
-            xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
-            xt::xtensor<double,1> epsy = 0.01 + 0.02 * xt::arange<double>(100);
-            xt::view(I, 1, xt::all()) = 1;
+            xt::xtensor<bool, 2> I = xt::zeros<bool>({nelem, nip});
+            xt::xtensor<double, 1> epsy = 0.01 + 0.02 * xt::arange<double>(100);
+            xt::view(I, 1, xt::all()) = true;
             mat.setCusp(I, K, G, epsy);
         }
 
         {
-            xt::xtensor<size_t,2> I = xt::zeros<size_t>({nelem, nip});
-            xt::xtensor<double,1> epsy = 0.01 + 0.02 * xt::arange<double>(100);
-            xt::view(I, 2, xt::all()) = 1;
+            xt::xtensor<bool, 2> I = xt::zeros<bool>({nelem, nip});
+            xt::xtensor<double, 1> epsy = 0.01 + 0.02 * xt::arange<double>(100);
+            xt::view(I, 2, xt::all()) = true;
             mat.setSmooth(I, K, G, epsy);
         }
 

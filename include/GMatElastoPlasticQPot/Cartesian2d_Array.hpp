@@ -327,31 +327,27 @@ inline xt::xtensor<size_t, N> Array<N>::type() const
 }
 
 template <size_t N>
-inline xt::xtensor<size_t, N> Array<N>::isElastic() const
+inline xt::xtensor<bool, N> Array<N>::isElastic() const
 {
-    xt::xtensor<size_t, N> ret = xt::where(xt::equal(m_type, Type::Elastic), 1ul, 0ul);
-    return ret;
+    return xt::equal(m_type, Type::Elastic);
 }
 
 template <size_t N>
-inline xt::xtensor<size_t, N> Array<N>::isPlastic() const
+inline xt::xtensor<bool, N> Array<N>::isPlastic() const
 {
-    xt::xtensor<size_t, N> ret = xt::where(xt::not_equal(m_type, Type::Elastic), 1ul, 0ul);
-    return ret;
+    return xt::not_equal(m_type, Type::Elastic);
 }
 
 template <size_t N>
-inline xt::xtensor<size_t, N> Array<N>::isCusp() const
+inline xt::xtensor<bool, N> Array<N>::isCusp() const
 {
-    xt::xtensor<size_t, N> ret = xt::where(xt::equal(m_type, Type::Cusp), 1ul, 0ul);
-    return ret;
+    return xt::equal(m_type, Type::Cusp);
 }
 
 template <size_t N>
-inline xt::xtensor<size_t, N> Array<N>::isSmooth() const
+inline xt::xtensor<bool, N> Array<N>::isSmooth() const
 {
-    xt::xtensor<size_t, N> ret = xt::where(xt::equal(m_type, Type::Cusp), 1ul, 0ul);
-    return ret;
+    return xt::equal(m_type, Type::Smooth);
 }
 
 template <size_t N>
@@ -369,15 +365,13 @@ inline void Array<N>::setElastic(const xt::xtensor<double, N>& K, const xt::xten
 }
 
 template <size_t N>
-inline void Array<N>::setElastic(const xt::xtensor<size_t, N>& I, double K, double G)
+inline void Array<N>::setElastic(const xt::xtensor<bool, N>& I, double K, double G)
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
-    GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(I, 0ul) || xt::equal(I, 1ul)));
-    GMATELASTOPLASTICQPOT_ASSERT(
-        xt::all(xt::equal(xt::where(xt::equal(I, 1ul), m_type, Type::Unset), Type::Unset)));
+    GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
 
     for (size_t i = 0; i < m_size; ++i) {
-        if (I.data()[i] == 1ul) {
+        if (I.data()[i]) {
             m_type.data()[i] = Type::Elastic;
             m_index.data()[i] = m_Elastic.size();
             m_Elastic.push_back(Elastic(K, G));
@@ -387,19 +381,17 @@ inline void Array<N>::setElastic(const xt::xtensor<size_t, N>& I, double K, doub
 
 template <size_t N>
 inline void Array<N>::setCusp(
-    const xt::xtensor<size_t, N>& I,
+    const xt::xtensor<bool, N>& I,
     double K,
     double G,
     const xt::xtensor<double, 1>& epsy,
     bool init_elastic)
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
-    GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(I, 0ul) || xt::equal(I, 1ul)));
-    GMATELASTOPLASTICQPOT_ASSERT(
-        xt::all(xt::equal(xt::where(xt::equal(I, 1ul), m_type, Type::Unset), Type::Unset)));
+    GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
 
     for (size_t i = 0; i < m_size; ++i) {
-        if (I.data()[i] == 1ul) {
+        if (I.data()[i]) {
             m_type.data()[i] = Type::Cusp;
             m_index.data()[i] = m_Cusp.size();
             m_Cusp.push_back(Cusp(K, G, epsy, init_elastic));
@@ -409,19 +401,17 @@ inline void Array<N>::setCusp(
 
 template <size_t N>
 inline void Array<N>::setSmooth(
-    const xt::xtensor<size_t, N>& I,
+    const xt::xtensor<bool, N>& I,
     double K,
     double G,
     const xt::xtensor<double, 1>& epsy,
     bool init_elastic)
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
-    GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(I, 0ul) || xt::equal(I, 1ul)));
-    GMATELASTOPLASTICQPOT_ASSERT(
-        xt::all(xt::equal(xt::where(xt::equal(I, 1ul), m_type, Type::Unset), Type::Unset)));
+    GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
 
     for (size_t i = 0; i < m_size; ++i) {
-        if (I.data()[i] == 1ul) {
+        if (I.data()[i]) {
             m_type.data()[i] = Type::Smooth;
             m_index.data()[i] = m_Smooth.size();
             m_Smooth.push_back(Smooth(K, G, epsy, init_elastic));
@@ -431,7 +421,7 @@ inline void Array<N>::setSmooth(
 
 template <size_t N>
 inline void Array<N>::setElastic(
-    const xt::xtensor<size_t, N>& I,
+    const xt::xtensor<bool, N>& I,
     const xt::xtensor<size_t, N>& idx,
     const xt::xtensor<double, 1>& K,
     const xt::xtensor<double, 1>& G)
@@ -440,12 +430,10 @@ inline void Array<N>::setElastic(
     GMATELASTOPLASTICQPOT_ASSERT(K.size() == G.size());
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, idx.shape()));
-    GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(I, 0ul) || xt::equal(I, 1ul)));
-    GMATELASTOPLASTICQPOT_ASSERT(
-        xt::all(xt::equal(xt::where(xt::equal(I, 1ul), m_type, Type::Unset), Type::Unset)));
+    GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
 
     for (size_t i = 0; i < m_size; ++i) {
-        if (I.data()[i] == 1ul) {
+        if (I.data()[i]) {
             size_t j = idx.data()[i];
             m_type.data()[i] = Type::Elastic;
             m_index.data()[i] = m_Elastic.size();
@@ -456,7 +444,7 @@ inline void Array<N>::setElastic(
 
 template <size_t N>
 inline void Array<N>::setCusp(
-    const xt::xtensor<size_t, N>& I,
+    const xt::xtensor<bool, N>& I,
     const xt::xtensor<size_t, N>& idx,
     const xt::xtensor<double, 1>& K,
     const xt::xtensor<double, 1>& G,
@@ -468,12 +456,10 @@ inline void Array<N>::setCusp(
     GMATELASTOPLASTICQPOT_ASSERT(K.size() == epsy.shape(0));
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, idx.shape()));
-    GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(I, 0ul) || xt::equal(I, 1ul)));
-    GMATELASTOPLASTICQPOT_ASSERT(
-        xt::all(xt::equal(xt::where(xt::equal(I, 1ul), m_type, Type::Unset), Type::Unset)));
+    GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
 
     for (size_t i = 0; i < m_size; ++i) {
-        if (I.data()[i] == 1ul) {
+        if (I.data()[i]) {
             size_t j = idx.data()[i];
             m_type.data()[i] = Type::Cusp;
             m_index.data()[i] = m_Cusp.size();
@@ -484,7 +470,7 @@ inline void Array<N>::setCusp(
 
 template <size_t N>
 inline void Array<N>::setSmooth(
-    const xt::xtensor<size_t, N>& I,
+    const xt::xtensor<bool, N>& I,
     const xt::xtensor<size_t, N>& idx,
     const xt::xtensor<double, 1>& K,
     const xt::xtensor<double, 1>& G,
@@ -496,12 +482,10 @@ inline void Array<N>::setSmooth(
     GMATELASTOPLASTICQPOT_ASSERT(K.size() == epsy.shape(0));
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, idx.shape()));
-    GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(I, 0ul) || xt::equal(I, 1ul)));
-    GMATELASTOPLASTICQPOT_ASSERT(
-        xt::all(xt::equal(xt::where(xt::equal(I, 1ul), m_type, Type::Unset), Type::Unset)));
+    GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
 
     for (size_t i = 0; i < m_size; ++i) {
-        if (I.data()[i] == 1ul) {
+        if (I.data()[i]) {
             size_t j = idx.data()[i];
             m_type.data()[i] = Type::Smooth;
             m_index.data()[i] = m_Smooth.size();
