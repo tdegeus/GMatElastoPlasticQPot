@@ -5,7 +5,7 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     find_package(GMatElastoPlasticQPot REQUIRED CONFIG)
 endif()
 
-option(XSIMD "Use xsimd and 'march=native' optimisations" OFF)
+option(SIMD "Use xsimd and 'march=native' optimisations" OFF)
 
 set(CMAKE_BUILD_TYPE Release)
 
@@ -20,7 +20,8 @@ target_link_libraries(${test_name} PRIVATE Catch2::Catch2 GMatElastoPlasticQPot)
 target_link_libraries(${test_name} PRIVATE GMatElastoPlasticQPot::compiler_warnings)
 target_link_libraries(${test_name} PRIVATE GMatElastoPlasticQPot::assert)
 
-if(XSIMD)
+if(SIMD)
+    find_package(xsimd REQUIRED)
     target_link_libraries(${test_name} PRIVATE xtensor::optimize xtensor::use_xsimd)
 endif()
 
