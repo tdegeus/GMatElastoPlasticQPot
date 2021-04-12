@@ -10,7 +10,7 @@ set(CMAKE_BUILD_TYPE Release)
 
 set(ASSERT OFF)
 set(DEBUG OFF)
-option(SIMD "Enable xsimd" ON)
+option(SIMD "Enable xsimd" OFF)
 option(WARNINGS "Enable warnings" ON)
 
 file(GLOB APP_SOURCES *.cpp)
