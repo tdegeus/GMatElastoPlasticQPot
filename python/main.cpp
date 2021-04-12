@@ -171,6 +171,21 @@ auto construct_Array(T& self)
         .def("getCusp", &S::getCusp, "Returns underlying Cusp model.")
         .def("getSmooth", &S::getSmooth, "Returns underlying Smooth model.")
 
+        .def("refElastic",
+             &S::refElastic,
+             "Returns a reference to the underlying Elastic model.",
+             py::return_value_policy::reference_internal)
+
+        .def("refCusp",
+             &S::refCusp,
+             "Returns a reference to the underlying Cusp model.",
+             py::return_value_policy::reference_internal)
+
+        .def("refSmooth",
+             &S::refSmooth,
+             "Returns a reference to the underlying Smooth model.",
+             py::return_value_policy::reference_internal)
+
         .def(
             "checkYieldBoundLeft",
             &S::checkYieldBoundLeft,
@@ -301,6 +316,12 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
         .def("G", &SM::Cusp::G, "Returns the shear modulus.")
         .def("epsy", &SM::Cusp::epsy, "Returns the yield strains.")
         .def("getQPot", &SM::Cusp::getQPot, "Returns underlying QPot model.")
+
+        .def("refQPotStatic",
+             &SM::Cusp::refQPotStatic,
+             "Returns a reference underlying QPot::Static model.",
+             py::return_value_policy::reference_internal)
+
         .def("setStrain", &SM::Cusp::setStrain<xt::xtensor<double, 2>>, "Set current strain tensor.")
         .def("Strain", &SM::Cusp::Strain, "Returns strain tensor.")
         .def("Stress", &SM::Cusp::Stress, "Returns stress tensor.")
@@ -374,6 +395,12 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
         .def("G", &SM::Smooth::G, "Returns the shear modulus.")
         .def("epsy", &SM::Smooth::epsy, "Returns the yield strains.")
         .def("getQPot", &SM::Smooth::getQPot, "Returns underlying QPot model.")
+
+        .def("refQPotStatic",
+             &SM::Smooth::refQPotStatic,
+             "Returns a reference underlying QPot::Static model.",
+             py::return_value_policy::reference_internal)
+
         .def("setStrain", &SM::Smooth::setStrain<xt::xtensor<double, 2>>, "Set current strain tensor.")
         .def("Strain", &SM::Smooth::Strain, "Returns strain tensor.")
         .def("Stress", &SM::Smooth::Stress, "Returns stress tensor.")

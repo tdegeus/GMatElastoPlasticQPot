@@ -47,12 +47,19 @@ inline xt::xtensor<double, 1> Cusp::epsy() const
 
 inline auto Cusp::getQPot() const
 {
+    GMATELASTOPLASTICQPOT_WARNING_PYTHON("Deprecated, only refQPotStatic will be supported");
     return m_yield;
 }
 
 inline auto* Cusp::refQPot()
 {
+    GMATELASTOPLASTICQPOT_WARNING_PYTHON("Deprecated, only refQPotStatic will be supported");
     return &m_yield;
+}
+
+inline QPot::Static& Cusp::refQPotStatic()
+{
+    return m_yield;
 }
 
 inline size_t Cusp::currentIndex() const
