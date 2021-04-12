@@ -48,7 +48,7 @@ auto construct_Array(T& self)
         .def(
             "setElastic",
             py::overload_cast<
-                const xt::xtensor<size_t, S::rank>&,
+                const xt::xtensor<bool, S::rank>&,
                 const xt::xtensor<size_t, S::rank>&,
                 const xt::xtensor<double, 1>&,
                 const xt::xtensor<double, 1>&>(&S::setElastic),
@@ -61,7 +61,7 @@ auto construct_Array(T& self)
         .def(
             "setCusp",
             py::overload_cast<
-                const xt::xtensor<size_t, S::rank>&,
+                const xt::xtensor<bool, S::rank>&,
                 const xt::xtensor<size_t, S::rank>&,
                 const xt::xtensor<double, 1>&,
                 const xt::xtensor<double, 1>&,
@@ -78,7 +78,7 @@ auto construct_Array(T& self)
         .def(
             "setSmooth",
             py::overload_cast<
-                const xt::xtensor<size_t, S::rank>&,
+                const xt::xtensor<bool, S::rank>&,
                 const xt::xtensor<size_t, S::rank>&,
                 const xt::xtensor<double, 1>&,
                 const xt::xtensor<double, 1>&,
@@ -94,7 +94,7 @@ auto construct_Array(T& self)
 
         .def(
             "setElastic",
-            py::overload_cast<const xt::xtensor<size_t, S::rank>&, double, double>(
+            py::overload_cast<const xt::xtensor<bool, S::rank>&, double, double>(
                 &S::setElastic),
             "Set specific entries 'Elastic'.",
             py::arg("I"),
@@ -104,7 +104,7 @@ auto construct_Array(T& self)
         .def(
             "setCusp",
             py::overload_cast<
-                const xt::xtensor<size_t, S::rank>&,
+                const xt::xtensor<bool, S::rank>&,
                 double,
                 double,
                 const xt::xtensor<double, 1>&,
@@ -119,7 +119,7 @@ auto construct_Array(T& self)
         .def(
             "setSmooth",
             py::overload_cast<
-                const xt::xtensor<size_t, S::rank>&,
+                const xt::xtensor<bool, S::rank>&,
                 double,
                 double,
                 const xt::xtensor<double, 1>&,
