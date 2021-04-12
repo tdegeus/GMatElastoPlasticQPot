@@ -666,22 +666,22 @@ public:
     /**
     \return Per item, 1 if Elastic, otherwise 0.
     */
-    xt::xtensor<size_t, N> isElastic() const;
+    xt::xtensor<bool, N> isElastic() const;
 
     /**
     \return Per item, 1 if Cusp or Smooth, otherwise 0.
     */
-    xt::xtensor<size_t, N> isPlastic() const;
+    xt::xtensor<bool, N> isPlastic() const;
 
     /**
     \return Per item, 1 if Cusp, otherwise 0.
     */
-    xt::xtensor<size_t, N> isCusp() const;
+    xt::xtensor<bool, N> isCusp() const;
 
     /**
     \return Per item, 1 if Smooth, otherwise 0.
     */
-    xt::xtensor<size_t, N> isSmooth() const;
+    xt::xtensor<bool, N> isSmooth() const;
 
     /**
     \return Bulk modulus per item.
@@ -706,26 +706,26 @@ public:
     /**
     Set a batch of items Elastic, with the material parameters the same for all set items.
 
-    \param I Per item, 1 to set Elastic, 0 to skip.
+    \param I Per item, ``true`` to set Elastic, ``false`` to skip.
     \param K Bulk modulus.
     \param G Shear modulus.
     */
     void setElastic(
-        const xt::xtensor<size_t, N>& I,
+        const xt::xtensor<bool, N>& I,
         double K,
         double G);
 
     /**
     Set a batch of items Cusp, with the material parameters the same for all set items.
 
-    \param I Per item, 1 to set Cusp, 0 to skip.
+    \param I Per item, ``true`` to set Cusp, ``false`` to skip.
     \param K Bulk modulus.
     \param G Shear modulus.
     \param epsy Sequence of yield strains.
     \param init_elastic Initialise in minimum at zero strain.
     */
     void setCusp(
-        const xt::xtensor<size_t, N>& I,
+        const xt::xtensor<bool, N>& I,
         double K,
         double G,
         const xt::xtensor<double, 1>& epsy,
@@ -734,14 +734,14 @@ public:
     /**
     Set a batch of items Smooth, with the material parameters the same for all set items.
 
-    \param I Per item, 1 to set Smooth, 0 to skip.
+    \param I Per item, ``true`` to set Smooth, ``false`` to skip.
     \param K Bulk modulus.
     \param G Shear modulus.
     \param epsy Sequence of yield strains.
     \param init_elastic Initialise in minimum at zero strain.
     */
     void setSmooth(
-        const xt::xtensor<size_t, N>& I,
+        const xt::xtensor<bool, N>& I,
         double K,
         double G,
         const xt::xtensor<double, 1>& epsy,
@@ -752,13 +752,13 @@ public:
     To this end, and addition array ``idx`` is used that refers to a which entry to use:
     ``K(idx)``, ``G(idx)``, and ``epsy(idx, :)``.
 
-    \param I Per item, 1 to set Elastic, 0 to skip.
+    \param I Per item, ``true`` to set Elastic, ``false`` to skip.
     \param idx Per item, index in supplied material parameters.
     \param K Bulk modulus.
     \param G Shear modulus.
     */
     void setElastic(
-        const xt::xtensor<size_t, N>& I,
+        const xt::xtensor<bool, N>& I,
         const xt::xtensor<size_t, N>& idx,
         const xt::xtensor<double, 1>& K,
         const xt::xtensor<double, 1>& G);
@@ -768,7 +768,7 @@ public:
     To this end, and addition array ``idx`` is used that refers to a which entry to use:
     ``K(idx)``, ``G(idx)``, and ``epsy(idx, :)``.
 
-    \param I Per item, 1 to set Cusp, 0 to skip.
+    \param I Per item, ``true`` to set Cusp, ``false`` to skip.
     \param idx Per item, index in supplied material parameters.
     \param K Bulk modulus.
     \param G Shear modulus.
@@ -776,7 +776,7 @@ public:
     \param init_elastic Initialise in minimum at zero strain.
     */
     void setCusp(
-        const xt::xtensor<size_t, N>& I,
+        const xt::xtensor<bool, N>& I,
         const xt::xtensor<size_t, N>& idx,
         const xt::xtensor<double, 1>& K,
         const xt::xtensor<double, 1>& G,
@@ -788,7 +788,7 @@ public:
     To this end, and addition array ``idx`` is used that refers to a which entry to use:
     ``K(idx)``, ``G(idx)``, and ``epsy(idx, :)``.
 
-    \param I Per item, 1 to set Smooth, 0 to skip.
+    \param I Per item, ``true`` to set Smooth, ``false`` to skip.
     \param idx Per item, index in supplied material parameters.
     \param K Bulk modulus.
     \param G Shear modulus.
@@ -796,7 +796,7 @@ public:
     \param init_elastic Initialise in minimum at zero strain.
     */
     void setSmooth(
-        const xt::xtensor<size_t, N>& I,
+        const xt::xtensor<bool, N>& I,
         const xt::xtensor<size_t, N>& idx,
         const xt::xtensor<double, 1>& K,
         const xt::xtensor<double, 1>& G,
