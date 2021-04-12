@@ -46,6 +46,7 @@ conveniently compiled to this [PDF](docs/readme.pdf).
     - [Upgrading to >v0.8.*](#upgrading-to-v08)
     - [Upgrading to >v0.6.*](#upgrading-to-v06)
 - [Change-log](#change-log)
+    - [v0.15.0](#v0150)
     - [v0.14.0](#v0140)
     - [v0.13.0](#v0130)
     - [v0.12.0](#v0120)
@@ -503,6 +504,14 @@ This requires the following changes:
     The library therefore now depends on [QPot](https://www.github.com/tdegeus/QPot).
 
 # Change-log
+
+## v0.15.0
+
+*   Type identification: use `bool` instead of `size_t`.
+*   Switching-off xsimd for Python testing: 
+    if used also the Python API of QPot should be compiled with xsimd. 
+*   Updating references to QPot::Static / underlying model. 
+*   Adding references to QPot::Static / underlying model to Python API.
 
 ## v0.14.0
 
