@@ -158,33 +158,33 @@ public:
         m_quad_plas = QD::Quadrature(m_vector_plas.AsElement(m_coor));
         m_nip = m_quad.nip();
 
-        m_u = m_vector.AllocateNodevec(0.0);
-        m_v = m_vector.AllocateNodevec(0.0);
-        m_a = m_vector.AllocateNodevec(0.0);
-        m_v_n = m_vector.AllocateNodevec(0.0);
-        m_a_n = m_vector.AllocateNodevec(0.0);
+        m_u = m_vector.allocate_nodevec(0.0);
+        m_v = m_vector.allocate_nodevec(0.0);
+        m_a = m_vector.allocate_nodevec(0.0);
+        m_v_n = m_vector.allocate_nodevec(0.0);
+        m_a_n = m_vector.allocate_nodevec(0.0);
 
-        m_ue = m_vector.AllocateElemvec(0.0);
-        m_fe = m_vector.AllocateElemvec(0.0);
-        m_ue_plas = m_vector_plas.AllocateElemvec(0.0);;
-        m_fe_plas = m_vector_plas.AllocateElemvec(0.0);;
+        m_ue = m_vector.allocate_elemvec(0.0);
+        m_fe = m_vector.allocate_elemvec(0.0);
+        m_ue_plas = m_vector_plas.allocate_elemvec(0.0);;
+        m_fe_plas = m_vector_plas.allocate_elemvec(0.0);;
 
 #ifdef CHECK_MYSHORTCUT
-        m_fmaterial = m_vector.AllocateNodevec(0.0);
+        m_fmaterial = m_vector.allocate_nodevec(0.0);
 #endif
-        m_felas = m_vector.AllocateNodevec(0.0);
-        m_fplas = m_vector.AllocateNodevec(0.0);
-        m_fdamp = m_vector.AllocateNodevec(0.0);
-        m_fint = m_vector.AllocateNodevec(0.0);
-        m_fext = m_vector.AllocateNodevec(0.0);
-        m_fres = m_vector.AllocateNodevec(0.0);
+        m_felas = m_vector.allocate_nodevec(0.0);
+        m_fplas = m_vector.allocate_nodevec(0.0);
+        m_fdamp = m_vector.allocate_nodevec(0.0);
+        m_fint = m_vector.allocate_nodevec(0.0);
+        m_fext = m_vector.allocate_nodevec(0.0);
+        m_fres = m_vector.allocate_nodevec(0.0);
 
-        m_Eps = m_quad.AllocateQtensor<2>(0.0);
-        m_Sig = m_quad.AllocateQtensor<2>(0.0);
-        m_Eps_elas = m_quad_elas.AllocateQtensor<2>(0.0);
-        m_Sig_elas = m_quad_elas.AllocateQtensor<2>(0.0);
-        m_Eps_plas = m_quad_plas.AllocateQtensor<2>(0.0);
-        m_Sig_plas = m_quad_plas.AllocateQtensor<2>(0.0);
+        m_Eps = m_quad.allocate_qtensor<2>(0.0);
+        m_Sig = m_quad.allocate_qtensor<2>(0.0);
+        m_Eps_elas = m_quad_elas.allocate_qtensor<2>(0.0);
+        m_Sig_elas = m_quad_elas.allocate_qtensor<2>(0.0);
+        m_Eps_plas = m_quad_plas.allocate_qtensor<2>(0.0);
+        m_Sig_plas = m_quad_plas.allocate_qtensor<2>(0.0);
 
         // --------
         // material
