@@ -126,7 +126,7 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
         mat.setStrain(Eps);
 
         REQUIRE(xt::allclose(mat.Stress(), Sig));
-        REQUIRE(mat.currentIndex() == 1 - 1); // "- 1 since v0.16.0"
+        REQUIRE(mat.currentIndex() == 1);
         REQUIRE(mat.epsp() == 0.02);
         REQUIRE(mat.currentYieldLeft() == 0.01);
         REQUIRE(mat.currentYieldRight() == 0.03);
@@ -156,7 +156,7 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
         mat.setStrain(Eps);
 
         REQUIRE(xt::allclose(mat.Stress(), Sig));
-        REQUIRE(mat.currentIndex() == 2 - 1); // "- 1 since v0.16.0"
+        REQUIRE(mat.currentIndex() == 2);
         REQUIRE(mat.epsp() == 0.04);
         REQUIRE(mat.currentYieldLeft() == 0.03);
         REQUIRE(mat.currentYieldRight() == 0.05);
@@ -186,7 +186,7 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
         mat.setStrain(Eps);
 
         REQUIRE(xt::allclose(mat.Stress(), Sig));
-        REQUIRE(mat.currentIndex() == 1 - 1); // "- 1 since v0.16.0"
+        REQUIRE(mat.currentIndex() == 1);
         REQUIRE(mat.epsp() == 0.02);
         REQUIRE(mat.currentYieldLeft() == 0.01);
         REQUIRE(mat.currentYieldRight() == 0.03);

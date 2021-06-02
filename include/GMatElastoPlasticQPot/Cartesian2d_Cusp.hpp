@@ -26,13 +26,13 @@ inline Cusp::Cusp(double K, double G, const Y& epsy, bool init_elastic) : m_K(K)
 
     if (epsy.size() > 1) {
         if (epsy(0) == -epsy(1)) {
-            m_yield = QPot::Chunked(0.0, epsy, GMATELASTOPLASTICQPOT_INDEX_ELASTICOFFSET);
+            m_yield = QPot::Chunked(0.0, epsy, 0);
             return;
         }
     }
 
     xt::xtensor<double, 1> y = xt::concatenate(xt::xtuple(xt::xtensor<double, 1>({-epsy(0)}), epsy));
-    m_yield = QPot::Chunked(0.0, y, GMATELASTOPLASTICQPOT_INDEX_ELASTICOFFSET);
+    m_yield = QPot::Chunked(0.0, y, 0);
 }
 
 inline double Cusp::K() const

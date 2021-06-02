@@ -93,13 +93,6 @@ jobs:
         python Cartesian2d_generate.py
         python Cartesian2d_check_main.py
 
-    - name: Check consistency with v0.15.0
-      if: runner.os == 'Linux'
-      working-directory: test/compare_versions
-      run: |
-        conda install -c conda-forge python=3.8.5 python-gmatelastoplasticqpot=0.15.0
-        python Cartesian2d_check_v0.15.0.py
-
     - name: Check consistency with v0.9.0
       if: runner.os == 'Linux'
       working-directory: test/compare_versions
