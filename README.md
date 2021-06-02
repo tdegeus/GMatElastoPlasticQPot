@@ -7,7 +7,7 @@
 
 Elasto-plastic material model based on a manifold of quadratic potentials. 
 An overview of the theory can be found in `docs/readme.tex` 
-conveniently compiled to this [PDF](docs/readme.pdf).
+conveniently compiled to this [PDF](docs/notes/readme.pdf).
 
 # Contents
 
