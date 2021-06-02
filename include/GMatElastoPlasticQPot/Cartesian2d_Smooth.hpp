@@ -14,20 +14,25 @@ Partial implementation of GMatElastoPlasticQPot/Cartesian2d.h
 namespace GMatElastoPlasticQPot {
 namespace Cartesian2d {
 
-inline Smooth::Smooth(double K, double G, const xt::xtensor<double, 1>& epsy, bool init_elastic)
-    : m_K(K), m_G(G)
+template <class Y>
+inline Smooth::Smooth(double K, double G, const Y& epsy, bool init_elastic) : m_K(K), m_G(G)
 {
-    xt::xtensor<double, 1> y = xt::sort(epsy);
+    GMATELASTOPLASTICQPOT_ASSERT(epsy.size() > 0);
 
-    if (init_elastic) {
-        if (y(0) != -y(1)) {
-            y = xt::concatenate(xt::xtuple(xt::xtensor<double, 1>({-y(0)}), y));
+    if (!init_elastic) {
+        m_yield = QPot::Chunked(0.0, epsy, 0);
+        return;
+    }
+
+    if (epsy.size() > 1) {
+        if (epsy(0) == -epsy(1)) {
+            m_yield = QPot::Chunked(0.0, epsy, GMATELASTOPLASTICQPOT_INDEX_ELASTICOFFSET);
+            return;
         }
     }
 
-    GMATELASTOPLASTICQPOT_ASSERT(y.size() > 1);
-
-    m_yield = QPot::Static(0.0, y);
+    xt::xtensor<double, 1> y = xt::concatenate(xt::xtuple(xt::xtensor<double, 1>({-epsy(0)}), epsy));
+    m_yield = QPot::Chunked(0.0, y, GMATELASTOPLASTICQPOT_INDEX_ELASTICOFFSET);
 }
 
 inline double Smooth::K() const
@@ -42,59 +47,42 @@ inline double Smooth::G() const
 
 inline xt::xtensor<double, 1> Smooth::epsy() const
 {
-    return m_yield.yieldPosition();
+    return xt::adapt(m_yield.y());
 }
 
-inline auto Smooth::getQPot() const
-{
-    GMATELASTOPLASTICQPOT_WARNING_PYTHON("Deprecated, only refQPotStatic will be supported");
-    return m_yield;
-}
-
-inline auto* Smooth::refQPot()
-{
-    GMATELASTOPLASTICQPOT_WARNING_PYTHON("Deprecated, only refQPotStatic will be supported");
-    return &m_yield;
-}
-
-inline QPot::Static& Smooth::refQPotStatic()
+inline QPot::Chunked& Smooth::refQPotChunked()
 {
     return m_yield;
 }
 
-inline size_t Smooth::currentIndex() const
+inline auto Smooth::currentIndex() const
 {
-    return m_yield.currentIndex();
+    return m_yield.i();
 }
 
-inline double Smooth::currentYieldLeft() const
+inline auto Smooth::currentYieldLeft() const
 {
-    return m_yield.currentYieldLeft();
+    return m_yield.yleft();
 }
 
-inline double Smooth::currentYieldRight() const
+inline auto Smooth::currentYieldRight() const
 {
-    return m_yield.currentYieldRight();
+    return m_yield.yright();
 }
 
-inline double Smooth::currentYieldLeft(size_t offset) const
+inline auto Smooth::currentYieldLeft(size_t offset) const
 {
-    return m_yield.currentYieldLeft(offset);
+    return m_yield.yleft(offset);
 }
 
-inline double Smooth::currentYieldRight(size_t offset) const
+inline auto Smooth::currentYieldRight(size_t offset) const
 {
-    return m_yield.currentYieldRight(offset);
-}
-
-inline double Smooth::nextYield(int offset) const
-{
-    return m_yield.nextYield(offset);
+    return m_yield.yright(offset);
 }
 
 inline double Smooth::epsp() const
 {
-    return 0.5 * (m_yield.currentYieldLeft() + m_yield.currentYieldRight());
+    return 0.5 * (m_yield.yleft() + m_yield.yright());
 }
 
 inline double Smooth::energy() const
@@ -105,8 +93,8 @@ inline double Smooth::energy() const
     double epsd = std::sqrt(0.5 * GT::A2s_ddot_B2s(&Epsd[0], &Epsd[0]));
     double U = m_K * std::pow(epsm, 2.0);
 
-    double eps_min = 0.5 * (m_yield.currentYieldRight() + m_yield.currentYieldLeft());
-    double deps_y = 0.5 * (m_yield.currentYieldRight() - m_yield.currentYieldLeft());
+    double eps_min = 0.5 * (m_yield.yright() + m_yield.yleft());
+    double deps_y = 0.5 * (m_yield.yright() - m_yield.yleft());
 
     double V
         = -2.0 * m_G * std::pow(deps_y / M_PI, 2.0)
@@ -117,12 +105,12 @@ inline double Smooth::energy() const
 
 inline bool Smooth::checkYieldBoundLeft(size_t n) const
 {
-    return m_yield.checkYieldBoundLeft(n);
+    return m_yield.boundcheck_left(n);
 }
 
 inline bool Smooth::checkYieldBoundRight(size_t n) const
 {
-    return m_yield.checkYieldBoundRight(n);
+    return m_yield.boundcheck_right(n);
 }
 
 template <class T>
@@ -134,7 +122,7 @@ inline void Smooth::setStrainPtr(const T* arg)
     std::array<double, 4> Epsd;
     double epsm = GT::Hydrostatic_deviatoric(&m_Eps[0], &Epsd[0]);
     double epsd = std::sqrt(0.5 * GT::A2s_ddot_B2s(&Epsd[0], &Epsd[0]));
-    m_yield.setPosition(epsd);
+    m_yield.set_x(epsd);
 
     m_Sig[0] = m_Sig[3] = m_K * epsm;
 
@@ -143,8 +131,8 @@ inline void Smooth::setStrainPtr(const T* arg)
         return;
     }
 
-    double eps_min = 0.5 * (m_yield.currentYieldRight() + m_yield.currentYieldLeft());
-    double deps_y = 0.5 * (m_yield.currentYieldRight() - m_yield.currentYieldLeft());
+    double eps_min = 0.5 * (m_yield.yright() + m_yield.yleft());
+    double deps_y = 0.5 * (m_yield.yright() - m_yield.yleft());
 
     double g = (m_G / epsd) * (deps_y / M_PI) * sin(M_PI / deps_y * (epsd - eps_min));
     m_Sig[0] += g * Epsd[0];

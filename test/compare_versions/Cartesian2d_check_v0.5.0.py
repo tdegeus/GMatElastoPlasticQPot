@@ -47,7 +47,7 @@ class Test(unittest.TestCase):
                 self.assertTrue(np.allclose(mat.Tangent(Eps)[1], data['/random/{0:d}/Tangent'.format(i)][...]))
                 self.assertTrue(np.allclose(mat.Epsy(idx), data['/random/{0:d}/CurrentYieldLeft'.format(i)][...]))
                 self.assertTrue(np.allclose(mat.Epsy(idx + 1), data['/random/{0:d}/CurrentYieldRight'.format(i)][...]))
-                self.assertTrue(np.all(mat.Find(Eps) == data['/random/{0:d}/CurrentIndex'.format(i)][...]))
+                self.assertTrue(np.all(mat.Find(Eps) == data['/random/{0:d}/CurrentIndex'.format(i)][...] - 1))
 
 if __name__ == '__main__':
 
