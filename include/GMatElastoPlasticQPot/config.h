@@ -86,7 +86,7 @@ They can be enabled by::
 
 /**
 When using `init_elestic` in Cartesian2d::Cusp and Cartesian2d::Smooth,
-from v0.18.0 onwards the yield strain index of the added negative yield strain is set to `-1`.
+from v0.16.0 onwards the yield strain index of the added negative yield strain is set to `-1`.
 The 'classic' behaviour can be recoverd by:
 
     #define GMATELASTOPLASTICQPOT_INDEX_ELASTICOFFSET -1
