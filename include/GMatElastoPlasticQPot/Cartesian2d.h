@@ -238,10 +238,11 @@ public:
     \param G Shear modulus.
     \param epsy Sequence of yield strains.
     \param init_elastic Initialise in minimum at zero strain
-        This options prepends `epsy` with  `- epsy(0)`.
-        Note that if you used chunked storage one should remember that the first yield strain
-        specified here will be the second yield strain held in storage. I.e the storage will be
-        as follows: `[- epsy(0), epsy(0), epsy(1), epsy(2), ...]
+        If set `true`, `epsy` is prepended with  `- epsy(0)`.
+        In that case, one should remember that the first yield strain specified as `epsy`,
+        will be the second yield strain held in storage. I.e the storage will be
+        as follows: `[- epsy(0), epsy(0), epsy(1), epsy(2), ...].
+        It is crucial to pay attention to this when using chunked storage.
     */
     template <class Y>
     Cusp(double K, double G, const Y&, bool init_elastic = true);
@@ -423,10 +424,11 @@ public:
     \param G Shear modulus.
     \param epsy Sequence of yield strains.
     \param init_elastic Initialise in minimum at zero strain
-        This options prepends `epsy` with  `- epsy(0)`.
-        Note that if you used chunked storage one should remember that the first yield strain
-        specified here will be the second yield strain held in storage. I.e the storage will be
-        as follows: `[- epsy(0), epsy(0), epsy(1), epsy(2), ...]
+        If set `true`, `epsy` is prepended with  `- epsy(0)`.
+        In that case, one should remember that the first yield strain specified as `epsy`,
+        will be the second yield strain held in storage. I.e the storage will be
+        as follows: `[- epsy(0), epsy(0), epsy(1), epsy(2), ...].
+        It is crucial to pay attention to this when using chunked storage.
     */
     template <class Y>
     Smooth(double K, double G, const Y& epsy, bool init_elastic = true);
