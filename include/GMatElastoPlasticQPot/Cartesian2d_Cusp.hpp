@@ -17,7 +17,6 @@ namespace Cartesian2d {
 template <class Y>
 inline Cusp::Cusp(double K, double G, const Y& epsy, bool init_elastic) : m_K(K), m_G(G)
 {
-    GMATELASTOPLASTICQPOT_ASSERT(epsy.dimension() == 1);
     GMATELASTOPLASTICQPOT_ASSERT(epsy.size() > 0);
     // assertion on epsy being sorted is done by QPot::Chunked
 
@@ -26,9 +25,9 @@ inline Cusp::Cusp(double K, double G, const Y& epsy, bool init_elastic) : m_K(K)
         return;
     }
 
-    GMATELASTOPLASTICQPOT_ASSERT(epsy[0] > 0);
+    GMATELASTOPLASTICQPOT_ASSERT(epsy.front() > 0);
     std::vector<double> y(epsy.size() + 1);
-    y[0] = -epsy[0];
+    y[0] = - epsy.front();
     std::copy(epsy.cbegin(), epsy.cend(), y.begin() + 1);
     m_yield = QPot::Chunked(0.0, y, 0);
 }
