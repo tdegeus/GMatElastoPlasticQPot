@@ -17,21 +17,19 @@ namespace Cartesian2d {
 template <class Y>
 inline Smooth::Smooth(double K, double G, const Y& epsy, bool init_elastic) : m_K(K), m_G(G)
 {
+    GMATELASTOPLASTICQPOT_ASSERT(epsy.dimension() == 1);
     GMATELASTOPLASTICQPOT_ASSERT(epsy.size() > 0);
+    // assertion on epsy being sorted is done by QPot::Chunked
 
     if (!init_elastic) {
         m_yield = QPot::Chunked(0.0, epsy, 0);
         return;
     }
 
-    if (epsy.size() > 1) {
-        if (epsy(0) == -epsy(1)) {
-            m_yield = QPot::Chunked(0.0, epsy, 0);
-            return;
-        }
-    }
-
-    xt::xtensor<double, 1> y = xt::concatenate(xt::xtuple(xt::xtensor<double, 1>({-epsy(0)}), epsy));
+    GMATELASTOPLASTICQPOT_ASSERT(epsy[0] > 0);
+    std::vector<double> y(epsy.size() + 1);
+    y[0] = -epsy[0];
+    std::copy(epsy.cbegin(), epsy.cend(), y.begin() + 1);
     m_yield = QPot::Chunked(0.0, y, 0);
 }
 

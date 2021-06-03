@@ -238,8 +238,10 @@ public:
     \param G Shear modulus.
     \param epsy Sequence of yield strains.
     \param init_elastic Initialise in minimum at zero strain
-        (prepends `epsy` with  `- epsy(0)` if needed. and starts the first yield strain index
-        equal to `-1`, see #GMATELASTOPLASTICQPOT_INDEX_ELASTICOFFSET to change the latter).
+        This options prepends `epsy` with  `- epsy(0)`.
+        Note that if you used chunked storage one should remember that the first yield strain
+        specified here will be the second yield strain held in storage. I.e the storage will be
+        as follows: `[- epsy(0), epsy(0), epsy(1), epsy(2), ...]
     */
     template <class Y>
     Cusp(double K, double G, const Y&, bool init_elastic = true);
@@ -421,8 +423,10 @@ public:
     \param G Shear modulus.
     \param epsy Sequence of yield strains.
     \param init_elastic Initialise in minimum at zero strain
-        (prepends `epsy` with  `- epsy(0)` if needed. and starts the first yield strain index
-        equal to `-1`, see #GMATELASTOPLASTICQPOT_INDEX_ELASTICOFFSET to change the latter).
+        This options prepends `epsy` with  `- epsy(0)`.
+        Note that if you used chunked storage one should remember that the first yield strain
+        specified here will be the second yield strain held in storage. I.e the storage will be
+        as follows: `[- epsy(0), epsy(0), epsy(1), epsy(2), ...]
     */
     template <class Y>
     Smooth(double K, double G, const Y& epsy, bool init_elastic = true);

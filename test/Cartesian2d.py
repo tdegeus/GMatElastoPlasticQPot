@@ -50,7 +50,7 @@ class Test_main(unittest.TestCase):
         mat.setStrain(Eps)
 
         self.assertTrue(np.allclose(mat.Stress(), Sig))
-        self.assertTrue(mat.currentIndex() == 0)
+        self.assertTrue(mat.currentIndex() == 1)
         self.assertTrue(np.isclose(mat.epsp(), 0.02))
         self.assertTrue(np.isclose(mat.currentYieldLeft(), 0.01))
         self.assertTrue(np.isclose(mat.currentYieldRight(), 0.03))
@@ -79,7 +79,7 @@ class Test_main(unittest.TestCase):
         mat.setStrain(Eps)
 
         self.assertTrue(np.allclose(mat.Stress(), Sig))
-        self.assertTrue(mat.currentIndex() == 0)
+        self.assertTrue(mat.currentIndex() == 1)
         self.assertTrue(np.isclose(mat.epsp(), 0.02))
         self.assertTrue(np.isclose(mat.currentYieldLeft(), 0.01))
         self.assertTrue(np.isclose(mat.currentYieldRight(), 0.03))
