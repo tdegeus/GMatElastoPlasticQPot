@@ -46,6 +46,7 @@ conveniently compiled to this [PDF](docs/notes/readme.pdf).
     - [Upgrading to >v0.8.*](#upgrading-to-v08)
     - [Upgrading to >v0.6.*](#upgrading-to-v06)
 - [Change-log](#change-log)
+    - [v0.15.1](#v0151)
     - [v0.15.0](#v0150)
     - [v0.14.0](#v0140)
     - [v0.13.0](#v0130)
@@ -504,6 +505,19 @@ This requires the following changes:
     The library therefore now depends on [QPot](https://www.github.com/tdegeus/QPot).
 
 # Change-log
+
+## v0.15.1
+
+*   Exposing non-allocating overloads in Python API
+*   Switching to xtensor-python
+*   CMake & setup.py modernization
+*   Templating all around
+*   Removing deprecated functions
+*   Internal change: using `flat` instead of `data`
+*   [CI] Using micromamba (#80)
+*   Using QPot::Chunked instead of QPot::Static (minor API change) (#78)
+*   Conforming with GooseFEM syntax (#79)
+*   Fixing paths docs
 
 ## v0.15.0
 
