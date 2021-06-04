@@ -12,12 +12,14 @@ dependencies:
 
   # Python API
   - python
+  - numpy
+  - pybind11
+  - xtensor-python
   - pyxtensor
 
   # run tests
   - catch2
   - goosefem
-  - numpy
   - h5py
   - python-qpot
 
