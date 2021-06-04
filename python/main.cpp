@@ -5,7 +5,14 @@
 */
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
+#define FORCE_IMPORT_ARRAY
+#include <xtensor-python/pytensor.hpp>
+
+#ifdef _WIN32
 #include <pyxtensor/pyxtensor.hpp>
+#endif
 
 // Enable basic assertions on matrix shape
 // (doesn't cost a lot of time, but avoids segmentation faults)
@@ -38,14 +45,14 @@ auto construct_Array(T& self)
 
         .def(
             "setElastic",
-             static_cast<void (S::*)(const xt::xtensor<double, S::rank>&, const xt::xtensor<double, S::rank>&)>(&S::template setElastic),
+             static_cast<void (S::*)(const xt::pytensor<double, S::rank>&, const xt::pytensor<double, S::rank>&)>(&S::template setElastic),
             "Set all points 'Elastic'.",
             py::arg("K"),
             py::arg("G"))
 
         .def(
             "setElastic",
-            static_cast<void (S::*)(const xt::xtensor<bool, S::rank>&, const xt::xtensor<size_t, S::rank>&, const xt::xtensor<double, 1>&, const xt::xtensor<double, 1>&)>(&S::template setElastic),
+            static_cast<void (S::*)(const xt::pytensor<bool, S::rank>&, const xt::pytensor<size_t, S::rank>&, const xt::pytensor<double, 1>&, const xt::pytensor<double, 1>&)>(&S::template setElastic),
             "Set specific entries 'Elastic'.",
             py::arg("I"),
             py::arg("idx"),
@@ -54,7 +61,7 @@ auto construct_Array(T& self)
 
         .def(
             "setCusp",
-            static_cast<void (S::*)(const xt::xtensor<bool, S::rank>&, const xt::xtensor<size_t, S::rank>&, const xt::xtensor<double, 1>&, const xt::xtensor<double, 1>&, const xt::xtensor<double, 2>&, bool)>(&S::template setCusp),
+            static_cast<void (S::*)(const xt::pytensor<bool, S::rank>&, const xt::pytensor<size_t, S::rank>&, const xt::pytensor<double, 1>&, const xt::pytensor<double, 1>&, const xt::pytensor<double, 2>&, bool)>(&S::template setCusp),
             "Set specific entries 'Cusp'.",
             py::arg("I"),
             py::arg("idx"),
@@ -65,7 +72,7 @@ auto construct_Array(T& self)
 
         .def(
             "setSmooth",
-            static_cast<void (S::*)(const xt::xtensor<bool, S::rank>&, const xt::xtensor<size_t, S::rank>&, const xt::xtensor<double, 1>&, const xt::xtensor<double, 1>&, const xt::xtensor<double, 2>&, bool)>(&S::template setSmooth),
+            static_cast<void (S::*)(const xt::pytensor<bool, S::rank>&, const xt::pytensor<size_t, S::rank>&, const xt::pytensor<double, 1>&, const xt::pytensor<double, 1>&, const xt::pytensor<double, 2>&, bool)>(&S::template setSmooth),
             "Set specific entries 'Smooth'.",
             py::arg("I"),
             py::arg("idx"),
@@ -76,7 +83,7 @@ auto construct_Array(T& self)
 
         .def(
             "setElastic",
-            static_cast<void (S::*)(const xt::xtensor<bool, S::rank>&, double, double)>(&S::template setElastic),
+            static_cast<void (S::*)(const xt::pytensor<bool, S::rank>&, double, double)>(&S::template setElastic),
             "Set specific entries 'Elastic'.",
             py::arg("I"),
             py::arg("K"),
@@ -84,7 +91,7 @@ auto construct_Array(T& self)
 
         .def(
             "setCusp",
-            static_cast<void (S::*)(const xt::xtensor<bool, S::rank>&, double, double, const xt::xtensor<double, 1>&, bool)>(&S::template setCusp),
+            static_cast<void (S::*)(const xt::pytensor<bool, S::rank>&, double, double, const xt::pytensor<double, 1>&, bool)>(&S::template setCusp),
             "Set specific entries 'Cusp'.",
             py::arg("I"),
             py::arg("K"),
@@ -94,7 +101,7 @@ auto construct_Array(T& self)
 
         .def(
             "setSmooth",
-            static_cast<void (S::*)(const xt::xtensor<bool, S::rank>&, double, double, const xt::xtensor<double, 1>&, bool)>(&S::template setSmooth),
+            static_cast<void (S::*)(const xt::pytensor<bool, S::rank>&, double, double, const xt::pytensor<double, 1>&, bool)>(&S::template setSmooth),
             "Set specific entries 'Smooth'.",
             py::arg("I"),
             py::arg("K"),
@@ -102,7 +109,7 @@ auto construct_Array(T& self)
             py::arg("epsy"),
             py::arg("init_elastic") = true)
 
-        .def("setStrain", &S::template setStrain<xt::xtensor<double, S::rank + 2>>, "Set strain tensors.", py::arg("Eps"))
+        .def("setStrain", &S::template setStrain<xt::pytensor<double, S::rank + 2>>, "Set strain tensors.", py::arg("Eps"))
         .def("Strain", &S::Strain, "Get strain tensors.")
         .def("Stress", &S::Stress, "Get stress tensors.")
         .def("Tangent", &S::Tangent, "Get stiffness tensors.")
@@ -165,50 +172,49 @@ auto construct_Array(T& self)
         });
 }
 
-template <class S, class T>
-void add_deviatoric_overloads(T& module)
+template <class R, class T, class M>
+void add_deviatoric_overloads(M& module)
 {
     module.def(
         "Deviatoric",
-        static_cast<S (*)(const S&)>(&GMatElastoPlasticQPot::Cartesian2d::Deviatoric<S>),
+        static_cast<R (*)(const T&)>(&GMatElastoPlasticQPot::Cartesian2d::Deviatoric),
         "Deviatoric part of a(n) (array of) tensor(s).",
         py::arg("A"));
 }
 
-template <class R, class S, class T>
-void add_hydrostatic_overloads(T& module)
+template <class R, class T, class M>
+void add_hydrostatic_overloads(M& module)
 {
     module.def(
         "Hydrostatic",
-        static_cast<R (*)(const S&)>(&GMatElastoPlasticQPot::Cartesian2d::Hydrostatic<S>),
+        static_cast<R (*)(const T&)>(&GMatElastoPlasticQPot::Cartesian2d::Hydrostatic),
         "Hydrostatic part of a(n) (array of) tensor(s).",
         py::arg("A"));
 }
 
-template <class R, class S, class T>
-void add_epsd_overloads(T& module)
+template <class R, class T, class M>
+void add_epsd_overloads(M& module)
 {
     module.def(
         "Epsd",
-        static_cast<R (*)(const S&)>(
-            &GMatElastoPlasticQPot::Cartesian2d::Epsd<S>),
+        static_cast<R (*)(const T&)>(&GMatElastoPlasticQPot::Cartesian2d::Epsd),
         "Equivalent strain of a(n) (array of) tensor(s).",
         py::arg("A"));
 }
 
-template <class R, class S, class T>
-void add_sigd_overloads(T& module)
+template <class R, class T, class M>
+void add_sigd_overloads(M& module)
 {
     module.def(
         "Sigd",
-        static_cast<R (*)(const S&)>(
-            &GMatElastoPlasticQPot::Cartesian2d::Sigd<S>),
+        static_cast<R (*)(const T&)>(&GMatElastoPlasticQPot::Cartesian2d::Sigd),
         "Equivalent stress of a(n) (array of) tensor(s).",
         py::arg("A"));
 }
 
 PYBIND11_MODULE(GMatElastoPlasticQPot, m)
 {
+    xt::import_numpy();
 
     m.doc() = "Elasto-plastic material model";
 
@@ -231,18 +237,31 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
 
     // Tensor algebra
 
-    add_deviatoric_overloads<xt::xtensor<double, 4>>(sm);
-    add_deviatoric_overloads<xt::xtensor<double, 3>>(sm);
-    add_deviatoric_overloads<xt::xtensor<double, 2>>(sm);
-    add_hydrostatic_overloads<xt::xtensor<double, 2>, xt::xtensor<double, 4>>(sm);
-    add_hydrostatic_overloads<xt::xtensor<double, 1>, xt::xtensor<double, 3>>(sm);
-    add_hydrostatic_overloads<xt::xtensor<double, 0>, xt::xtensor<double, 2>>(sm);
-    add_epsd_overloads<xt::xtensor<double, 2>, xt::xtensor<double, 4>>(sm);
-    add_epsd_overloads<xt::xtensor<double, 1>, xt::xtensor<double, 3>>(sm);
+    add_deviatoric_overloads<xt::pytensor<double, 4>, xt::pytensor<double, 4>>(sm);
+    add_deviatoric_overloads<xt::pytensor<double, 3>, xt::pytensor<double, 3>>(sm);
+    add_deviatoric_overloads<xt::pytensor<double, 2>, xt::pytensor<double, 2>>(sm);
+
+    add_hydrostatic_overloads<xt::pytensor<double, 2>, xt::pytensor<double, 4>>(sm);
+    add_hydrostatic_overloads<xt::pytensor<double, 1>, xt::pytensor<double, 3>>(sm);
+    add_hydrostatic_overloads<xt::pytensor<double, 0>, xt::pytensor<double, 2>>(sm);
+
+    add_epsd_overloads<xt::pytensor<double, 2>, xt::pytensor<double, 4>>(sm);
+    add_epsd_overloads<xt::pytensor<double, 1>, xt::pytensor<double, 3>>(sm);
+    #ifdef _WIN32
+    // todo: switch to xt::pytensor when https://github.com/xtensor-stack/xtensor-python/pull/263 is fixed
     add_epsd_overloads<xt::xtensor<double, 0>, xt::xtensor<double, 2>>(sm);
-    add_sigd_overloads<xt::xtensor<double, 2>, xt::xtensor<double, 4>>(sm);
-    add_sigd_overloads<xt::xtensor<double, 1>, xt::xtensor<double, 3>>(sm);
+    #else
+    add_epsd_overloads<xt::pytensor<double, 0>, xt::pytensor<double, 2>>(sm);
+    #endif
+
+    add_sigd_overloads<xt::pytensor<double, 2>, xt::pytensor<double, 4>>(sm);
+    add_sigd_overloads<xt::pytensor<double, 1>, xt::pytensor<double, 3>>(sm);
+    #ifdef _WIN32
+    // todo: switch to xt::pytensor when https://github.com/xtensor-stack/xtensor-python/pull/263 is fixed
     add_sigd_overloads<xt::xtensor<double, 0>, xt::xtensor<double, 2>>(sm);
+    #else
+    add_sigd_overloads<xt::pytensor<double, 0>, xt::pytensor<double, 2>>(sm);
+    #endif
 
     // Material point: Elastic
 
@@ -252,7 +271,7 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
 
         .def("K", &SM::Elastic::K, "Returns the bulk modulus.")
         .def("G", &SM::Elastic::G, "Returns the shear modulus.")
-        .def("setStrain", &SM::Elastic::setStrain<xt::xtensor<double, 2>>, "Set current strain tensor.")
+        .def("setStrain", &SM::Elastic::setStrain<xt::pytensor<double, 2>>, "Set current strain tensor.")
         .def("Strain", &SM::Elastic::Strain, "Returns strain tensor.")
         .def("Stress", &SM::Elastic::Stress, "Returns stress tensor.")
         .def("Tangent", &SM::Elastic::Tangent, "Returns tangent stiffness.")
@@ -267,7 +286,7 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
     py::class_<SM::Cusp>(sm, "Cusp")
 
         .def(
-            py::init<double, double, const xt::xtensor<double, 1>&, bool>(),
+            py::init<double, double, const xt::pytensor<double, 1>&, bool>(),
             "Elasto-plastic material point, with 'cusp' potentials.",
             py::arg("K"),
             py::arg("G"),
@@ -283,7 +302,7 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
              "Returns a reference underlying QPot::Chunked model.",
              py::return_value_policy::reference_internal)
 
-        .def("setStrain", &SM::Cusp::setStrain<xt::xtensor<double, 2>>, "Set current strain tensor.")
+        .def("setStrain", &SM::Cusp::setStrain<xt::pytensor<double, 2>>, "Set current strain tensor.")
         .def("Strain", &SM::Cusp::Strain, "Returns strain tensor.")
         .def("Stress", &SM::Cusp::Stress, "Returns stress tensor.")
         .def("Tangent", &SM::Cusp::Tangent, "Returns tangent stiffness.")
@@ -339,7 +358,7 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
     py::class_<SM::Smooth>(sm, "Smooth")
 
         .def(
-            py::init<double, double, const xt::xtensor<double, 1>&, bool>(),
+            py::init<double, double, const xt::pytensor<double, 1>&, bool>(),
             "Elasto-plastic material point, with 'smooth' potentials.",
             py::arg("K"),
             py::arg("G"),
@@ -355,7 +374,7 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
              "Returns a reference underlying QPot::Chunked model.",
              py::return_value_policy::reference_internal)
 
-        .def("setStrain", &SM::Smooth::setStrain<xt::xtensor<double, 2>>, "Set current strain tensor.")
+        .def("setStrain", &SM::Smooth::setStrain<xt::pytensor<double, 2>>, "Set current strain tensor.")
         .def("Strain", &SM::Smooth::Strain, "Returns strain tensor.")
         .def("Stress", &SM::Smooth::Stress, "Returns stress tensor.")
         .def("Tangent", &SM::Smooth::Tangent, "Returns tangent stiffness.")

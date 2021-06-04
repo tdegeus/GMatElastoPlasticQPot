@@ -64,7 +64,7 @@ To write to allocated data use epsd().
 \return [...] array.
 */
 template <class T>
-inline auto Epsd(const T& A);
+inline auto Epsd(const T& A) -> typename GMatTensor::detail::allocate<xt::get_rank<T>::value - 2, T>::type;
 
 /**
 Same as Epsd(), but writes to externally allocated output.
@@ -86,7 +86,7 @@ To write to allocated data use sigd().
 \return [...] array.
 */
 template <class T>
-inline auto Sigd(const T& A);
+inline auto Sigd(const T& A) -> typename GMatTensor::detail::allocate<xt::get_rank<T>::value - 2, T>::type;
 
 /**
 Same as Sigd(), but writes to externally allocated output.
