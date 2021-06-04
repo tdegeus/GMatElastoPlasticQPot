@@ -9,6 +9,7 @@ dependencies:
   # build tools
   - cmake
   - setuptools_scm
+  - ninja
 
   # Python API
   - python
