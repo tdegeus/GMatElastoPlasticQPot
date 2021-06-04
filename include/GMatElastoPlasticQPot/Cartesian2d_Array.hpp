@@ -29,18 +29,18 @@ inline xt::xtensor<double, N> Array<N>::K() const
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
-        switch (m_type.data()[i]) {
+        switch (m_type.flat(i)) {
         case Type::Unset:
-            ret.data()[i] = 0.0;
+            ret.flat(i) = 0.0;
             break;
         case Type::Elastic:
-            ret.data()[i] = m_Elastic[m_index.data()[i]].K();
+            ret.flat(i) = m_Elastic[m_index.flat(i)].K();
             break;
         case Type::Cusp:
-            ret.data()[i] = m_Cusp[m_index.data()[i]].K();
+            ret.flat(i) = m_Cusp[m_index.flat(i)].K();
             break;
         case Type::Smooth:
-            ret.data()[i] = m_Smooth[m_index.data()[i]].K();
+            ret.flat(i) = m_Smooth[m_index.flat(i)].K();
             break;
         }
     }
@@ -55,18 +55,18 @@ inline xt::xtensor<double, N> Array<N>::G() const
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
-        switch (m_type.data()[i]) {
+        switch (m_type.flat(i)) {
         case Type::Unset:
-            ret.data()[i] = 0.0;
+            ret.flat(i) = 0.0;
             break;
         case Type::Elastic:
-            ret.data()[i] = m_Elastic[m_index.data()[i]].G();
+            ret.flat(i) = m_Elastic[m_index.flat(i)].G();
             break;
         case Type::Cusp:
-            ret.data()[i] = m_Cusp[m_index.data()[i]].G();
+            ret.flat(i) = m_Cusp[m_index.flat(i)].G();
             break;
         case Type::Smooth:
-            ret.data()[i] = m_Smooth[m_index.data()[i]].G();
+            ret.flat(i) = m_Smooth[m_index.flat(i)].G();
             break;
         }
     }
@@ -81,18 +81,18 @@ inline void Array<N>::currentIndex(xt::xtensor<long, N>& ret) const
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
-        switch (m_type.data()[i]) {
+        switch (m_type.flat(i)) {
         case Type::Unset:
-            ret.data()[i] = 0;
+            ret.flat(i) = 0;
             break;
         case Type::Elastic:
-            ret.data()[i] = 0;
+            ret.flat(i) = 0;
             break;
         case Type::Cusp:
-            ret.data()[i] = m_Cusp[m_index.data()[i]].currentIndex();
+            ret.flat(i) = m_Cusp[m_index.flat(i)].currentIndex();
             break;
         case Type::Smooth:
-            ret.data()[i] = m_Smooth[m_index.data()[i]].currentIndex();
+            ret.flat(i) = m_Smooth[m_index.flat(i)].currentIndex();
             break;
         }
     }
@@ -104,18 +104,18 @@ inline bool Array<N>::checkYieldBoundLeft(size_t n) const
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
-        switch (m_type.data()[i]) {
+        switch (m_type.flat(i)) {
         case Type::Unset:
             break;
         case Type::Elastic:
             break;
         case Type::Cusp:
-            if (!m_Cusp[m_index.data()[i]].checkYieldBoundLeft(n)) {
+            if (!m_Cusp[m_index.flat(i)].checkYieldBoundLeft(n)) {
                 return false;
             }
             break;
         case Type::Smooth:
-            if (!m_Smooth[m_index.data()[i]].checkYieldBoundLeft(n)) {
+            if (!m_Smooth[m_index.flat(i)].checkYieldBoundLeft(n)) {
                 return false;
             }
             break;
@@ -131,18 +131,18 @@ inline bool Array<N>::checkYieldBoundRight(size_t n) const
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
-        switch (m_type.data()[i]) {
+        switch (m_type.flat(i)) {
         case Type::Unset:
             break;
         case Type::Elastic:
             break;
         case Type::Cusp:
-            if (!m_Cusp[m_index.data()[i]].checkYieldBoundRight(n)) {
+            if (!m_Cusp[m_index.flat(i)].checkYieldBoundRight(n)) {
                 return false;
             }
             break;
         case Type::Smooth:
-            if (!m_Smooth[m_index.data()[i]].checkYieldBoundRight(n)) {
+            if (!m_Smooth[m_index.flat(i)].checkYieldBoundRight(n)) {
                 return false;
             }
             break;
@@ -159,18 +159,18 @@ inline void Array<N>::currentYieldLeft(xt::xtensor<double, N>& ret) const
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
-        switch (m_type.data()[i]) {
+        switch (m_type.flat(i)) {
         case Type::Unset:
-            ret.data()[i] = 0.0;
+            ret.flat(i) = 0.0;
             break;
         case Type::Elastic:
-            ret.data()[i] = std::numeric_limits<double>::infinity();
+            ret.flat(i) = std::numeric_limits<double>::infinity();
             break;
         case Type::Cusp:
-            ret.data()[i] = m_Cusp[m_index.data()[i]].currentYieldLeft();
+            ret.flat(i) = m_Cusp[m_index.flat(i)].currentYieldLeft();
             break;
         case Type::Smooth:
-            ret.data()[i] = m_Smooth[m_index.data()[i]].currentYieldLeft();
+            ret.flat(i) = m_Smooth[m_index.flat(i)].currentYieldLeft();
             break;
         }
     }
@@ -183,18 +183,18 @@ inline void Array<N>::currentYieldRight(xt::xtensor<double, N>& ret) const
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
-        switch (m_type.data()[i]) {
+        switch (m_type.flat(i)) {
         case Type::Unset:
-            ret.data()[i] = 0.0;
+            ret.flat(i) = 0.0;
             break;
         case Type::Elastic:
-            ret.data()[i] = std::numeric_limits<double>::infinity();
+            ret.flat(i) = std::numeric_limits<double>::infinity();
             break;
         case Type::Cusp:
-            ret.data()[i] = m_Cusp[m_index.data()[i]].currentYieldRight();
+            ret.flat(i) = m_Cusp[m_index.flat(i)].currentYieldRight();
             break;
         case Type::Smooth:
-            ret.data()[i] = m_Smooth[m_index.data()[i]].currentYieldRight();
+            ret.flat(i) = m_Smooth[m_index.flat(i)].currentYieldRight();
             break;
         }
     }
@@ -207,18 +207,18 @@ inline void Array<N>::currentYieldLeft(xt::xtensor<double, N>& ret, size_t offse
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
-        switch (m_type.data()[i]) {
+        switch (m_type.flat(i)) {
         case Type::Unset:
-            ret.data()[i] = 0.0;
+            ret.flat(i) = 0.0;
             break;
         case Type::Elastic:
-            ret.data()[i] = std::numeric_limits<double>::infinity();
+            ret.flat(i) = std::numeric_limits<double>::infinity();
             break;
         case Type::Cusp:
-            ret.data()[i] = m_Cusp[m_index.data()[i]].currentYieldLeft(offset);
+            ret.flat(i) = m_Cusp[m_index.flat(i)].currentYieldLeft(offset);
             break;
         case Type::Smooth:
-            ret.data()[i] = m_Smooth[m_index.data()[i]].currentYieldLeft(offset);
+            ret.flat(i) = m_Smooth[m_index.flat(i)].currentYieldLeft(offset);
             break;
         }
     }
@@ -231,18 +231,18 @@ inline void Array<N>::currentYieldRight(xt::xtensor<double, N>& ret, size_t offs
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
-        switch (m_type.data()[i]) {
+        switch (m_type.flat(i)) {
         case Type::Unset:
-            ret.data()[i] = 0.0;
+            ret.flat(i) = 0.0;
             break;
         case Type::Elastic:
-            ret.data()[i] = std::numeric_limits<double>::infinity();
+            ret.flat(i) = std::numeric_limits<double>::infinity();
             break;
         case Type::Cusp:
-            ret.data()[i] = m_Cusp[m_index.data()[i]].currentYieldRight(offset);
+            ret.flat(i) = m_Cusp[m_index.flat(i)].currentYieldRight(offset);
             break;
         case Type::Smooth:
-            ret.data()[i] = m_Smooth[m_index.data()[i]].currentYieldRight(offset);
+            ret.flat(i) = m_Smooth[m_index.flat(i)].currentYieldRight(offset);
             break;
         }
     }
@@ -255,18 +255,18 @@ inline void Array<N>::epsp(xt::xtensor<double, N>& ret) const
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
-        switch (m_type.data()[i]) {
+        switch (m_type.flat(i)) {
         case Type::Unset:
-            ret.data()[i] = 0.0;
+            ret.flat(i) = 0.0;
             break;
         case Type::Elastic:
-            ret.data()[i] = 0.0;
+            ret.flat(i) = 0.0;
             break;
         case Type::Cusp:
-            ret.data()[i] = m_Cusp[m_index.data()[i]].epsp();
+            ret.flat(i) = m_Cusp[m_index.flat(i)].epsp();
             break;
         case Type::Smooth:
-            ret.data()[i] = m_Smooth[m_index.data()[i]].epsp();
+            ret.flat(i) = m_Smooth[m_index.flat(i)].epsp();
             break;
         }
     }
@@ -279,18 +279,18 @@ inline void Array<N>::energy(xt::xtensor<double, N>& ret) const
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
-        switch (m_type.data()[i]) {
+        switch (m_type.flat(i)) {
         case Type::Unset:
-            ret.data()[i] = 0.0;
+            ret.flat(i) = 0.0;
             break;
         case Type::Elastic:
-            ret.data()[i] = m_Elastic[m_index.data()[i]].energy();
+            ret.flat(i) = m_Elastic[m_index.flat(i)].energy();
             break;
         case Type::Cusp:
-            ret.data()[i] = m_Cusp[m_index.data()[i]].energy();
+            ret.flat(i) = m_Cusp[m_index.flat(i)].energy();
             break;
         case Type::Smooth:
-            ret.data()[i] = m_Smooth[m_index.data()[i]].energy();
+            ret.flat(i) = m_Smooth[m_index.flat(i)].energy();
             break;
         }
     }
@@ -334,9 +334,9 @@ inline void Array<N>::setElastic(const xt::xtensor<double, N>& K, const xt::xten
     GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(m_type, m_type)));
 
     for (size_t i = 0; i < m_size; ++i) {
-        m_type.data()[i] = Type::Elastic;
-        m_index.data()[i] = m_Elastic.size();
-        m_Elastic.push_back(Elastic(K.data()[i], G.data()[i]));
+        m_type.flat(i) = Type::Elastic;
+        m_index.flat(i) = m_Elastic.size();
+        m_Elastic.push_back(Elastic(K.flat(i), G.flat(i)));
     }
 }
 
@@ -347,9 +347,9 @@ inline void Array<N>::setElastic(const xt::xtensor<bool, N>& I, double K, double
     GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
 
     for (size_t i = 0; i < m_size; ++i) {
-        if (I.data()[i]) {
-            m_type.data()[i] = Type::Elastic;
-            m_index.data()[i] = m_Elastic.size();
+        if (I.flat(i)) {
+            m_type.flat(i) = Type::Elastic;
+            m_index.flat(i) = m_Elastic.size();
             m_Elastic.push_back(Elastic(K, G));
         }
     }
@@ -367,9 +367,9 @@ inline void Array<N>::setCusp(
     GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
 
     for (size_t i = 0; i < m_size; ++i) {
-        if (I.data()[i]) {
-            m_type.data()[i] = Type::Cusp;
-            m_index.data()[i] = m_Cusp.size();
+        if (I.flat(i)) {
+            m_type.flat(i) = Type::Cusp;
+            m_index.flat(i) = m_Cusp.size();
             m_Cusp.push_back(Cusp(K, G, epsy, init_elastic));
         }
     }
@@ -387,9 +387,9 @@ inline void Array<N>::setSmooth(
     GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
 
     for (size_t i = 0; i < m_size; ++i) {
-        if (I.data()[i]) {
-            m_type.data()[i] = Type::Smooth;
-            m_index.data()[i] = m_Smooth.size();
+        if (I.flat(i)) {
+            m_type.flat(i) = Type::Smooth;
+            m_index.flat(i) = m_Smooth.size();
             m_Smooth.push_back(Smooth(K, G, epsy, init_elastic));
         }
     }
@@ -409,10 +409,10 @@ inline void Array<N>::setElastic(
     GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
 
     for (size_t i = 0; i < m_size; ++i) {
-        if (I.data()[i]) {
-            size_t j = idx.data()[i];
-            m_type.data()[i] = Type::Elastic;
-            m_index.data()[i] = m_Elastic.size();
+        if (I.flat(i)) {
+            size_t j = idx.flat(i);
+            m_type.flat(i) = Type::Elastic;
+            m_index.flat(i) = m_Elastic.size();
             m_Elastic.push_back(Elastic(K(j), G(j)));
         }
     }
@@ -435,10 +435,10 @@ inline void Array<N>::setCusp(
     GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
 
     for (size_t i = 0; i < m_size; ++i) {
-        if (I.data()[i]) {
-            size_t j = idx.data()[i];
-            m_type.data()[i] = Type::Cusp;
-            m_index.data()[i] = m_Cusp.size();
+        if (I.flat(i)) {
+            size_t j = idx.flat(i);
+            m_type.flat(i) = Type::Cusp;
+            m_index.flat(i) = m_Cusp.size();
             m_Cusp.push_back(Cusp(K(j), G(j), xt::view(epsy, j, xt::all()), init_elastic));
         }
     }
@@ -461,10 +461,10 @@ inline void Array<N>::setSmooth(
     GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
 
     for (size_t i = 0; i < m_size; ++i) {
-        if (I.data()[i]) {
-            size_t j = idx.data()[i];
-            m_type.data()[i] = Type::Smooth;
-            m_index.data()[i] = m_Smooth.size();
+        if (I.flat(i)) {
+            size_t j = idx.flat(i);
+            m_type.flat(i) = Type::Smooth;
+            m_index.flat(i) = m_Smooth.size();
             m_Smooth.push_back(Smooth(K(j), G(j), xt::view(epsy, j, xt::all()), init_elastic));
         }
     }
@@ -477,17 +477,17 @@ inline void Array<N>::setStrain(const xt::xtensor<double, N + 2>& arg)
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
-        switch (m_type.data()[i]) {
+        switch (m_type.flat(i)) {
         case Type::Unset:
             break;
         case Type::Elastic:
-            m_Elastic[m_index.data()[i]].setStrainPtr(&arg.data()[i * m_stride_tensor2]);
+            m_Elastic[m_index.flat(i)].setStrainPtr(&arg.flat(i * m_stride_tensor2));
             break;
         case Type::Cusp:
-            m_Cusp[m_index.data()[i]].setStrainPtr(&arg.data()[i * m_stride_tensor2]);
+            m_Cusp[m_index.flat(i)].setStrainPtr(&arg.flat(i * m_stride_tensor2));
             break;
         case Type::Smooth:
-            m_Smooth[m_index.data()[i]].setStrainPtr(&arg.data()[i * m_stride_tensor2]);
+            m_Smooth[m_index.flat(i)].setStrainPtr(&arg.flat(i * m_stride_tensor2));
             break;
         }
     }
@@ -500,18 +500,18 @@ inline void Array<N>::strain(xt::xtensor<double, N + 2>& ret) const
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
-        switch (m_type.data()[i]) {
+        switch (m_type.flat(i)) {
         case Type::Unset:
-            GMatTensor::Cartesian2d::pointer::O2(&ret.data()[i * m_stride_tensor2]);
+            GMatTensor::Cartesian2d::pointer::O2(&ret.flat(i * m_stride_tensor2));
             break;
         case Type::Elastic:
-            m_Elastic[m_index.data()[i]].strainPtr(&ret.data()[i * m_stride_tensor2]);
+            m_Elastic[m_index.flat(i)].strainPtr(&ret.flat(i * m_stride_tensor2));
             break;
         case Type::Cusp:
-            m_Cusp[m_index.data()[i]].strainPtr(&ret.data()[i * m_stride_tensor2]);
+            m_Cusp[m_index.flat(i)].strainPtr(&ret.flat(i * m_stride_tensor2));
             break;
         case Type::Smooth:
-            m_Smooth[m_index.data()[i]].strainPtr(&ret.data()[i * m_stride_tensor2]);
+            m_Smooth[m_index.flat(i)].strainPtr(&ret.flat(i * m_stride_tensor2));
             break;
         }
     }
@@ -524,18 +524,18 @@ inline void Array<N>::stress(xt::xtensor<double, N + 2>& ret) const
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
-        switch (m_type.data()[i]) {
+        switch (m_type.flat(i)) {
         case Type::Unset:
-            GMatTensor::Cartesian2d::pointer::O2(&ret.data()[i * m_stride_tensor2]);
+            GMatTensor::Cartesian2d::pointer::O2(&ret.flat(i * m_stride_tensor2));
             break;
         case Type::Elastic:
-            m_Elastic[m_index.data()[i]].stressPtr(&ret.data()[i * m_stride_tensor2]);
+            m_Elastic[m_index.flat(i)].stressPtr(&ret.flat(i * m_stride_tensor2));
             break;
         case Type::Cusp:
-            m_Cusp[m_index.data()[i]].stressPtr(&ret.data()[i * m_stride_tensor2]);
+            m_Cusp[m_index.flat(i)].stressPtr(&ret.flat(i * m_stride_tensor2));
             break;
         case Type::Smooth:
-            m_Smooth[m_index.data()[i]].stressPtr(&ret.data()[i * m_stride_tensor2]);
+            m_Smooth[m_index.flat(i)].stressPtr(&ret.flat(i * m_stride_tensor2));
             break;
         }
     }
@@ -548,18 +548,18 @@ inline void Array<N>::tangent(xt::xtensor<double, N + 4>& ret) const
 
     #pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
-        switch (m_type.data()[i]) {
+        switch (m_type.flat(i)) {
         case Type::Unset:
-            GMatTensor::Cartesian2d::pointer::O4(&ret.data()[i * m_stride_tensor4]);
+            GMatTensor::Cartesian2d::pointer::O4(&ret.flat(i * m_stride_tensor4));
             break;
         case Type::Elastic:
-            m_Elastic[m_index.data()[i]].tangentPtr(&ret.data()[i * m_stride_tensor4]);
+            m_Elastic[m_index.flat(i)].tangentPtr(&ret.flat(i * m_stride_tensor4));
             break;
         case Type::Cusp:
-            m_Cusp[m_index.data()[i]].tangentPtr(&ret.data()[i * m_stride_tensor4]);
+            m_Cusp[m_index.flat(i)].tangentPtr(&ret.flat(i * m_stride_tensor4));
             break;
         case Type::Smooth:
-            m_Smooth[m_index.data()[i]].tangentPtr(&ret.data()[i * m_stride_tensor4]);
+            m_Smooth[m_index.flat(i)].tangentPtr(&ret.flat(i * m_stride_tensor4));
             break;
         }
     }
