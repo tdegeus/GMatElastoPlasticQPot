@@ -31,7 +31,7 @@ Tip: use the environment variable ``SETUPTOOLS_SCM_PRETEND_VERSION``
 to overwrite the automatic version.
 */
 #ifndef GMATELASTOPLASTICQPOT_VERSION
-#define GMATELASTOPLASTICQPOT_VERSION "@GMatElastoPlasticQPot_VERSION@"
+#define GMATELASTOPLASTICQPOT_VERSION "@PROJECT_VERSION@"
 #endif
 
 namespace GMatElastoPlasticQPot {
