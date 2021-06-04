@@ -75,7 +75,7 @@ inline xt::xtensor<double, N> Array<N>::G() const
 }
 
 template <size_t N>
-inline void Array<N>::currentIndex(xt::xtensor<size_t, N>& ret) const
+inline void Array<N>::currentIndex(xt::xtensor<long, N>& ret) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
 
@@ -243,30 +243,6 @@ inline void Array<N>::currentYieldRight(xt::xtensor<double, N>& ret, size_t offs
             break;
         case Type::Smooth:
             ret.data()[i] = m_Smooth[m_index.data()[i]].currentYieldRight(offset);
-            break;
-        }
-    }
-}
-
-template <size_t N>
-inline void Array<N>::nextYield(xt::xtensor<double, N>& ret, int offset) const
-{
-    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
-
-    #pragma omp parallel for
-    for (size_t i = 0; i < m_size; ++i) {
-        switch (m_type.data()[i]) {
-        case Type::Unset:
-            ret.data()[i] = 0.0;
-            break;
-        case Type::Elastic:
-            ret.data()[i] = std::numeric_limits<double>::infinity();
-            break;
-        case Type::Cusp:
-            ret.data()[i] = m_Cusp[m_index.data()[i]].nextYield(offset);
-            break;
-        case Type::Smooth:
-            ret.data()[i] = m_Smooth[m_index.data()[i]].nextYield(offset);
             break;
         }
     }
@@ -614,9 +590,9 @@ inline xt::xtensor<double, N + 4> Array<N>::Tangent() const
 }
 
 template <size_t N>
-inline xt::xtensor<size_t, N> Array<N>::CurrentIndex() const
+inline xt::xtensor<long, N> Array<N>::CurrentIndex() const
 {
-    xt::xtensor<size_t, N> ret = xt::empty<size_t>(m_shape);
+    xt::xtensor<long, N> ret = xt::empty<long>(m_shape);
     this->currentIndex(ret);
     return ret;
 }
@@ -650,14 +626,6 @@ inline xt::xtensor<double, N> Array<N>::CurrentYieldRight(size_t offset) const
 {
     xt::xtensor<double, N> ret = xt::empty<double>(m_shape);
     this->currentYieldRight(ret, offset);
-    return ret;
-}
-
-template <size_t N>
-inline xt::xtensor<double, N> Array<N>::NextYield(int offset) const
-{
-    xt::xtensor<double, N> ret = xt::empty<double>(m_shape);
-    this->nextYield(ret, offset);
     return ret;
 }
 

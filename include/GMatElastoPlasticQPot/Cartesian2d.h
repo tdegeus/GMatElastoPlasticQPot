@@ -12,7 +12,7 @@ Implementation in a 2-d Cartesian coordinate frame.
 // use "M_PI" from "math.h"
 #define _USE_MATH_DEFINES
 
-#include <QPot/Static.hpp>
+#include <QPot/Chunked.hpp>
 #include <GMatTensor/Cartesian2d.h>
 #include <math.h>
 #include <xtensor/xsort.hpp>
@@ -238,9 +238,14 @@ public:
     \param G Shear modulus.
     \param epsy Sequence of yield strains.
     \param init_elastic Initialise in minimum at zero strain
-        (prepends epsy with  ``- epsy(0)`` if needed).
+        If set `true`, `epsy` is prepended with  `- epsy(0)`.
+        In that case, one should remember that the first yield strain specified as `epsy`,
+        will be the second yield strain held in storage. I.e the storage will be
+        as follows: `[- epsy(0), epsy(0), epsy(1), epsy(2), ...].
+        It is crucial to pay attention to this when using chunked storage.
     */
-    Cusp(double K, double G, const xt::xtensor<double, 1>& epsy, bool init_elastic = true);
+    template <class Y>
+    Cusp(double K, double G, const Y&, bool init_elastic = true);
 
     /**
     \return Bulk modulus.
@@ -258,53 +263,36 @@ public:
     xt::xtensor<double, 1> epsy() const;
 
     /**
-    \return Copy to the underlying #QPot::Static model.
+    \return Reference to the underlying #QPot::Chunked model.
     */
-    [[ deprecated ]]
-    auto getQPot() const;
+    QPot::Chunked& refQPotChunked();
 
     /**
-    \return Reference to the underlying #QPot::Static model.
+    \return Current yield index, see QPot::Chunked::i().
     */
-    [[ deprecated ]]
-    auto* refQPot();
+    auto currentIndex() const;
 
     /**
-    \return Reference to the underlying #QPot::Static model.
+    \return Current yield strain left, see QPot::Chunked::yleft().
     */
-    QPot::Static& refQPotStatic();
+    auto currentYieldLeft() const;
 
     /**
-    \return Current yield index, see QPot::Static::currentIndex().
+    \return Current yield strain right, see QPot::Chunked::yright().
     */
-    size_t currentIndex() const;
-
-    /**
-    \return Current yield strain left, see QPot::Static::currentYieldLeft().
-    */
-    double currentYieldLeft() const;
-
-    /**
-    \return Current yield strain right, see QPot::Static::currentYieldRight().
-    */
-    double currentYieldRight() const;
+    auto currentYieldRight() const;
 
     /**
     \return Current yield strain at an offset left,
-    see QPot::Static::currentYieldLeft(size_t) const
+    see QPot::Chunked::yleft(size_t) const
     */
-    double currentYieldLeft(size_t offset) const;
+    auto currentYieldLeft(size_t offset) const;
 
     /**
     \return Current yield strain at an offset right,
-    see QPot::Static::currentYieldRight(size_t) const
+    see QPot::Chunked::yright(size_t) const
     */
-    double currentYieldRight(size_t offset) const;
-
-    /**
-    \return Current yield strain at an offset, see QPot::Static::nextYield()
-    */
-    double nextYield(int offset) const;
+    auto currentYieldRight(size_t offset) const;
 
     /**
     \return Plastic strain = 0.5 * (currentYieldLeft() + currentYieldRight())
@@ -317,12 +305,12 @@ public:
     double energy() const;
 
     /**
-    \return See QPot::Static::checkYieldBoundLeft()
+    \return See QPot::Chunked::checkYieldBoundLeft()
     */
     bool checkYieldBoundLeft(size_t n = 0) const;
 
     /**
-    \return See QPot::Static::checkYieldBoundRight()
+    \return See QPot::Chunked::checkYieldBoundRight()
     */
     bool checkYieldBoundRight(size_t n = 0) const;
 
@@ -414,7 +402,7 @@ public:
 private:
     double m_K; ///< bulk modulus
     double m_G; ///< shear modulus
-    QPot::Static m_yield; ///< potential energy landscape
+    QPot::Chunked m_yield; ///< potential energy landscape
     std::array<double, 4> m_Eps; ///< strain tensor [xx, xy, yx, yy]
     std::array<double, 4> m_Sig; ///< stress tensor ,,
 };
@@ -436,9 +424,14 @@ public:
     \param G Shear modulus.
     \param epsy Sequence of yield strains.
     \param init_elastic Initialise in minimum at zero strain
-        (prepends epsy with  ``- epsy(0)`` if needed).
+        If set `true`, `epsy` is prepended with  `- epsy(0)`.
+        In that case, one should remember that the first yield strain specified as `epsy`,
+        will be the second yield strain held in storage. I.e the storage will be
+        as follows: `[- epsy(0), epsy(0), epsy(1), epsy(2), ...].
+        It is crucial to pay attention to this when using chunked storage.
     */
-    Smooth(double K, double G, const xt::xtensor<double, 1>& epsy, bool init_elastic = true);
+    template <class Y>
+    Smooth(double K, double G, const Y& epsy, bool init_elastic = true);
 
     /**
     \return Bulk modulus.
@@ -456,53 +449,36 @@ public:
     xt::xtensor<double, 1> epsy() const;
 
     /**
-    \return Copy to the underlying #QPot::Static model.
+    \return Reference to the underlying #QPot::Chunked model.
     */
-    [[ deprecated ]]
-    auto getQPot() const;
+    QPot::Chunked& refQPotChunked();
 
     /**
-    \return Reference to the underlying #QPot::Static model.
+    \return Current yield index, see QPot::Chunked::i().
     */
-    [[ deprecated ]]
-    auto* refQPot();
+    auto currentIndex() const;
 
     /**
-    \return Reference to the underlying #QPot::Static model.
+    \return Current yield strain left, see QPot::Chunked::yleft().
     */
-    QPot::Static& refQPotStatic();
+    auto currentYieldLeft() const;
 
     /**
-    \return Current yield index, see QPot::Static::currentIndex().
+    \return Current yield strain right, see QPot::Chunked::yright().
     */
-    size_t currentIndex() const;
-
-    /**
-    \return Current yield strain left, see QPot::Static::currentYieldLeft().
-    */
-    double currentYieldLeft() const;
-
-    /**
-    \return Current yield strain right, see QPot::Static::currentYieldRight().
-    */
-    double currentYieldRight() const;
+    auto currentYieldRight() const;
 
     /**
     \return Current yield strain at an offset left,
-    see QPot::Static::currentYieldLeft(size_t) const
+    see QPot::Chunked::yleft(size_t) const
     */
-    double currentYieldLeft(size_t offset) const;
+    auto currentYieldLeft(size_t offset) const;
 
     /**
     \return Current yield strain at an offset right,
-    see QPot::Static::currentYieldRight(size_t) const
+    see QPot::Chunked::yright(size_t) const
     */
-    double currentYieldRight(size_t offset) const;
-
-    /**
-    \return Current yield strain at an offset, see QPot::Static::nextYield()
-    */
-    double nextYield(int offset) const;
+    auto currentYieldRight(size_t offset) const;
 
     /**
     \return Plastic strain = 0.5 * (currentYieldLeft() + currentYieldRight())
@@ -515,12 +491,12 @@ public:
     double energy() const;
 
     /**
-    \return See QPot::Static::checkYieldBoundLeft()
+    \return See QPot::Chunked::checkYieldBoundLeft()
     */
     bool checkYieldBoundLeft(size_t n = 0) const;
 
     /**
-    \return See QPot::Static::checkYieldBoundRight()
+    \return See QPot::Chunked::checkYieldBoundRight()
     */
     bool checkYieldBoundRight(size_t n = 0) const;
 
@@ -612,7 +588,7 @@ public:
 private:
     double m_K; ///< bulk modulus
     double m_G; ///< shear modulus
-    QPot::Static m_yield; ///< potential energy landscape
+    QPot::Chunked m_yield; ///< potential energy landscape
     std::array<double, 4> m_Eps; ///< strain tensor [xx, xy, yx, yy]
     std::array<double, 4> m_Sig; ///< stress tensor ,,
 };
@@ -847,19 +823,19 @@ public:
     void tangent(xt::xtensor<double, N + 4>& ret) const;
 
     /**
-    \return Yield index per item [shape()], see QPot::Static::currentIndex().
+    \return Yield index per item [shape()], see QPot::Chunked::i().
     */
-    xt::xtensor<size_t, N> CurrentIndex() const;
+    xt::xtensor<long, N> CurrentIndex() const;
 
     /**
     Same as CurrentIndex(), but write to allocated data.
 
     \param ret [shape()], overwritten.
     */
-    void currentIndex(xt::xtensor<size_t, N>& ret) const;
+    void currentIndex(xt::xtensor<long, N>& ret) const;
 
     /**
-    \return Yield strain left [shape()], see QPot::Static::currentYieldLeft().
+    \return Yield strain left [shape()], see QPot::Chunked::yleft().
     */
     xt::xtensor<double, N> CurrentYieldLeft() const;
 
@@ -871,7 +847,7 @@ public:
     void currentYieldLeft(xt::xtensor<double, N>& ret) const;
 
     /**
-    \return Yield strain right [shape()], see QPot::Static::currentYieldRight().
+    \return Yield strain right [shape()], see QPot::Chunked::yright().
     */
     xt::xtensor<double, N> CurrentYieldRight() const;
 
@@ -883,7 +859,7 @@ public:
     void currentYieldRight(xt::xtensor<double, N>& ret) const;
 
     /**
-    \return Yield strain at an offset left [shape()], see QPot::Static::currentYieldLeft().
+    \return Yield strain at an offset left [shape()], see QPot::Chunked::yleft().
     */
     xt::xtensor<double, N> CurrentYieldLeft(size_t offset) const;
 
@@ -897,7 +873,7 @@ public:
 
     /**
     \param offset
-    \return Yield strain at an offset right [shape()], see QPot::Static::currentYieldRight().
+    \return Yield strain at an offset right [shape()], see QPot::Chunked::yright().
     */
     xt::xtensor<double, N> CurrentYieldRight(size_t offset) const;
 
@@ -910,28 +886,14 @@ public:
     void currentYieldRight(xt::xtensor<double, N>& ret, size_t offset) const;
 
     /**
-    \param offset
-    \return Next yield strain at an offset [shape()], see QPot::Static::nextYield().
-    */
-    xt::xtensor<double, N> NextYield(int offset) const;
-
-    /**
-    Same as NextYield(), but write to allocated data.
-
-    \param ret [shape()], overwritten.
-    \param offset
-    */
-    void nextYield(xt::xtensor<double, N>& ret, int offset) const;
-
-    /**
     \param n Number of potentials that should be remaining to the left.
-    \return Bound check, see QPot::Static::checkYieldBoundLeft().
+    \return Bound check, see QPot::Chunked::checkYieldBoundLeft().
     */
     bool checkYieldBoundLeft(size_t n = 0) const;
 
     /**
     \param n Number of potentials that should be remaining to the right.
-    \return Bound check, see QPot::Static::checkYieldBoundRight().
+    \return Bound check, see QPot::Chunked::checkYieldBoundRight().
     */
     bool checkYieldBoundRight(size_t n = 0) const;
 

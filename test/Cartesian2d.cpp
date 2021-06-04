@@ -107,6 +107,27 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
         REQUIRE(mat.energy() == Approx(K * std::pow(epsm, 2.0) + G * std::pow(gamma, 2.0)));
     }
 
+    SECTION("Cusp - stress (0)")
+    {
+        double K = 12.3;
+        double G = 45.6;
+        xt::xtensor<double, 2> Eps = xt::zeros<double>({2, 2});
+        xt::xtensor<double, 2> Sig = xt::zeros<double>({2, 2});;
+
+        GM::Cusp mat(K, G, xt::xtensor<double, 1>{0.01, 0.03, 0.05, 0.10});
+        mat.setStrain(Eps);
+
+        REQUIRE(xt::allclose(mat.Stress(), Sig));
+        REQUIRE(mat.currentIndex() == 0);
+        REQUIRE(mat.epsp() == 0);
+        REQUIRE(mat.currentYieldLeft() == -0.01);
+        REQUIRE(mat.currentYieldRight() == +0.01);
+        REQUIRE(mat.currentYieldLeft() == mat.refQPotChunked().yleft());
+        REQUIRE(mat.currentYieldRight() == mat.refQPotChunked().yright());
+        REQUIRE(mat.checkYieldBoundRight());
+        REQUIRE(mat.energy() == Approx(- G * std::pow(0.01, 2.0)));
+    }
+
     SECTION("Cusp - stress (1)")
     {
         double K = 12.3;
@@ -122,7 +143,7 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
             {K * epsm, 0.0},
             {0.0, K * epsm}};
 
-        GM::Cusp mat(K, G, {0.01, 0.03, 0.05, 0.10});
+        GM::Cusp mat(K, G, xt::xtensor<double, 1>{0.01, 0.03, 0.05, 0.10});
         mat.setStrain(Eps);
 
         REQUIRE(xt::allclose(mat.Stress(), Sig));
@@ -130,8 +151,8 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
         REQUIRE(mat.epsp() == 0.02);
         REQUIRE(mat.currentYieldLeft() == 0.01);
         REQUIRE(mat.currentYieldRight() == 0.03);
-        REQUIRE(mat.currentYieldLeft() == mat.refQPotStatic().currentYieldLeft());
-        REQUIRE(mat.currentYieldRight() == mat.refQPotStatic().currentYieldRight());
+        REQUIRE(mat.currentYieldLeft() == mat.refQPotChunked().yleft());
+        REQUIRE(mat.currentYieldRight() == mat.refQPotChunked().yright());
         REQUIRE(mat.checkYieldBoundLeft());
         REQUIRE(mat.checkYieldBoundRight());
         REQUIRE(mat.energy() == Approx(K * std::pow(epsm, 2.0) + G * (0.0 - std::pow(0.01, 2.0))));
@@ -152,7 +173,7 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
             {K * epsm, G * (gamma - 0.04)},
             {G * (gamma - 0.04), K * epsm}};
 
-        GM::Cusp mat(K, G, {0.01, 0.03, 0.05, 0.10});
+        GM::Cusp mat(K, G, xt::xtensor<double, 1>{0.01, 0.03, 0.05, 0.10});
         mat.setStrain(Eps);
 
         REQUIRE(xt::allclose(mat.Stress(), Sig));
@@ -160,8 +181,8 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
         REQUIRE(mat.epsp() == 0.04);
         REQUIRE(mat.currentYieldLeft() == 0.03);
         REQUIRE(mat.currentYieldRight() == 0.05);
-        REQUIRE(mat.currentYieldLeft() == mat.refQPotStatic().currentYieldLeft());
-        REQUIRE(mat.currentYieldRight() == mat.refQPotStatic().currentYieldRight());
+        REQUIRE(mat.currentYieldLeft() == mat.refQPotChunked().yleft());
+        REQUIRE(mat.currentYieldRight() == mat.refQPotChunked().yright());
         REQUIRE(mat.checkYieldBoundLeft());
         REQUIRE(mat.checkYieldBoundRight());
         REQUIRE(mat.energy() == Approx(K * std::pow(epsm, 2.0) + G * (std::pow(gamma - 0.04, 2.0) - std::pow(0.01, 2.0))));
@@ -182,7 +203,7 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
             {K * epsm, 0.0},
             {0.0, K * epsm}};
 
-        GM::Smooth mat(K, G, {0.01, 0.03, 0.05, 0.10});
+        GM::Smooth mat(K, G, xt::xtensor<double, 1>{0.01, 0.03, 0.05, 0.10});
         mat.setStrain(Eps);
 
         REQUIRE(xt::allclose(mat.Stress(), Sig));
@@ -190,8 +211,8 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
         REQUIRE(mat.epsp() == 0.02);
         REQUIRE(mat.currentYieldLeft() == 0.01);
         REQUIRE(mat.currentYieldRight() == 0.03);
-        REQUIRE(mat.currentYieldLeft() == mat.refQPotStatic().currentYieldLeft());
-        REQUIRE(mat.currentYieldRight() == mat.refQPotStatic().currentYieldRight());
+        REQUIRE(mat.currentYieldLeft() == mat.refQPotChunked().yleft());
+        REQUIRE(mat.currentYieldRight() == mat.refQPotChunked().yright());
         REQUIRE(mat.checkYieldBoundLeft());
         REQUIRE(mat.checkYieldBoundRight());
     }
@@ -221,7 +242,7 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
         xt::xtensor<double, 4> Is = GM::I4s();
         Eps = GT::A4_ddot_B2(Is, Eps);
 
-        GM::Cusp mat(K, G, {10000.0});
+        GM::Cusp mat(K, G, xt::xtensor<double, 1>{10000.0});
         mat.setStrain(Eps);
         auto Sig = mat.Stress();
         auto C = mat.Tangent();
@@ -237,7 +258,7 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
         xt::xtensor<double, 4> Is = GM::I4s();
         Eps = GT::A4_ddot_B2(Is, Eps);
 
-        GM::Smooth mat(K, G, {10000.0});
+        GM::Smooth mat(K, G, xt::xtensor<double, 1>{10000.0});
         mat.setStrain(Eps);
         auto Sig = mat.Stress();
         auto C = mat.Tangent();

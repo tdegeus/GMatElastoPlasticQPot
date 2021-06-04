@@ -14,20 +14,22 @@ Partial implementation of GMatElastoPlasticQPot/Cartesian2d.h
 namespace GMatElastoPlasticQPot {
 namespace Cartesian2d {
 
-inline Cusp::Cusp(double K, double G, const xt::xtensor<double, 1>& epsy, bool init_elastic)
-    : m_K(K), m_G(G)
+template <class Y>
+inline Cusp::Cusp(double K, double G, const Y& epsy, bool init_elastic) : m_K(K), m_G(G)
 {
-    xt::xtensor<double, 1> y = xt::sort(epsy);
+    GMATELASTOPLASTICQPOT_ASSERT(epsy.size() > 0);
+    // assertion on epsy being sorted is done by QPot::Chunked
 
-    if (init_elastic) {
-        if (y(0) != -y(1)) {
-            y = xt::concatenate(xt::xtuple(xt::xtensor<double, 1>({-y(0)}), y));
-        }
+    if (!init_elastic) {
+        m_yield = QPot::Chunked(0.0, epsy, 0);
+        return;
     }
 
-    GMATELASTOPLASTICQPOT_ASSERT(y.size() > 1);
-
-    m_yield = QPot::Static(0.0, y);
+    GMATELASTOPLASTICQPOT_ASSERT(epsy.front() > 0);
+    std::vector<double> y(epsy.size() + 1);
+    y[0] = - epsy.front();
+    std::copy(epsy.cbegin(), epsy.cend(), y.begin() + 1);
+    m_yield = QPot::Chunked(0.0, y, 0);
 }
 
 inline double Cusp::K() const
@@ -42,59 +44,42 @@ inline double Cusp::G() const
 
 inline xt::xtensor<double, 1> Cusp::epsy() const
 {
-    return m_yield.yieldPosition();
+    return xt::adapt(m_yield.y());
 }
 
-inline auto Cusp::getQPot() const
-{
-    GMATELASTOPLASTICQPOT_WARNING_PYTHON("Deprecated, only refQPotStatic will be supported");
-    return m_yield;
-}
-
-inline auto* Cusp::refQPot()
-{
-    GMATELASTOPLASTICQPOT_WARNING_PYTHON("Deprecated, only refQPotStatic will be supported");
-    return &m_yield;
-}
-
-inline QPot::Static& Cusp::refQPotStatic()
+inline QPot::Chunked& Cusp::refQPotChunked()
 {
     return m_yield;
 }
 
-inline size_t Cusp::currentIndex() const
+inline auto Cusp::currentIndex() const
 {
-    return m_yield.currentIndex();
+    return m_yield.i();
 }
 
-inline double Cusp::currentYieldLeft() const
+inline auto Cusp::currentYieldLeft() const
 {
-    return m_yield.currentYieldLeft();
+    return m_yield.yleft();
 }
 
-inline double Cusp::currentYieldRight() const
+inline auto Cusp::currentYieldRight() const
 {
-    return m_yield.currentYieldRight();
+    return m_yield.yright();
 }
 
-inline double Cusp::currentYieldLeft(size_t offset) const
+inline auto Cusp::currentYieldLeft(size_t offset) const
 {
-    return m_yield.currentYieldLeft(offset);
+    return m_yield.yleft(offset);
 }
 
-inline double Cusp::currentYieldRight(size_t offset) const
+inline auto Cusp::currentYieldRight(size_t offset) const
 {
-    return m_yield.currentYieldRight(offset);
-}
-
-inline double Cusp::nextYield(int offset) const
-{
-    return m_yield.nextYield(offset);
+    return m_yield.yright(offset);
 }
 
 inline double Cusp::epsp() const
 {
-    return 0.5 * (m_yield.currentYieldLeft() + m_yield.currentYieldRight());
+    return 0.5 * (m_yield.yleft() + m_yield.yright());
 }
 
 inline double Cusp::energy() const
@@ -105,8 +90,8 @@ inline double Cusp::energy() const
     double epsd = std::sqrt(0.5 * GT::A2s_ddot_B2s(&Epsd[0], &Epsd[0]));
     double U = m_K * std::pow(epsm, 2.0);
 
-    double eps_min = 0.5 * (m_yield.currentYieldRight() + m_yield.currentYieldLeft());
-    double deps_y = 0.5 * (m_yield.currentYieldRight() - m_yield.currentYieldLeft());
+    double eps_min = 0.5 * (m_yield.yright() + m_yield.yleft());
+    double deps_y = 0.5 * (m_yield.yright() - m_yield.yleft());
 
     double V = m_G * (std::pow(epsd - eps_min, 2.0) - std::pow(deps_y, 2.0));
 
@@ -115,12 +100,12 @@ inline double Cusp::energy() const
 
 inline bool Cusp::checkYieldBoundLeft(size_t n) const
 {
-    return m_yield.checkYieldBoundLeft(n);
+    return m_yield.boundcheck_left(n);
 }
 
 inline bool Cusp::checkYieldBoundRight(size_t n) const
 {
-    return m_yield.checkYieldBoundRight(n);
+    return m_yield.boundcheck_right(n);
 }
 
 template <class T>
@@ -132,7 +117,7 @@ inline void Cusp::setStrainPtr(const T* arg)
     std::array<double, 4> Epsd;
     double epsm = GT::Hydrostatic_deviatoric(&m_Eps[0], &Epsd[0]);
     double epsd = std::sqrt(0.5 * GT::A2s_ddot_B2s(&Epsd[0], &Epsd[0]));
-    m_yield.setPosition(epsd);
+    m_yield.set_x(epsd);
 
     m_Sig[0] = m_Sig[3] = m_K * epsm;
 
@@ -141,7 +126,7 @@ inline void Cusp::setStrainPtr(const T* arg)
         return;
     }
 
-    double eps_min = 0.5 * (m_yield.currentYieldRight() + m_yield.currentYieldLeft());
+    double eps_min = 0.5 * (m_yield.yright() + m_yield.yleft());
 
     double g = m_G * (1.0 - eps_min / epsd);
     m_Sig[0] += g * Epsd[0];

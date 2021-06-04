@@ -159,12 +159,6 @@ auto construct_Array(T& self)
             "Returns the yield strain to the right, for last known strain.",
             py::arg("shift"))
 
-        .def(
-            "NextYield",
-            &S::NextYield,
-            "Returns the next yield strain to either direction, for last known strain.",
-            py::arg("shift"))
-
         .def("Epsp", &S::Epsp, "Get equivalent plastic strains.")
         .def("Energy", &S::Energy, "Get energies.")
         .def("getElastic", &S::getElastic, "Returns underlying Elastic model.")
@@ -315,11 +309,10 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
         .def("K", &SM::Cusp::K, "Returns the bulk modulus.")
         .def("G", &SM::Cusp::G, "Returns the shear modulus.")
         .def("epsy", &SM::Cusp::epsy, "Returns the yield strains.")
-        .def("getQPot", &SM::Cusp::getQPot, "Returns underlying QPot model.")
 
-        .def("refQPotStatic",
-             &SM::Cusp::refQPotStatic,
-             "Returns a reference underlying QPot::Static model.",
+        .def("refQPotChunked",
+             &SM::Cusp::refQPotChunked,
+             "Returns a reference underlying QPot::Chunked model.",
              py::return_value_policy::reference_internal)
 
         .def("setStrain", &SM::Cusp::setStrain<xt::xtensor<double, 2>>, "Set current strain tensor.")
@@ -352,12 +345,6 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
             "currentYieldRight",
             py::overload_cast<size_t>(&SM::Cusp::currentYieldRight, py::const_),
             "Returns the yield strain to the right, for last known strain.",
-            py::arg("shift"))
-
-        .def(
-            "nextYield",
-            &SM::Cusp::nextYield,
-            "Returns the next yield strain to either direction, for last known strain.",
             py::arg("shift"))
 
         .def(
@@ -394,11 +381,10 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
         .def("K", &SM::Smooth::K, "Returns the bulk modulus.")
         .def("G", &SM::Smooth::G, "Returns the shear modulus.")
         .def("epsy", &SM::Smooth::epsy, "Returns the yield strains.")
-        .def("getQPot", &SM::Smooth::getQPot, "Returns underlying QPot model.")
 
-        .def("refQPotStatic",
-             &SM::Smooth::refQPotStatic,
-             "Returns a reference underlying QPot::Static model.",
+        .def("refQPotChunked",
+             &SM::Smooth::refQPotChunked,
+             "Returns a reference underlying QPot::Chunked model.",
              py::return_value_policy::reference_internal)
 
         .def("setStrain", &SM::Smooth::setStrain<xt::xtensor<double, 2>>, "Set current strain tensor.")
@@ -431,12 +417,6 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
             "currentYieldRight",
             py::overload_cast<size_t>(&SM::Smooth::currentYieldRight, py::const_),
             "Returns the yield strain to the right, for last known strain.",
-            py::arg("shift"))
-
-        .def(
-            "nextYield",
-            &SM::Smooth::nextYield,
-            "Returns the next yield strain to either direction, for last known strain.",
             py::arg("shift"))
 
         .def(
