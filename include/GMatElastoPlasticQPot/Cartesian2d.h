@@ -672,78 +672,77 @@ public:
     /**
     Set all items Elastic, specifying material parameters per item.
 
+    \tparam T e.g. `xt::xtensor<double, N>`
     \param K Bulk modulus per item [shape()].
     \param G Shear modulus per item [shape()].
     */
-    void setElastic(
-        const xt::xtensor<double, N>& K,
-        const xt::xtensor<double, N>& G);
+    template <class T>
+    void setElastic(const T& K, const T& G);
 
     /**
     Set a batch of items Elastic, with the material parameters the same for all set items.
 
+    \tparam L e.g. `xt::xtensor<bool, N>`
     \param I Per item, ``true`` to set Elastic, ``false`` to skip.
     \param K Bulk modulus.
     \param G Shear modulus.
     */
-    void setElastic(
-        const xt::xtensor<bool, N>& I,
-        double K,
-        double G);
+    template <class L>
+    void setElastic(const L& I, double K, double G);
 
     /**
     Set a batch of items Cusp, with the material parameters the same for all set items.
 
+    \tparam L e.g. `xt::xtensor<bool, N>`
+    \tparam Y e.g. `xt::xtensor<double, 1>`
     \param I Per item, ``true`` to set Cusp, ``false`` to skip.
     \param K Bulk modulus.
     \param G Shear modulus.
     \param epsy Sequence of yield strains.
     \param init_elastic Initialise in minimum at zero strain.
     */
-    void setCusp(
-        const xt::xtensor<bool, N>& I,
-        double K,
-        double G,
-        const xt::xtensor<double, 1>& epsy,
-        bool init_elastic = true);
+    template <class L, class Y>
+    void setCusp(const L& I, double K, double G, const Y& epsy, bool init_elastic = true);
 
     /**
     Set a batch of items Smooth, with the material parameters the same for all set items.
 
+    \tparam L e.g. `xt::xtensor<bool, N>`
+    \tparam Y e.g. `xt::xtensor<double, 1>`
     \param I Per item, ``true`` to set Smooth, ``false`` to skip.
     \param K Bulk modulus.
     \param G Shear modulus.
     \param epsy Sequence of yield strains.
     \param init_elastic Initialise in minimum at zero strain.
     */
-    void setSmooth(
-        const xt::xtensor<bool, N>& I,
-        double K,
-        double G,
-        const xt::xtensor<double, 1>& epsy,
-        bool init_elastic = true);
+    template <class L, class Y>
+    void setSmooth(const L& I, double K, double G, const Y& epsy, bool init_elastic = true);
 
     /**
     Set a batch of items Elastic, with the material parameters (possibly) different.
     To this end, and addition array ``idx`` is used that refers to a which entry to use:
     ``K(idx)``, ``G(idx)``, and ``epsy(idx, :)``.
 
+    \tparam L e.g. `xt::xtensor<bool, N>`
+    \tparam C e.g. `xt::xtensor<size_t, N>`
+    \tparam T e.g. `xt::xtensor<double, 1>`
     \param I Per item, ``true`` to set Elastic, ``false`` to skip.
     \param idx Per item, index in supplied material parameters.
     \param K Bulk modulus.
     \param G Shear modulus.
     */
-    void setElastic(
-        const xt::xtensor<bool, N>& I,
-        const xt::xtensor<size_t, N>& idx,
-        const xt::xtensor<double, 1>& K,
-        const xt::xtensor<double, 1>& G);
+    template <class L, class C, class T>
+    void setElastic(const L& I, const C& idx, const T& K, const T& G);
 
     /**
     Set a batch of items Cusp, with the material parameters (possibly) different.
     To this end, and addition array ``idx`` is used that refers to a which entry to use:
     ``K(idx)``, ``G(idx)``, and ``epsy(idx, :)``.
 
+    \tparam L e.g. `xt::xtensor<bool, N>`
+    \tparam C e.g. `xt::xtensor<size_t, N>`
+    \tparam T e.g. `xt::xtensor<double, 1>`
+    \tparam Y e.g. `xt::xtensor<double, 2>`
     \param I Per item, ``true`` to set Cusp, ``false`` to skip.
     \param idx Per item, index in supplied material parameters.
     \param K Bulk modulus.
@@ -751,19 +750,18 @@ public:
     \param epsy Sequence of yield strains.
     \param init_elastic Initialise in minimum at zero strain.
     */
-    void setCusp(
-        const xt::xtensor<bool, N>& I,
-        const xt::xtensor<size_t, N>& idx,
-        const xt::xtensor<double, 1>& K,
-        const xt::xtensor<double, 1>& G,
-        const xt::xtensor<double, 2>& epsy,
-        bool init_elastic = true);
+    template <class L, class C, class T, class Y>
+    void setCusp(const L& I, const C& idx, const T& K, const T& G, const Y& epsy, bool init_elastic = true);
 
     /**
     Set a batch of items Smooth, with the material parameters (possibly) different.
     To this end, and addition array ``idx`` is used that refers to a which entry to use:
     ``K(idx)``, ``G(idx)``, and ``epsy(idx, :)``.
 
+    \tparam L e.g. `xt::xtensor<bool, N>`
+    \tparam C e.g. `xt::xtensor<size_t, N>`
+    \tparam T e.g. `xt::xtensor<double, 1>`
+    \tparam Y e.g. `xt::xtensor<double, 2>`
     \param I Per item, ``true`` to set Smooth, ``false`` to skip.
     \param idx Per item, index in supplied material parameters.
     \param K Bulk modulus.
@@ -771,20 +769,17 @@ public:
     \param epsy Sequence of yield strains.
     \param init_elastic Initialise in minimum at zero strain.
     */
-    void setSmooth(
-        const xt::xtensor<bool, N>& I,
-        const xt::xtensor<size_t, N>& idx,
-        const xt::xtensor<double, 1>& K,
-        const xt::xtensor<double, 1>& G,
-        const xt::xtensor<double, 2>& epsy,
-        bool init_elastic = true);
+    template <class L, class C, class T, class Y>
+    void setSmooth(const L& I, const C& idx, const T& K, const T& G, const Y& epsy, bool init_elastic = true);
 
     /**
     Set strain tensors.
 
+    \tparam T e.g. `xt::xtensor<double, N + 2>`
     \param arg Strain tensor per item [shape(), 2, 2].
     */
-    void setStrain(const xt::xtensor<double, N + 2>& arg);
+    template <class T>
+    void setStrain(const T& arg);
 
     /**
     \return Strain tensor per item [shape(), 2, 2].
@@ -794,9 +789,11 @@ public:
     /**
     Same as Strain(), but write to allocated data.
 
+    \tparam R e.g. `xt::xtensor<double, N + 2>`
     \param ret [shape(), 2, 2], overwritten.
     */
-    void strain(xt::xtensor<double, N + 2>& ret) const;
+    template <class R>
+    void strain(R& ret) const;
 
     /**
     \return Stress tensor per item [shape(), 2, 2].
@@ -806,9 +803,11 @@ public:
     /**
     Same as Stress(), but write to allocated data.
 
+    \tparam R e.g. `xt::xtensor<double, N + 2>`
     \param ret [shape(), 2, 2], overwritten.
     */
-    void stress(xt::xtensor<double, N + 2>& ret) const;
+    template <class R>
+    void stress(R& ret) const;
 
     /**
     \return Tangent tensor per item [shape(), 2, 2].
@@ -818,9 +817,11 @@ public:
     /**
     Same as Tangent(), but write to allocated data.
 
+    \tparam R e.g. `xt::xtensor<double, N + 4>`
     \param ret [shape(), 2, 2, 2, 2], overwritten.
     */
-    void tangent(xt::xtensor<double, N + 4>& ret) const;
+    template <class R>
+    void tangent(R& ret) const;
 
     /**
     \return Yield index per item [shape()], see QPot::Chunked::i().
@@ -830,9 +831,11 @@ public:
     /**
     Same as CurrentIndex(), but write to allocated data.
 
+    \tparam R e.g. `xt::xtensor<long, N>`
     \param ret [shape()], overwritten.
     */
-    void currentIndex(xt::xtensor<long, N>& ret) const;
+    template <class R>
+    void currentIndex(R& ret) const;
 
     /**
     \return Yield strain left [shape()], see QPot::Chunked::yleft().
@@ -842,9 +845,11 @@ public:
     /**
     Same as CurrentYieldLeft(), but write to allocated data.
 
+    \tparam R e.g. `xt::xtensor<double, N>`
     \param ret [shape()], overwritten.
     */
-    void currentYieldLeft(xt::xtensor<double, N>& ret) const;
+    template <class R>
+    void currentYieldLeft(R& ret) const;
 
     /**
     \return Yield strain right [shape()], see QPot::Chunked::yright().
@@ -854,9 +859,11 @@ public:
     /**
     Same as CurrentYieldRight(), but write to allocated data.
 
+    \tparam R e.g. `xt::xtensor<double, N>`
     \param ret [shape()], overwritten.
     */
-    void currentYieldRight(xt::xtensor<double, N>& ret) const;
+    template <class R>
+    void currentYieldRight(R& ret) const;
 
     /**
     \return Yield strain at an offset left [shape()], see QPot::Chunked::yleft().
@@ -866,10 +873,12 @@ public:
     /**
     Same as CurrentYieldLeft(), but write to allocated data.
 
+    \tparam R e.g. `xt::xtensor<double, N>`
     \param ret [shape()], overwritten.
     \param offset
     */
-    void currentYieldLeft(xt::xtensor<double, N>& ret, size_t offset) const;
+    template <class R>
+    void currentYieldLeft(R& ret, size_t offset) const;
 
     /**
     \param offset
@@ -880,10 +889,12 @@ public:
     /**
     Same as CurrentYieldRight(), but write to allocated data.
 
+    \tparam R e.g. `xt::xtensor<double, N>`
     \param ret [shape()], overwritten.
     \param offset
     */
-    void currentYieldRight(xt::xtensor<double, N>& ret, size_t offset) const;
+    template <class R>
+    void currentYieldRight(R& ret, size_t offset) const;
 
     /**
     \param n Number of potentials that should be remaining to the left.
@@ -905,9 +916,11 @@ public:
     /**
     Same as Epsp(), but write to allocated data.
 
+    \tparam R e.g. `xt::xtensor<double, N>`
     \param ret [shape()], overwritten.
     */
-    void epsp(xt::xtensor<double, N>& ret) const;
+    template <class R>
+    void epsp(R& ret) const;
 
     /**
     \return Elastic energy item [shape()].
@@ -917,10 +930,11 @@ public:
     /**
     Same as Energy(), but write to allocated data.
 
+    \tparam R e.g. `xt::xtensor<double, N>`
     \param ret [shape()], overwritten.
     */
-    void energy(xt::xtensor<double, N>& ret) const;
-
+    template <class R>
+    void energy(R& ret) const;
 
     /**
     Reference to the underlying Elastic model of an item.

@@ -75,7 +75,8 @@ inline xt::xtensor<double, N> Array<N>::G() const
 }
 
 template <size_t N>
-inline void Array<N>::currentIndex(xt::xtensor<long, N>& ret) const
+template <class R>
+inline void Array<N>::currentIndex(R& ret) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
 
@@ -153,7 +154,8 @@ inline bool Array<N>::checkYieldBoundRight(size_t n) const
 }
 
 template <size_t N>
-inline void Array<N>::currentYieldLeft(xt::xtensor<double, N>& ret) const
+template <class R>
+inline void Array<N>::currentYieldLeft(R& ret) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
 
@@ -177,7 +179,8 @@ inline void Array<N>::currentYieldLeft(xt::xtensor<double, N>& ret) const
 }
 
 template <size_t N>
-inline void Array<N>::currentYieldRight(xt::xtensor<double, N>& ret) const
+template <class R>
+inline void Array<N>::currentYieldRight(R& ret) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
 
@@ -201,7 +204,8 @@ inline void Array<N>::currentYieldRight(xt::xtensor<double, N>& ret) const
 }
 
 template <size_t N>
-inline void Array<N>::currentYieldLeft(xt::xtensor<double, N>& ret, size_t offset) const
+template <class R>
+inline void Array<N>::currentYieldLeft(R& ret, size_t offset) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
 
@@ -225,7 +229,8 @@ inline void Array<N>::currentYieldLeft(xt::xtensor<double, N>& ret, size_t offse
 }
 
 template <size_t N>
-inline void Array<N>::currentYieldRight(xt::xtensor<double, N>& ret, size_t offset) const
+template <class R>
+inline void Array<N>::currentYieldRight(R& ret, size_t offset) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
 
@@ -249,7 +254,8 @@ inline void Array<N>::currentYieldRight(xt::xtensor<double, N>& ret, size_t offs
 }
 
 template <size_t N>
-inline void Array<N>::epsp(xt::xtensor<double, N>& ret) const
+template <class R>
+inline void Array<N>::epsp(R& ret) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
 
@@ -273,7 +279,8 @@ inline void Array<N>::epsp(xt::xtensor<double, N>& ret) const
 }
 
 template <size_t N>
-inline void Array<N>::energy(xt::xtensor<double, N>& ret) const
+template <class R>
+inline void Array<N>::energy(R& ret) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
 
@@ -327,7 +334,8 @@ inline xt::xtensor<bool, N> Array<N>::isSmooth() const
 }
 
 template <size_t N>
-inline void Array<N>::setElastic(const xt::xtensor<double, N>& K, const xt::xtensor<double, N>& G)
+template <class T>
+inline void Array<N>::setElastic(const T& K, const T& G)
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, K.shape()));
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, G.shape()));
@@ -341,7 +349,8 @@ inline void Array<N>::setElastic(const xt::xtensor<double, N>& K, const xt::xten
 }
 
 template <size_t N>
-inline void Array<N>::setElastic(const xt::xtensor<bool, N>& I, double K, double G)
+template <class L>
+inline void Array<N>::setElastic(const L& I, double K, double G)
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
     GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
@@ -356,14 +365,11 @@ inline void Array<N>::setElastic(const xt::xtensor<bool, N>& I, double K, double
 }
 
 template <size_t N>
-inline void Array<N>::setCusp(
-    const xt::xtensor<bool, N>& I,
-    double K,
-    double G,
-    const xt::xtensor<double, 1>& epsy,
-    bool init_elastic)
+template <class L, class Y>
+inline void Array<N>::setCusp(const L& I, double K, double G, const Y& epsy, bool init_elastic)
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
+    GMATELASTOPLASTICQPOT_ASSERT(epsy.dimension() == 1);
     GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
 
     for (size_t i = 0; i < m_size; ++i) {
@@ -376,14 +382,11 @@ inline void Array<N>::setCusp(
 }
 
 template <size_t N>
-inline void Array<N>::setSmooth(
-    const xt::xtensor<bool, N>& I,
-    double K,
-    double G,
-    const xt::xtensor<double, 1>& epsy,
-    bool init_elastic)
+template <class L, class Y>
+inline void Array<N>::setSmooth(const L& I, double K, double G, const Y& epsy, bool init_elastic)
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
+    GMATELASTOPLASTICQPOT_ASSERT(epsy.dimension() == 1);
     GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
 
     for (size_t i = 0; i < m_size; ++i) {
@@ -396,14 +399,12 @@ inline void Array<N>::setSmooth(
 }
 
 template <size_t N>
-inline void Array<N>::setElastic(
-    const xt::xtensor<bool, N>& I,
-    const xt::xtensor<size_t, N>& idx,
-    const xt::xtensor<double, 1>& K,
-    const xt::xtensor<double, 1>& G)
+template <class L, class C, class T>
+inline void Array<N>::setElastic(const L& I, const C& idx, const T& K, const T& G)
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::amax(idx)() == K.size() - 1);
-    GMATELASTOPLASTICQPOT_ASSERT(K.size() == G.size());
+    GMATELASTOPLASTICQPOT_ASSERT(K.dimension() == 1);
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(K, G.shape()));
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, idx.shape()));
     GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
@@ -419,16 +420,13 @@ inline void Array<N>::setElastic(
 }
 
 template <size_t N>
-inline void Array<N>::setCusp(
-    const xt::xtensor<bool, N>& I,
-    const xt::xtensor<size_t, N>& idx,
-    const xt::xtensor<double, 1>& K,
-    const xt::xtensor<double, 1>& G,
-    const xt::xtensor<double, 2>& epsy,
-    bool init_elastic)
+template <class L, class C, class T, class Y>
+inline void Array<N>::setCusp(const L& I, const C& idx, const T& K, const T& G, const Y& epsy, bool init_elastic)
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::amax(idx)() == K.size() - 1);
-    GMATELASTOPLASTICQPOT_ASSERT(K.size() == G.size());
+    GMATELASTOPLASTICQPOT_ASSERT(K.dimension() == 1);
+    GMATELASTOPLASTICQPOT_ASSERT(epsy.dimension() == 2);
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(K, G.shape()));
     GMATELASTOPLASTICQPOT_ASSERT(K.size() == epsy.shape(0));
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, idx.shape()));
@@ -445,16 +443,13 @@ inline void Array<N>::setCusp(
 }
 
 template <size_t N>
-inline void Array<N>::setSmooth(
-    const xt::xtensor<bool, N>& I,
-    const xt::xtensor<size_t, N>& idx,
-    const xt::xtensor<double, 1>& K,
-    const xt::xtensor<double, 1>& G,
-    const xt::xtensor<double, 2>& epsy,
-    bool init_elastic)
+template <class L, class C, class T, class Y>
+inline void Array<N>::setSmooth(const L& I, const C& idx, const T& K, const T& G, const Y& epsy, bool init_elastic)
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::amax(idx)() == K.size() - 1);
-    GMATELASTOPLASTICQPOT_ASSERT(K.size() == G.size());
+    GMATELASTOPLASTICQPOT_ASSERT(K.dimension() == 1);
+    GMATELASTOPLASTICQPOT_ASSERT(epsy.dimension() == 2);
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(K, G.shape()));
     GMATELASTOPLASTICQPOT_ASSERT(K.size() == epsy.shape(0));
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, idx.shape()));
@@ -471,7 +466,8 @@ inline void Array<N>::setSmooth(
 }
 
 template <size_t N>
-inline void Array<N>::setStrain(const xt::xtensor<double, N + 2>& arg)
+template <class T>
+inline void Array<N>::setStrain(const T& arg)
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(arg, m_shape_tensor2));
 
@@ -494,7 +490,8 @@ inline void Array<N>::setStrain(const xt::xtensor<double, N + 2>& arg)
 }
 
 template <size_t N>
-inline void Array<N>::strain(xt::xtensor<double, N + 2>& ret) const
+template <class R>
+inline void Array<N>::strain(R& ret) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape_tensor2));
 
@@ -518,7 +515,8 @@ inline void Array<N>::strain(xt::xtensor<double, N + 2>& ret) const
 }
 
 template <size_t N>
-inline void Array<N>::stress(xt::xtensor<double, N + 2>& ret) const
+template <class R>
+inline void Array<N>::stress(R& ret) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape_tensor2));
 
@@ -542,7 +540,8 @@ inline void Array<N>::stress(xt::xtensor<double, N + 2>& ret) const
 }
 
 template <size_t N>
-inline void Array<N>::tangent(xt::xtensor<double, N + 4>& ret) const
+template <class R>
+inline void Array<N>::tangent(R& ret) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape_tensor4));
 

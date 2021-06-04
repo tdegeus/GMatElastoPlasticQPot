@@ -38,20 +38,14 @@ auto construct_Array(T& self)
 
         .def(
             "setElastic",
-            py::overload_cast<
-                const xt::xtensor<double, S::rank>&,
-                const xt::xtensor<double, S::rank>&>(&S::setElastic),
+             static_cast<void (S::*)(const xt::xtensor<double, S::rank>&, const xt::xtensor<double, S::rank>&)>(&S::template setElastic),
             "Set all points 'Elastic'.",
             py::arg("K"),
             py::arg("G"))
 
         .def(
             "setElastic",
-            py::overload_cast<
-                const xt::xtensor<bool, S::rank>&,
-                const xt::xtensor<size_t, S::rank>&,
-                const xt::xtensor<double, 1>&,
-                const xt::xtensor<double, 1>&>(&S::setElastic),
+            static_cast<void (S::*)(const xt::xtensor<bool, S::rank>&, const xt::xtensor<size_t, S::rank>&, const xt::xtensor<double, 1>&, const xt::xtensor<double, 1>&)>(&S::template setElastic),
             "Set specific entries 'Elastic'.",
             py::arg("I"),
             py::arg("idx"),
@@ -60,13 +54,7 @@ auto construct_Array(T& self)
 
         .def(
             "setCusp",
-            py::overload_cast<
-                const xt::xtensor<bool, S::rank>&,
-                const xt::xtensor<size_t, S::rank>&,
-                const xt::xtensor<double, 1>&,
-                const xt::xtensor<double, 1>&,
-                const xt::xtensor<double, 2>&,
-                bool>(&S::setCusp),
+            static_cast<void (S::*)(const xt::xtensor<bool, S::rank>&, const xt::xtensor<size_t, S::rank>&, const xt::xtensor<double, 1>&, const xt::xtensor<double, 1>&, const xt::xtensor<double, 2>&, bool)>(&S::template setCusp),
             "Set specific entries 'Cusp'.",
             py::arg("I"),
             py::arg("idx"),
@@ -77,13 +65,7 @@ auto construct_Array(T& self)
 
         .def(
             "setSmooth",
-            py::overload_cast<
-                const xt::xtensor<bool, S::rank>&,
-                const xt::xtensor<size_t, S::rank>&,
-                const xt::xtensor<double, 1>&,
-                const xt::xtensor<double, 1>&,
-                const xt::xtensor<double, 2>&,
-                bool>(&S::setSmooth),
+            static_cast<void (S::*)(const xt::xtensor<bool, S::rank>&, const xt::xtensor<size_t, S::rank>&, const xt::xtensor<double, 1>&, const xt::xtensor<double, 1>&, const xt::xtensor<double, 2>&, bool)>(&S::template setSmooth),
             "Set specific entries 'Smooth'.",
             py::arg("I"),
             py::arg("idx"),
@@ -94,8 +76,7 @@ auto construct_Array(T& self)
 
         .def(
             "setElastic",
-            py::overload_cast<const xt::xtensor<bool, S::rank>&, double, double>(
-                &S::setElastic),
+            static_cast<void (S::*)(const xt::xtensor<bool, S::rank>&, double, double)>(&S::template setElastic),
             "Set specific entries 'Elastic'.",
             py::arg("I"),
             py::arg("K"),
@@ -103,12 +84,7 @@ auto construct_Array(T& self)
 
         .def(
             "setCusp",
-            py::overload_cast<
-                const xt::xtensor<bool, S::rank>&,
-                double,
-                double,
-                const xt::xtensor<double, 1>&,
-                bool>(&S::setCusp),
+            static_cast<void (S::*)(const xt::xtensor<bool, S::rank>&, double, double, const xt::xtensor<double, 1>&, bool)>(&S::template setCusp),
             "Set specific entries 'Cusp'.",
             py::arg("I"),
             py::arg("K"),
@@ -118,12 +94,7 @@ auto construct_Array(T& self)
 
         .def(
             "setSmooth",
-            py::overload_cast<
-                const xt::xtensor<bool, S::rank>&,
-                double,
-                double,
-                const xt::xtensor<double, 1>&,
-                bool>(&S::setSmooth),
+            static_cast<void (S::*)(const xt::xtensor<bool, S::rank>&, double, double, const xt::xtensor<double, 1>&, bool)>(&S::template setSmooth),
             "Set specific entries 'Smooth'.",
             py::arg("I"),
             py::arg("K"),
@@ -131,7 +102,7 @@ auto construct_Array(T& self)
             py::arg("epsy"),
             py::arg("init_elastic") = true)
 
-        .def("setStrain", &S::setStrain, "Set strain tensors.", py::arg("Eps"))
+        .def("setStrain", &S::template setStrain<xt::xtensor<double, S::rank + 2>>, "Set strain tensors.", py::arg("Eps"))
         .def("Strain", &S::Strain, "Get strain tensors.")
         .def("Stress", &S::Stress, "Get stress tensors.")
         .def("Tangent", &S::Tangent, "Get stiffness tensors.")
