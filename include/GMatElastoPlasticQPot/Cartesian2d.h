@@ -921,32 +921,6 @@ public:
     */
     void energy(xt::xtensor<double, N>& ret) const;
 
-    /**
-    Copy to the underlying Elastic model of an item.
-
-    \param index The index of the item.
-    \return Copy to the model.
-    */
-    [[ deprecated ]]
-    auto getElastic(const std::array<size_t, N>& index) const;
-
-    /**
-    Copy to the underlying Cusp model of an item.
-
-    \param index The index of the item.
-    \return Copy to the model.
-    */
-    [[ deprecated ]]
-    auto getCusp(const std::array<size_t, N>& index) const;
-
-    /**
-    Copy to the underlying Smooth model of an item.
-
-    \param index The index of the item.
-    \return Copy to the model.
-    */
-    [[ deprecated ]]
-    auto getSmooth(const std::array<size_t, N>& index) const;
 
     /**
     Reference to the underlying Elastic model of an item.

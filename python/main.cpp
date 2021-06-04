@@ -161,9 +161,6 @@ auto construct_Array(T& self)
 
         .def("Epsp", &S::Epsp, "Get equivalent plastic strains.")
         .def("Energy", &S::Energy, "Get energies.")
-        .def("getElastic", &S::getElastic, "Returns underlying Elastic model.")
-        .def("getCusp", &S::getCusp, "Returns underlying Cusp model.")
-        .def("getSmooth", &S::getSmooth, "Returns underlying Smooth model.")
 
         .def("refElastic",
              &S::refElastic,
