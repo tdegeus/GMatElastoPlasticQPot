@@ -22,7 +22,7 @@ inline void epsd(const T& A, U& ret)
 }
 
 template <class T>
-inline auto Epsd(const T& A)
+inline auto Epsd(const T& A) -> typename GMatTensor::detail::allocate<xt::get_rank<T>::value - 2, T>::type
 {
     return xt::eval(std::sqrt(0.5) * GMatTensor::Cartesian2d::Norm_deviatoric(A));
 }
@@ -35,7 +35,7 @@ inline void sigd(const T& A, U& ret)
 }
 
 template <class T>
-inline auto Sigd(const T& A)
+inline auto Sigd(const T& A) -> typename GMatTensor::detail::allocate<xt::get_rank<T>::value - 2, T>::type
 {
     return xt::eval(std::sqrt(2.0) * GMatTensor::Cartesian2d::Norm_deviatoric(A));
 }
