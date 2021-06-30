@@ -14,7 +14,7 @@
 % ==============================================================================
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{goose-article}[2019/12/20 v0.5.0 customized article class]
+\ProvidesClass{goose-article}[2020/08/26 v0.6.1 customized article class]
 
 % ==============================================================================
 % Options
@@ -87,7 +87,11 @@
 
 \newif\if@showlinks
 \let\if@showlinks\iffalse
-\DeclareOption{showlinks}{\let\if@showlinks\iftrue\let\if@font\iftrue}
+\DeclareOption{showlinks}{\let\if@showlinks\iftrue}
+
+\newif\if@colorlinks
+\let\if@colorlinks\iffalse
+\DeclareOption{colorlinks}{\let\if@colorlinks\iftrue}
 
 % Process options
 % ---------------
@@ -233,27 +237,41 @@
     \AtBeginDocument{%
         \hypersetup{%
             pdftitle=\@title,
-            citecolor=Blue,
-            filecolor=black,
-            linkcolor=Blue,
-            urlcolor=Blue,
+            citecolor=NavyBlue,
+            filecolor=NavyBlue,
+            linkcolor=NavyBlue,
+            urlcolor=NavyBlue,
             breaklinks,
             bookmarksopen=true,
         }%
     }
 \else
-    \AtBeginDocument{%
-        \hypersetup{%
-            pdftitle=\@title,
-            citecolor=Blue,
-            filecolor=black,
-            linkcolor=Blue,
-            urlcolor=Blue,
-            breaklinks,
-            hidelinks,
-            bookmarksopen=true,
-        }%
-    }
+    \if@colorlinks
+        \AtBeginDocument{%
+            \hypersetup{%
+                pdftitle=\@title,
+                citecolor=NavyBlue,
+                filecolor=NavyBlue,
+                linkcolor=NavyBlue,
+                urlcolor=NavyBlue,
+                breaklinks,
+                bookmarksopen=true,
+            }%
+        }
+    \else
+        \AtBeginDocument{%
+            \hypersetup{%
+                pdftitle=\@title,
+                citecolor=NavyBlue,
+                filecolor=NavyBlue,
+                linkcolor=NavyBlue,
+                urlcolor=NavyBlue,
+                breaklinks,
+                hidelinks,
+                bookmarksopen=true,
+            }%
+        }
+    \fi
 \fi
 
 % ==============================================================================

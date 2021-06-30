@@ -1,4 +1,4 @@
-\documentclass[fleqn]{goose-article}
+\documentclass[fleqn, colorlinks]{goose-article}
 
 \title{%
     Elasto-plastic continuum model
@@ -675,9 +675,17 @@ following expression for the stress is obtained
     \end{equation}
 
     \item Equivalent shear stress
+
     \begin{equation}
         \sigma_\mathrm{d} = \sqrt{ 2 \, \T{\sigma}_\mathrm{d} : \T{\sigma}_\mathrm{d} }
     \end{equation}
+
+    Note that this measure is not used by the model itself.
+    It is just provided as for convenience, its definition being such that it is work-conjugate
+    with the equivalent strain in the case of simple shear.
+    I.e.\ for $\bm{\varepsilon} = \gamma (\vec{e}_x \vec{e}_y + \vec{e}_y \vec{e}_x)$,
+    in the the case of elasticity,
+    $\bm{\sigma} : \bm{\varepsilon} = \sigma_\mathrm{d} \varepsilon_\mathrm{d}$.
 
 \end{itemize}
 
