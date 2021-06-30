@@ -46,6 +46,7 @@ conveniently compiled to this [PDF](docs/notes/readme.pdf).
     - [Upgrading to >v0.8.*](#upgrading-to-v08)
     - [Upgrading to >v0.6.*](#upgrading-to-v06)
 - [Change-log](#change-log)
+    - [v0.15.2](#v0152)
     - [v0.15.1](#v0151)
     - [v0.15.0](#v0150)
     - [v0.14.0](#v0140)
@@ -505,6 +506,14 @@ This requires the following changes:
     The library therefore now depends on [QPot](https://www.github.com/tdegeus/QPot).
 
 # Change-log
+
+## v0.15.2
+
+*   Python API: code-style update, removing work-around (#86)
+*   [CI] Minor update gh-pages
+*   Adding `checkYieldRedraw`
+*   Adding missing header
+*   [docs] Explaining rationale behind "sigd"
 
 ## v0.15.1
 
