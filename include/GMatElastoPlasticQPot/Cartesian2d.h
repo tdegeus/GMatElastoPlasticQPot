@@ -18,6 +18,7 @@ Implementation in a 2-d Cartesian coordinate frame.
 #include <xtensor/xsort.hpp>
 
 #include "config.h"
+#include "version.h"
 
 namespace GMatElastoPlasticQPot {
 
