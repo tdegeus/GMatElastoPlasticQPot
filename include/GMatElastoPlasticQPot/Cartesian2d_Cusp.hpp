@@ -108,6 +108,11 @@ inline bool Cusp::checkYieldBoundRight(size_t n) const
     return m_yield.boundcheck_right(n);
 }
 
+inline int Cusp::checkYieldRedraw() const
+{
+    return m_yield.redraw();
+}
+
 template <class T>
 inline void Cusp::setStrainPtr(const T* arg)
 {

@@ -306,14 +306,19 @@ public:
     double energy() const;
 
     /**
-    \return See QPot::Chunked::checkYieldBoundLeft()
+    \return See QPot::Chunked::boundcheck_left()
     */
     bool checkYieldBoundLeft(size_t n = 0) const;
 
     /**
-    \return See QPot::Chunked::checkYieldBoundRight()
+    \return See QPot::Chunked::boundcheck_right()
     */
     bool checkYieldBoundRight(size_t n = 0) const;
+
+    /**
+    \return See QPot::Chunked::redraw()
+    */
+    int checkYieldRedraw() const;
 
     /**
     Set the current strain tensor.
@@ -492,14 +497,19 @@ public:
     double energy() const;
 
     /**
-    \return See QPot::Chunked::checkYieldBoundLeft()
+    \return See QPot::Chunked::boundcheck_left()
     */
     bool checkYieldBoundLeft(size_t n = 0) const;
 
     /**
-    \return See QPot::Chunked::checkYieldBoundRight()
+    \return See QPot::Chunked::boundcheck_right()
     */
     bool checkYieldBoundRight(size_t n = 0) const;
+
+    /**
+    \return See QPot::Chunked::redraw()
+    */
+    int checkYieldRedraw() const;
 
     /**
     Set the current strain tensor.
@@ -899,15 +909,31 @@ public:
 
     /**
     \param n Number of potentials that should be remaining to the left.
-    \return Bound check, see QPot::Chunked::checkYieldBoundLeft().
+    \return Bound check, see QPot::Chunked::boundcheck_left().
     */
     bool checkYieldBoundLeft(size_t n = 0) const;
 
     /**
     \param n Number of potentials that should be remaining to the right.
-    \return Bound check, see QPot::Chunked::checkYieldBoundRight().
+    \return Bound check, see QPot::Chunked::boundcheck_right().
     */
     bool checkYieldBoundRight(size_t n = 0) const;
+
+    /**
+    Check need to redraw the chunk of yield strains for all points,
+    see QPot::Chunked::redraw().
+    \return Redraw status per point.
+    */
+    xt::xtensor<int, N> CheckYieldRedraw() const;
+
+    /**
+    Same as CheckYieldRedraw(), but write to allocated data.
+
+    \tparam R e.g. `xt::xtensor<int, N>`
+    \param ret [shape()], overwritten.
+    */
+    template <class R>
+    void checkYieldRedraw(R& ret) const;
 
     /**
     \return Plastic strain [shape()].

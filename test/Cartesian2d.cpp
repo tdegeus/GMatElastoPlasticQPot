@@ -125,6 +125,7 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
         REQUIRE(mat.currentYieldLeft() == mat.refQPotChunked().yleft());
         REQUIRE(mat.currentYieldRight() == mat.refQPotChunked().yright());
         REQUIRE(mat.checkYieldBoundRight());
+        REQUIRE(mat.checkYieldRedraw() == 0);
         REQUIRE(mat.energy() == Approx(- G * std::pow(0.01, 2.0)));
     }
 
@@ -155,6 +156,7 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
         REQUIRE(mat.currentYieldRight() == mat.refQPotChunked().yright());
         REQUIRE(mat.checkYieldBoundLeft());
         REQUIRE(mat.checkYieldBoundRight());
+        REQUIRE(mat.checkYieldRedraw() == 0);
         REQUIRE(mat.energy() == Approx(K * std::pow(epsm, 2.0) + G * (0.0 - std::pow(0.01, 2.0))));
     }
 
@@ -185,6 +187,7 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
         REQUIRE(mat.currentYieldRight() == mat.refQPotChunked().yright());
         REQUIRE(mat.checkYieldBoundLeft());
         REQUIRE(mat.checkYieldBoundRight());
+        REQUIRE(mat.checkYieldRedraw() == 0);
         REQUIRE(mat.energy() == Approx(K * std::pow(epsm, 2.0) + G * (std::pow(gamma - 0.04, 2.0) - std::pow(0.01, 2.0))));
     }
 
@@ -215,6 +218,7 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
         REQUIRE(mat.currentYieldRight() == mat.refQPotChunked().yright());
         REQUIRE(mat.checkYieldBoundLeft());
         REQUIRE(mat.checkYieldBoundRight());
+        REQUIRE(mat.checkYieldRedraw() == 0);
     }
 
     SECTION("Tangent (purely elastic response only) - Elastic")
@@ -340,6 +344,7 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
         REQUIRE(xt::allclose(mat.Epsp(), epsp));
         REQUIRE(mat.checkYieldBoundLeft());
         REQUIRE(mat.checkYieldBoundRight());
+        REQUIRE(xt::all(xt::equal(mat.CheckYieldRedraw(), 0)));
     }
 
     SECTION("Array - reference to underlying model")

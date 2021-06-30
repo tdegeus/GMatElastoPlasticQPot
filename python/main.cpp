@@ -142,6 +142,12 @@ auto construct_Array(T& self)
             py::arg("ret"),
             py::arg("offset"))
 
+        .def(
+            "checkYieldRedraw",
+            static_cast<void (S::*)(xt::pytensor<int, S::rank>&) const>(&S::template checkYieldRedraw),
+            "Check to redraw the chunk of yield strains.",
+            py::arg("ret"))
+
         .def("epsp", &S::template epsp<xt::pytensor<long, S::rank>>, "Get equivalent plastic strains.")
         .def("energy", &S::template energy<xt::pytensor<long, S::rank>>, "Get energies.")
 
@@ -171,6 +177,11 @@ auto construct_Array(T& self)
             py::overload_cast<size_t>(&S::CurrentYieldRight, py::const_),
             "Returns the yield strain to the right, for last known strain.",
             py::arg("offset"))
+
+        .def(
+            "CheckYieldRedraw",
+            py::overload_cast<>(&S::CheckYieldRedraw, py::const_),
+            "Check to redraw the chunk of yield strains.")
 
         .def("Epsp", &S::Epsp, "Get equivalent plastic strains.")
         .def("Energy", &S::Energy, "Get energies.")
@@ -467,6 +478,11 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
             "Check that 'the particle' is at least 'n' wells from the far-right.",
             py::arg("n") = 0)
 
+        .def(
+            "checkYieldRedraw",
+            &SM::Cusp::checkYieldRedraw,
+            "Check to redraw the chunk of yield strains.")
+
         .def("epsp", &SM::Cusp::epsp, "Returns equivalent plastic strain.")
         .def("energy", &SM::Cusp::energy, "Returns the energy, for last known strain.")
 
@@ -541,6 +557,11 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
             &SM::Smooth::checkYieldBoundRight,
             "Check that 'the particle' is at least 'n' wells from the far-right.",
             py::arg("n") = 0)
+
+        .def(
+            "checkYieldRedraw",
+            &SM::Smooth::checkYieldRedraw,
+            "Check to redraw the chunk of yield strains.")
 
         .def("epsp", &SM::Smooth::epsp, "Returns equivalent plastic strain.")
         .def("energy", &SM::Smooth::energy, "Returns the energy, for last known strain.")
