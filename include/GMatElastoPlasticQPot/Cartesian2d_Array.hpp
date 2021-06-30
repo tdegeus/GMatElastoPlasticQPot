@@ -255,6 +255,31 @@ inline void Array<N>::currentYieldRight(R& ret, size_t offset) const
 
 template <size_t N>
 template <class R>
+inline void Array<N>::checkYieldRedraw(R& ret) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
+
+    #pragma omp parallel for
+    for (size_t i = 0; i < m_size; ++i) {
+        switch (m_type.flat(i)) {
+        case Type::Unset:
+            ret.flat(i) = 0;
+            break;
+        case Type::Elastic:
+            ret.flat(i) = 0;
+            break;
+        case Type::Cusp:
+            ret.flat(i) = m_Cusp[m_index.flat(i)].checkYieldRedraw();
+            break;
+        case Type::Smooth:
+            ret.flat(i) = m_Smooth[m_index.flat(i)].checkYieldRedraw();
+            break;
+        }
+    }
+}
+
+template <size_t N>
+template <class R>
 inline void Array<N>::epsp(R& ret) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
@@ -625,6 +650,14 @@ inline xt::xtensor<double, N> Array<N>::CurrentYieldRight(size_t offset) const
 {
     xt::xtensor<double, N> ret = xt::empty<double>(m_shape);
     this->currentYieldRight(ret, offset);
+    return ret;
+}
+
+template <size_t N>
+inline xt::xtensor<int, N> Array<N>::CheckYieldRedraw() const
+{
+    xt::xtensor<int, N> ret = xt::empty<int>(m_shape);
+    this->checkYieldRedraw(ret);
     return ret;
 }
 

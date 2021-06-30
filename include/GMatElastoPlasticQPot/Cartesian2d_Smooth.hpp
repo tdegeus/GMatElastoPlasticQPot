@@ -110,6 +110,11 @@ inline bool Smooth::checkYieldBoundRight(size_t n) const
     return m_yield.boundcheck_right(n);
 }
 
+inline int Smooth::checkYieldRedraw() const
+{
+    return m_yield.redraw();
+}
+
 template <class T>
 inline void Smooth::setStrainPtr(const T* arg)
 {
