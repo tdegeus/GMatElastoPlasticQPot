@@ -10,10 +10,6 @@
 #define FORCE_IMPORT_ARRAY
 #include <xtensor-python/pytensor.hpp>
 
-#ifdef _WIN32
-#include <pyxtensor/pyxtensor.hpp>
-#endif
-
 // Enable basic assertions on matrix shape
 // (doesn't cost a lot of time, but avoids segmentation faults)
 #define QPOT_ENABLE_ASSERT
@@ -371,30 +367,15 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
 
     add_hydrostatic<xt::pytensor<double, 2>, xt::pytensor<double, 4>>(sm);
     add_hydrostatic<xt::pytensor<double, 1>, xt::pytensor<double, 3>>(sm);
-    #ifdef _WIN32
-    // todo: switch to xt::pytensor when https://github.com/xtensor-stack/xtensor-python/pull/263 is fixed
-    add_hydrostatic<xt::xtensor<double, 0>, xt::xtensor<double, 2>>(sm);
-    #else
     add_hydrostatic<xt::pytensor<double, 0>, xt::pytensor<double, 2>>(sm);
-    #endif
 
     add_epsd<xt::pytensor<double, 2>, xt::pytensor<double, 4>>(sm);
     add_epsd<xt::pytensor<double, 1>, xt::pytensor<double, 3>>(sm);
-    #ifdef _WIN32
-    // todo: switch to xt::pytensor when https://github.com/xtensor-stack/xtensor-python/pull/263 is fixed
-    add_epsd<xt::xtensor<double, 0>, xt::xtensor<double, 2>>(sm);
-    #else
     add_epsd<xt::pytensor<double, 0>, xt::pytensor<double, 2>>(sm);
-    #endif
 
     add_sigd<xt::pytensor<double, 2>, xt::pytensor<double, 4>>(sm);
     add_sigd<xt::pytensor<double, 1>, xt::pytensor<double, 3>>(sm);
-    #ifdef _WIN32
-    // todo: switch to xt::pytensor when https://github.com/xtensor-stack/xtensor-python/pull/263 is fixed
-    add_sigd<xt::xtensor<double, 0>, xt::xtensor<double, 2>>(sm);
-    #else
     add_sigd<xt::pytensor<double, 0>, xt::pytensor<double, 2>>(sm);
-    #endif
 
     add_Deviatoric<xt::pytensor<double, 4>, xt::pytensor<double, 4>>(sm);
     add_Deviatoric<xt::pytensor<double, 3>, xt::pytensor<double, 3>>(sm);
@@ -402,30 +383,15 @@ PYBIND11_MODULE(GMatElastoPlasticQPot, m)
 
     add_Hydrostatic<xt::pytensor<double, 2>, xt::pytensor<double, 4>>(sm);
     add_Hydrostatic<xt::pytensor<double, 1>, xt::pytensor<double, 3>>(sm);
-    #ifdef _WIN32
-    // todo: switch to xt::pytensor when https://github.com/xtensor-stack/xtensor-python/pull/263 is fixed
-    add_Hydrostatic<xt::xtensor<double, 0>, xt::xtensor<double, 2>>(sm);
-    #else
     add_Hydrostatic<xt::pytensor<double, 0>, xt::pytensor<double, 2>>(sm);
-    #endif
 
     add_Epsd<xt::pytensor<double, 2>, xt::pytensor<double, 4>>(sm);
     add_Epsd<xt::pytensor<double, 1>, xt::pytensor<double, 3>>(sm);
-    #ifdef _WIN32
-    // todo: switch to xt::pytensor when https://github.com/xtensor-stack/xtensor-python/pull/263 is fixed
-    add_Epsd<xt::xtensor<double, 0>, xt::xtensor<double, 2>>(sm);
-    #else
     add_Epsd<xt::pytensor<double, 0>, xt::pytensor<double, 2>>(sm);
-    #endif
 
     add_Sigd<xt::pytensor<double, 2>, xt::pytensor<double, 4>>(sm);
     add_Sigd<xt::pytensor<double, 1>, xt::pytensor<double, 3>>(sm);
-    #ifdef _WIN32
-    // todo: switch to xt::pytensor when https://github.com/xtensor-stack/xtensor-python/pull/263 is fixed
-    add_Sigd<xt::xtensor<double, 0>, xt::xtensor<double, 2>>(sm);
-    #else
     add_Sigd<xt::pytensor<double, 0>, xt::pytensor<double, 2>>(sm);
-    #endif
 
     // Material point: Elastic
 
