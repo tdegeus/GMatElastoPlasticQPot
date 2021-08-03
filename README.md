@@ -268,7 +268,8 @@ git checkout https://github.com/tdegeus/GMatElastoPlasticQPot.git
 cd GMatElastoPlasticQPot
 
 # Install headers, CMake and pkg-config support
-cmake .
+cmake -Bbuild .
+cd build
 make install
 ```
 
@@ -285,12 +286,12 @@ To enable them you have to compile on your system, as is discussed next.
 
 ### From source
 
->   You need *xtensor*, *pyxtensor* and optionally *xsimd* as prerequisites. 
+>   You need *xtensor*, *xtensor-python* and optionally *xsimd* as prerequisites. 
 >   Additionally, Python needs to know how to find them. 
 >   The easiest is to use *conda* to get the prerequisites:
 > 
 >   ```bash
->   conda install -c conda-forge pyxtensor
+>   conda install -c conda-forge xtensor-python
 >   conda install -c conda-forge xsimd
 >   ```
 >   
@@ -304,14 +305,15 @@ To enable them you have to compile on your system, as is discussed next.
 git checkout https://github.com/tdegeus/GMatElastoPlasticQPot.git
 cd GMatElastoPlasticQPot
 
+# Only if you want to use hardware optization:
+export CMAKE_ARGS="-DUSE_SIMD=1"
+
 # Compile and install the Python module
-python setup.py build
-python setup.py install
-# OR you can use one command (but with less readable output)
-python -m pip install .
+# (-vv can be omitted as is controls just the verbosity)
+python -m pip install . -vv
 ```
 
-# Compiling
+# Compiling user-code
 
 ## Using CMake
 
