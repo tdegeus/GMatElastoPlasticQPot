@@ -10,11 +10,6 @@
 #define FORCE_IMPORT_ARRAY
 #include <xtensor-python/pytensor.hpp>
 
-// Enable basic assertions on matrix shape
-// (doesn't cost a lot of time, but avoids segmentation faults)
-#define QPOT_ENABLE_ASSERT
-#define GMATELASTOPLASTICQPOT_ENABLE_ASSERT
-
 #include <GMatElastoPlasticQPot/Cartesian2d.h>
 
 namespace py = pybind11;
@@ -336,7 +331,7 @@ void add_sigd(M& mod)
             py::arg("ret"));
 }
 
-PYBIND11_MODULE(GMatElastoPlasticQPot, m)
+PYBIND11_MODULE(_GMatElastoPlasticQPot, m)
 {
     xt::import_numpy();
 

@@ -1,48 +1,42 @@
-
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.1..3.21)
 
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-    project(GMatElastoPlasticQPot-examples)
+    project(GMatElastoPlasticQPot)
     find_package(GMatElastoPlasticQPot REQUIRED CONFIG)
+    option(USE_ASSERT "${PROJECT_NAME}: Build with assertions" ON)
+    option(USE_DEBUG "${PROJECT_NAME}: Build in debug mode" OFF)
+    option(USE_SIMD "${PROJECT_NAME}: Build with hardware optimization" OFF)
 endif()
 
-set(CMAKE_BUILD_TYPE Release)
+set(MYPROJECT "${PROJECT_NAME}-examples")
 
-set(ASSERT OFF)
-set(DEBUG OFF)
-option(SIMD "Enable xsimd" OFF)
-option(WARNINGS "Enable warnings" ON)
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
 
-file(GLOB APP_SOURCES *.cpp)
+add_library(mytarget INTERFACE IMPORTED)
 
-foreach(testsourcefile ${APP_SOURCES})
+target_link_libraries(mytarget INTERFACE ${PROJECT_NAME} ${PROJECT_NAME}::compiler_warnings)
 
-    string(REPLACE ".cpp" "" test_name ${testsourcefile})
-    get_filename_component(test_name ${test_name} NAME)
+if(USE_ASSERT)
+    target_link_libraries(mytarget INTERFACE ${PROJECT_NAME}::assert)
+    message(STATUS "Compiling ${MYPROJECT} with assertions")
+endif()
 
-    add_executable(${test_name} ${testsourcefile})
+if(USE_DEBUG)
+    target_link_libraries(mytarget INTERFACE ${PROJECT_NAME}::debug)
+    message(STATUS "Compiling ${MYPROJECT} in debug mode")
+endif()
 
-    find_package(GooseFEM REQUIRED)
+if(USE_SIMD)
     find_package(xtensor REQUIRED)
+    find_package(xsimd REQUIRED)
+    target_link_libraries(mytarget INTERFACE xtensor::use_xsimd xtensor::optimize)
+    message(STATUS "Compiling ${MYPROJECT} with hardware optimization")
+endif()
 
-    target_link_libraries(${test_name} PUBLIC GMatElastoPlasticQPot GooseFEM)
-
-    if(SIMD)
-        find_package(xsimd REQUIRED)
-        target_link_libraries(${test_name} PRIVATE xtensor::optimize xtensor::use_xsimd)
-    endif()
-
-    if(WARNINGS)
-        target_link_libraries(${test_name} PRIVATE GMatElastoPlasticQPot::compiler_warnings)
-    endif()
-
-    if(ASSERT)
-        target_link_libraries(${test_name} PRIVATE GooseFEM::assert GMatElastoPlasticQPot::assert)
-    endif()
-
-    if(DEBUG)
-        target_link_libraries(${test_name} PRIVATE GooseFEM::debug GMatElastoPlasticQPot::debug)
-    endif()
-
-endforeach()
-
+set(myexec "frozen_sequence")
+set(mysource "frozen_sequence/main.cpp")
+add_executable(${myexec} ${mysource})
+target_link_libraries(${myexec} PRIVATE mytarget)
+add_test(NAME ${myexec} COMMAND ${myexec})
