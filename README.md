@@ -283,13 +283,12 @@ make install
 conda install -c conda-forge python-gmatelastoplasticqpot
 ```
 
-Note that *xsimd* and hardware optimisations are **not enabled**. 
+Note that *xsimd* and hardware optimisation are **not enabled**. 
 To enable them you have to compile on your system, as is discussed next.
 
 ### From source
 
->   You need *xtensor*, *xtensor-python* and optionally *xsimd* as prerequisites. 
->   Additionally, Python needs to know how to find them. 
+>   You need *xtensor*, *xtensor-python* and optionally *xsimd* as prerequisites.
 >   The easiest is to use *conda* to get the prerequisites:
 > 
 >   ```bash
@@ -307,7 +306,7 @@ To enable them you have to compile on your system, as is discussed next.
 git checkout https://github.com/tdegeus/GMatElastoPlasticQPot.git
 cd GMatElastoPlasticQPot
 
-# Only if you want to use hardware optization:
+# Only if you want to use hardware optimisation:
 export CMAKE_ARGS="-DUSE_SIMD=1"
 
 # Compile and install the Python module
@@ -350,7 +349,7 @@ The following targets are available:
 
 ### Optimisation
 
-It is advised to think about compiler optimization and enabling *xsimd*.
+It is advised to think about compiler optimisation and enabling *xsimd*.
 Using *CMake* this can be done using the `xtensor::optimize` and `xtensor::use_xsimd` targets.
 The above example then becomes:
 
@@ -358,6 +357,8 @@ The above example then becomes:
 cmake_minimum_required(VERSION 3.1)
 project(example)
 find_package(GMatElastoPlasticQPot REQUIRED)
+find_package(xtensor REQUIRED)
+find_package(xsimd REQUIRED)
 add_executable(example example.cpp)
 target_link_libraries(example PRIVATE 
     GMatElastoPlasticQPot 
@@ -365,7 +366,7 @@ target_link_libraries(example PRIVATE
     xtensor::use_xsimd)
 ```
 
-See the [documentation of xtensor](https://xtensor.readthedocs.io/en/latest/) concerning optimization.
+See the [documentation of xtensor](https://xtensor.readthedocs.io/en/latest/) concerning optimisation.
 
 ## By hand
 
@@ -375,7 +376,7 @@ Presuming that the compiler is `c++`, compile using:
 c++ -I/path/to/GMatElastoPlasticQPot/include ...
 ```
 
-Note that you have to take care of the *xtensor* dependency, the C++ version, optimization, 
+Note that you have to take care of the *xtensor* dependency, the C++ version, optimisation, 
 enabling *xsimd*, ...
 
 ## Using pkg-config
