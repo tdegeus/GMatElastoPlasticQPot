@@ -97,7 +97,7 @@ include(CTest)
 
 if(BUILD_TESTS OR BUILD_ALL)
     enable_testing()
-    add_subdirectory(test)
+    add_subdirectory(tests)
 endif()
 
 # Examples
