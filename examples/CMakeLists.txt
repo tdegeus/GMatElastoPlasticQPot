@@ -16,7 +16,9 @@ endif()
 
 add_library(mytarget INTERFACE IMPORTED)
 
-target_link_libraries(mytarget INTERFACE ${PROJECT_NAME} ${PROJECT_NAME}::compiler_warnings)
+find_package(GooseFEM REQUIRED)
+
+target_link_libraries(mytarget INTERFACE ${PROJECT_NAME} ${PROJECT_NAME}::compiler_warnings GooseFEM)
 
 if(USE_ASSERT)
     target_link_libraries(mytarget INTERFACE ${PROJECT_NAME}::assert)
