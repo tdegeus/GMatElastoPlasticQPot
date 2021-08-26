@@ -313,7 +313,9 @@ public:
 
                 timeStep();
 
-                if (m_stop.stop(xt::norm_l2(m_fres)() / xt::norm_l2(m_fext)(), 1e-5)) {
+                m_stop.roll_insert(xt::norm_l2(m_fres)() / xt::norm_l2(m_fext)());
+
+                if (m_stop.descending() && m_stop.all_less(1e-5)) {
                     std::cout << inc << ", " << iiter << std::endl;
                     break;
                 }
