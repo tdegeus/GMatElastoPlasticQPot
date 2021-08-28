@@ -5,8 +5,8 @@
 [![Conda Version](https://img.shields.io/conda/vn/conda-forge/gmatelastoplasticqpot.svg)](https://anaconda.org/conda-forge/gmatelastoplasticqpot)
 [![Conda Version](https://img.shields.io/conda/vn/conda-forge/python-gmatelastoplasticqpot.svg)](https://anaconda.org/conda-forge/python-gmatelastoplasticqpot)
 
-Elasto-plastic material model based on a manifold of quadratic potentials. 
-An overview of the theory can be found in `docs/readme.tex` 
+Elasto-plastic material model based on a manifold of quadratic potentials.
+An overview of the theory can be found in `docs/readme.tex`
 conveniently compiled to this [PDF](docs/notes/readme.pdf).
 
 # Contents
@@ -46,6 +46,7 @@ conveniently compiled to this [PDF](docs/notes/readme.pdf).
     - [Upgrading to >v0.8.*](#upgrading-to-v08)
     - [Upgrading to >v0.6.*](#upgrading-to-v06)
 - [Change-log](#change-log)
+    - [v0.15.5](#v0155)
     - [v0.15.4](#v0154)
     - [v0.15.3](#v0153)
     - [v0.15.2](#v0152)
@@ -83,7 +84,7 @@ Bug reports or feature requests can be filed on
 As always, the code comes with no guarantee.
 None of the developers can be held responsible for possible mistakes.
 
-Download: 
+Download:
 [.zip file](https://github.com/tdegeus/GMatElastoPlasticQPot/zipball/master) |
 [.tar.gz file](https://github.com/tdegeus/GMatElastoPlasticQPot/tarball/master).
 
@@ -95,13 +96,13 @@ T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me |
 
 ## C++ and Python
 
-The code is a C++ header-only library (see [installation notes](#c-headers)), 
+The code is a C++ header-only library (see [installation notes](#c-headers)),
 but a Python module is also provided (see [installation notes](#python-module)).
 The interfaces are identical except:
 
-+   All *xtensor* objects (`xt::xtensor<...>`) are *NumPy* arrays in Python. 
++   All *xtensor* objects (`xt::xtensor<...>`) are *NumPy* arrays in Python.
     Overloading based on rank is also available in Python.
-+   The Python module cannot change output objects in-place: 
++   The Python module cannot change output objects in-place:
     only functions whose name starts with a capital letter are included, see below.
 +   All `::` in C++ are `.` in Python.
 
@@ -113,17 +114,17 @@ The interfaces are identical except:
 
 At the material point level different models are implemented with different classes:
 
-+   `Elastic`: linear elastic material model that corresponds to 
++   `Elastic`: linear elastic material model that corresponds to
     the elastic part of the elasto-plastic material model.
 +   `Cusp`: the elasto-plastic material model defined by cusp potentials.
-+   `Smooth`: the elasto-plastic material model defined by smoothed potentials. 
++   `Smooth`: the elasto-plastic material model defined by smoothed potentials.
 
-There is an `Array` class that allows you to combine all these material models and 
-have a single API for an array of material points. 
+There is an `Array` class that allows you to combine all these material models and
+have a single API for an array of material points.
 
->   Note that all strain tensors are presumed symmetric. 
+>   Note that all strain tensors are presumed symmetric.
 >   No checks are made to ensure this.
-   
+
 ### Example
 
 Only a partial examples are presented here, meant to understand the code's structure.
@@ -141,18 +142,18 @@ int main()
     GMat::Elastic elastic(K, G);
     GMat::Cusp plastic(K, G, epsy);
     ...
-    
+
     // set strain (follows e.g. from FEM discretisation)
     xt::xtensor<double, 2> Eps;
     ...
     elastic.setStrain(Eps);
     ...
-    
+
     // compute stress (including allocation of the result)
     xt::xtensor<double, 2> Sig = elastic.Stress();
     // OR compute stress without (re)allocating the results
     // in this case "Sig" has to be of the correct type and shape
-    elastic.stress(Sig); 
+    elastic.stress(Sig);
     ...
 
     return 0;
@@ -182,14 +183,14 @@ int main()
 
     // set strain tensor (follows e.g. from FEM discretisation)
     xt::xtensor<double,4> eps = xt::empty<double>({nelem, nip, ndim, ndim});
-    ... 
+    ...
     array.setStrain(eps);
 
     // compute stress (allocate result)
     xt::xtensor<double,4> sig = array.Stress();
     // OR compute stress without (re)allocating the results
     // in this case "sig" has to be of the correct type and shape
-    array.stress(sig); 
+    array.stress(sig);
     ...
 
     return 0;
@@ -198,10 +199,10 @@ int main()
 
 ### Function names
 
-+   Functions whose name starts with a capital letter (e.g. `Stress`) 
++   Functions whose name starts with a capital letter (e.g. `Stress`)
     return their result (allocating it internally).
-+   Functions whose name starts with a small letter (e.g. `stress`) 
-    write to the, fully allocated, last input argument(s) 
++   Functions whose name starts with a small letter (e.g. `stress`)
+    write to the, fully allocated, last input argument(s)
     (avoiding re-allocation, but making the user responsible to do it properly).
 
 ### Storage
@@ -237,19 +238,19 @@ int main()
 
 ## Debugging
 
-To enable assertions define `GMATELASTOPLASTICQPOT_ENABLE_ASSERT` 
-**before** including *GMatElastoPlasticQPot* for the first time. 
+To enable assertions define `GMATELASTOPLASTICQPOT_ENABLE_ASSERT`
+**before** including *GMatElastoPlasticQPot* for the first time.
 
 Using *CMake* this can be done using the `GMatElastoPlasticQPot::assert` target
 (see [below](#using-cmake)).
 
 >   To also enable assertions of *xtensor* also define `XTENSOR_ENABLE_ASSERT`
->   **before** including *xtensor* (and *GMatElastoPlasticQPot*) for the first time. 
->   
+>   **before** including *xtensor* (and *GMatElastoPlasticQPot*) for the first time.
+>
 >   Using *CMake* all assertions are enabled using the `GMatElastoPlasticQPot::debug` target
 >   (see [below](#using-cmake)).
 >
->   The library's assertions are enabled in the Python interface, 
+>   The library's assertions are enabled in the Python interface,
 >   but debugging with *xtensor* is disabled.
 
 # Installation
@@ -283,21 +284,21 @@ make install
 conda install -c conda-forge python-gmatelastoplasticqpot
 ```
 
-Note that *xsimd* and hardware optimisation are **not enabled**. 
+Note that *xsimd* and hardware optimisation are **not enabled**.
 To enable them you have to compile on your system, as is discussed next.
 
 ### From source
 
 >   You need *xtensor*, *xtensor-python* and optionally *xsimd* as prerequisites.
 >   The easiest is to use *conda* to get the prerequisites:
-> 
+>
 >   ```bash
 >   conda install -c conda-forge xtensor-python
 >   conda install -c conda-forge xsimd
 >   ```
->   
->   If you then compile and install with the same environment 
->   you should be good to go. 
+>
+>   If you then compile and install with the same environment
+>   you should be good to go.
 >   Otherwise, a bit of manual labour might be needed to
 >   treat the dependencies.
 
@@ -341,7 +342,7 @@ The following targets are available:
     Enables assertions by defining `GMATELASTOPLASTICQPOT_ENABLE_ASSERT`.
 
 *   `GMatElastoPlasticQPot::debug`
-    Enables all assertions by defining 
+    Enables all assertions by defining
     `GMATELASTOPLASTICQPOT_ENABLE_ASSERT` and `XTENSOR_ENABLE_ASSERT`.
 
 *   `GMatElastoPlasticQPot::compiler_warings`
@@ -360,9 +361,9 @@ find_package(GMatElastoPlasticQPot REQUIRED)
 find_package(xtensor REQUIRED)
 find_package(xsimd REQUIRED)
 add_executable(example example.cpp)
-target_link_libraries(example PRIVATE 
-    GMatElastoPlasticQPot 
-    xtensor::optimize 
+target_link_libraries(example PRIVATE
+    GMatElastoPlasticQPot
+    xtensor::optimize
     xtensor::use_xsimd)
 ```
 
@@ -376,7 +377,7 @@ Presuming that the compiler is `c++`, compile using:
 c++ -I/path/to/GMatElastoPlasticQPot/include ...
 ```
 
-Note that you have to take care of the *xtensor* dependency, the C++ version, optimisation, 
+Note that you have to take care of the *xtensor* dependency, the C++ version, optimisation,
 enabling *xsimd*, ...
 
 ## Using pkg-config
@@ -387,7 +388,7 @@ Presuming that the compiler is `c++`, compile using:
 c++ `pkg-config --cflags GMatElastoPlasticQPot` ...
 ```
 
-Note that you have to take care of the *xtensor* dependency, the C++ version, optimization, 
+Note that you have to take care of the *xtensor* dependency, the C++ version, optimization,
 enabling *xsimd*, ...
 
 # Testing & Benchmarking
@@ -449,15 +450,15 @@ etc.
 
 See [ci.yaml](.github/workflows/ci.yml) for details.
 
-Please feel free to contribute additional tests. 
+Please feel free to contribute additional tests.
 
 # References / Credits
 
-*   The model is described in 
-    *T.W.J. de Geus, M. Popović, W. Ji, A. Rosso, M. Wyart. 
-    How collective asperity detachments nucleate slip at frictional interfaces. 
-    Proceedings of the National Academy of Sciences, 2019, 201906551. 
-    [doi: 10.1073/pnas.1906551116](https://doi.org/10.1073/pnas.1906551116), 
+*   The model is described in
+    *T.W.J. de Geus, M. Popović, W. Ji, A. Rosso, M. Wyart.
+    How collective asperity detachments nucleate slip at frictional interfaces.
+    Proceedings of the National Academy of Sciences, 2019, 201906551.
+    [doi: 10.1073/pnas.1906551116](https://doi.org/10.1073/pnas.1906551116),
     [arXiv: 1904.07635](http://arxiv.org/abs/1904.07635)*.
 
 *   [xtensor](https://github.com/QuantStack/xtensor) is used under the hood.
@@ -472,45 +473,52 @@ if (xt::any(xt::equal(array.type(), Type::Unset))) {
     throw std::runtime_error("Please set all points");
 }
 ```
-Note however that it is no longer required to set all points, 
+Note however that it is no longer required to set all points,
 unset points are filled-up with zeros.
 
 ## Upgrading to >v0.8.*
 
-`xtensor_fixed` was completely deprecated in v0.8.0, as were the type aliases 
-`Tensor2` and `Tensor4`. 
+`xtensor_fixed` was completely deprecated in v0.8.0, as were the type aliases
+`Tensor2` and `Tensor4`.
 Please update your code as follows:
 
 *   `Tensor2` -> `xt::xtensor<double, 2>`.
 *   `Tensor4` -> `xt::xtensor<double, 4>`.
 
 **Tip:** Used `auto` as return type as much as possible.
-This simplifies implementation, and renders is less subjective to library 
+This simplifies implementation, and renders is less subjective to library
 return type changes.
 
 ## Upgrading to >v0.6.*
 
-Compared to v0.5.0, v0.6.1 has some generalisations and efficiency updates. 
+Compared to v0.5.0, v0.6.1 has some generalisations and efficiency updates.
 This requires the following changes:
 
 *   `Matrix` has been generalised to `Array<rank>`. Practically this requires changing:
     -   `Matrix` to `Array<2>` in C++.
-    -   `Matrix` to `Array2d` in Python. 
+    -   `Matrix` to `Array2d` in Python.
         Note that `Array1d`, `Array3d`, are also available.
 
-*   Strain is now stored as a member. 
-    Functions like `stress` now return the state based on the last specified strain, 
+*   Strain is now stored as a member.
+    Functions like `stress` now return the state based on the last specified strain,
     specified using `setStrain(Esp)`. This leads to the following changes:
     - `stress`: no argument.
     - `tangent`: no argument, single return value (no longer returns stress).
     - `find`: no argument, renamed to `currentIndex`.
     - `epsy`: replaced by `currentYieldLeft` and `currentYieldRight`.
 
-*   By storing strain as a member, 
-    efficiency upgrades have been made to find the position in the potential energy landscape. 
+*   By storing strain as a member,
+    efficiency upgrades have been made to find the position in the potential energy landscape.
     The library therefore now depends on [QPot](https://www.github.com/tdegeus/QPot).
 
 # Change-log
+
+## v0.15.5
+
+*   [Examples] Updating GooseFEM::Iterate (#89)
+*   [Python] Switching to scikit-build (#89)
+*   [CMake] Clean-up (#89)
+*   [Tests] Renaming "test" -> "tests" (#89)
 
 ## v0.15.4
 
@@ -544,9 +552,9 @@ This requires the following changes:
 ## v0.15.0
 
 *   Type identification: use `bool` instead of `size_t`.
-*   Switching-off xsimd for Python testing: 
-    if used also the Python API of QPot should be compiled with xsimd. 
-*   Updating references to QPot::Static / underlying model. 
+*   Switching-off xsimd for Python testing:
+    if used also the Python API of QPot should be compiled with xsimd.
+*   Updating references to QPot::Static / underlying model.
 *   Adding references to QPot::Static / underlying model to Python API.
 
 ## v0.14.0
@@ -566,7 +574,7 @@ This requires the following changes:
 
 ## v0.12.0
 
-*   Added overloads `currentYieldRight` and `currentYieldLeft` that allow for a shift. 
+*   Added overloads `currentYieldRight` and `currentYieldLeft` that allow for a shift.
     Uses latests QPot extension.
 
 ## v0.11.0
@@ -579,12 +587,12 @@ elas.setElastic(mat.K(), mat.G());
 
 ## v0.10.0
 
-*   `Array` now sets zeros for all `Type::Unset` points. 
+*   `Array` now sets zeros for all `Type::Unset` points.
     The function `check` is deprecated accordingly.
 *   The methods `setStrainIterator`, `strainIterator`, and `stressIterator` are replaced
     by `setStrainPtr`, `strainPtr`, and `stressPtr`, while `tangentPtr` is added.
     These methods now require a pointer input.
-*   `Array` now sets zeros for all `Type::Unset` points. 
+*   `Array` now sets zeros for all `Type::Unset` points.
     The function `check` is deprecated accordingly.
 *   Updated to latest GMatTensor.
 
@@ -595,7 +603,7 @@ elas.setElastic(mat.K(), mat.G());
 
 ## v0.8.0
 
-*   Using *GMatTensor* under the hood. 
+*   Using *GMatTensor* under the hood.
     This significantly shortens the implementation here, without loosing any functionality
     (while allowing exposing future additions to *GMatTensor*).
 *   Switching to GitHub CI.
@@ -633,25 +641,25 @@ elas.setElastic(mat.K(), mat.G());
 
 ## v0.6.0
 
-Compared to v0.5.0, v0.6.0 has some generalisations and efficiency updates. 
+Compared to v0.5.0, v0.6.0 has some generalisations and efficiency updates.
 This requires the following changes:
 
 *   `Matrix` has been generalised to `Array<rank>`. Practically this requires changing:
     -   `Matrix` to `Array<2>` in C++.
-    -   `Matrix` to `Array2d` in Python. 
-        Note that `Array1d`, `Array3d`, etc. are for the moment not compiled, 
+    -   `Matrix` to `Array2d` in Python.
+        Note that `Array1d`, `Array3d`, etc. are for the moment not compiled,
         but can be made available upon request.
 
-*   Strain is now stored as a member. 
-    Functions like `stress` now return the state based on the last specified strain, 
+*   Strain is now stored as a member.
+    Functions like `stress` now return the state based on the last specified strain,
     specified using `setStrain(Esp)`. This leads to the following changes:
     - `stress`: no argument.
     - `tangent`: no argument, single return value (no longer returns stress).
     - `find`: no argument, renamed to `currentIndex`.
     - `epsy`: replaced by `currentYieldLeft` and `currentYieldRight`.
 
-*   By storing strain as a member, 
-    efficiency upgrades have been made to find the position in the potential energy landscape. 
+*   By storing strain as a member,
+    efficiency upgrades have been made to find the position in the potential energy landscape.
     The library therefore now depends on [QPot](https://www.github.com/tdegeus/QPot).
 
 ## v0.5.0
