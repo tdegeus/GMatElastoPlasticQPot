@@ -517,6 +517,8 @@ This requires the following changes:
 ## v0.15.6
 
 *   [Python] Adding convenience import.
+*   [CI] Updating Python installation.
+*   [Python] Adding version (#91).
 
 ## v0.15.5
 
