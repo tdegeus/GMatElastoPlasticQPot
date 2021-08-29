@@ -337,6 +337,10 @@ PYBIND11_MODULE(_GMatElastoPlasticQPot, m)
 
     m.doc() = "Elasto-plastic material model";
 
+    m.def("version",
+          &GMatElastoPlasticQPot::version,
+          "Return version string.");
+
     // ---------------------------------
     // GMatElastoPlasticQPot.Cartesian2d
     // ---------------------------------
