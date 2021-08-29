@@ -23,7 +23,7 @@ jobs:
             config: -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=1
             prop: tests
           - runs-on: windows-latest
-            config: -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=1
+            config: -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=1 -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
             prop: tests
 
     defaults:
@@ -45,17 +45,14 @@ jobs:
         environment-name: myenv
 
     - name: Set dummy version
-      run: echo "SETUPTOOLS_SCM_PRETEND_VERSION=ci" >> $GITHUB_ENV
+      run: echo "SETUPTOOLS_SCM_PRETEND_VERSION=0.0" >> $GITHUB_ENV
+
+    - name: Install clang
+      if: runner.os == 'Windows'
+      run: micromamba install -c conda-forge clang_win-64 ninja
 
     - name: Configure using CMake (!Windows)
-      if: runner.os != 'Windows'
       run: cmake -Bbuild ${{ matrix.config }}
-
-    - name: Configure using CMake (Windows)
-      if: runner.os == 'Windows'
-      run: |
-        micromamba install -c conda-forge clang_win-64 ninja
-        cmake -Bbuild -G Ninja ${{ matrix.config }} -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
 
     - name: Build C++ ${{ matrix.prop }}
       working-directory: build
