@@ -91,6 +91,19 @@ auto construct_Array(T& cls)
         py::arg("init_elastic") = true);
 
     cls.def(
+        "reset_epsy",
+        static_cast<void (S::*)(
+            const xt::pytensor<bool, S::rank>&,
+            const xt::pytensor<size_t, S::rank>&,
+            const xt::pytensor<double, 2>&,
+            bool)>(&S::template reset_epsy),
+        "Reset yield strains.",
+        py::arg("I"),
+        py::arg("idx"),
+        py::arg("epsy"),
+        py::arg("init_elastic") = true);
+
+    cls.def(
         "setElastic",
         static_cast<void (S::*)(const xt::pytensor<bool, S::rank>&, double, double)>(
             &S::template setElastic),
@@ -130,6 +143,17 @@ auto construct_Array(T& cls)
         py::arg("init_elastic") = true);
 
     cls.def(
+        "reset_epsy",
+        static_cast<void (S::*)(
+            const xt::pytensor<bool, S::rank>&,
+            const xt::pytensor<double, 1>&,
+            bool)>(&S::template reset_epsy),
+        "Reset yield strains.",
+        py::arg("I"),
+        py::arg("epsy"),
+        py::arg("init_elastic") = true);
+
+    cls.def(
         "setStrain",
         &S::template setStrain<xt::pytensor<double, S::rank + 2>>,
         "Set strain tensors.",
@@ -138,12 +162,12 @@ auto construct_Array(T& cls)
     cls.def("Strain", &S::Strain, "Get strain tensors.");
 
     cls.def(
-        "strain", &S::template strain<xt::pytensor<double, S::rank + 2>>, "Get strain tensors.");
+        "strain", &S::template strain<xt::pytensor<double, S::rank + 2>>, "Get strain tensors for all points.");
 
     cls.def("Stress", &S::Stress, "Get stress tensors.");
 
     cls.def(
-        "stress", &S::template stress<xt::pytensor<double, S::rank + 2>>, "Get stress tensors.");
+        "stress", &S::template stress<xt::pytensor<double, S::rank + 2>>, "Get stress tensors for all points.");
 
     cls.def("Tangent", &S::Tangent, "Get stiffness tensors.");
 
@@ -237,11 +261,11 @@ auto construct_Array(T& cls)
     cls.def("Epsp", &S::Epsp, "Get equivalent plastic strains.");
 
     cls.def(
-        "epsp", &S::template epsp<xt::pytensor<long, S::rank>>, "Get equivalent plastic strains.");
+        "epsp", &S::template epsp<xt::pytensor<long, S::rank>>, "Get equivalent plastic strains for all points.");
 
     cls.def("Energy", &S::Energy, "Get energies.");
 
-    cls.def("energy", &S::template energy<xt::pytensor<long, S::rank>>, "Get energies.");
+    cls.def("energy", &S::template energy<xt::pytensor<long, S::rank>>, "Get energies for all points.");
 
     cls.def(
         "refElastic",
@@ -472,6 +496,10 @@ PYBIND11_MODULE(_GMatElastoPlasticQPot, m)
             py::arg("epsy"),
             py::arg("init_elastic") = true);
 
+        cls.def("reset_epsy", &SM::Cusp::reset_epsy<xt::pytensor<double, 1>>, "Reset yield strains.",
+            py::arg("epsy"),
+            py::arg("init_elastic") = true);
+
         cls.def("K", &SM::Cusp::K, "Returns the bulk modulus.");
 
         cls.def("G", &SM::Cusp::G, "Returns the shear modulus.");
@@ -575,6 +603,10 @@ PYBIND11_MODULE(_GMatElastoPlasticQPot, m)
             "Elasto-plastic material point, with 'smooth' potentials.",
             py::arg("K"),
             py::arg("G"),
+            py::arg("epsy"),
+            py::arg("init_elastic") = true);
+
+        cls.def("reset_epsy", &SM::Smooth::reset_epsy<xt::pytensor<double, 1>>, "Reset yield strains.",
             py::arg("epsy"),
             py::arg("init_elastic") = true);
 
