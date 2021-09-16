@@ -126,6 +126,14 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
         REQUIRE(mat.checkYieldBoundRight());
         REQUIRE(mat.checkYieldRedraw() == 0);
         REQUIRE(mat.energy() == Approx(-G * std::pow(0.01, 2.0)));
+
+        mat.reset_epsy(xt::xtensor<double, 1>{0.02, 0.03, 0.05, 0.10});
+
+        REQUIRE(xt::allclose(mat.Stress(), Sig));
+        REQUIRE(mat.currentIndex() == 0);
+        REQUIRE(mat.epsp() == 0);
+        REQUIRE(mat.currentYieldLeft() == -0.02);
+        REQUIRE(mat.currentYieldRight() == +0.02);
     }
 
     SECTION("Cusp - stress (1)")
@@ -186,7 +194,37 @@ TEST_CASE("GMatElastoPlasticQPot::Cartesian2d", "Cartesian2d.h")
                 K * std::pow(epsm, 2.0) + G * (std::pow(gamma - 0.04, 2.0) - std::pow(0.01, 2.0))));
     }
 
-    SECTION("Smooth - stress")
+    SECTION("Smooth - stress (0)")
+    {
+        double K = 12.3;
+        double G = 45.6;
+        xt::xtensor<double, 2> Eps = xt::zeros<double>({2, 2});
+        xt::xtensor<double, 2> Sig = xt::zeros<double>({2, 2});
+        ;
+
+        GM::Smooth mat(K, G, xt::xtensor<double, 1>{0.01, 0.03, 0.05, 0.10});
+        mat.setStrain(Eps);
+
+        REQUIRE(xt::allclose(mat.Stress(), Sig));
+        REQUIRE(mat.currentIndex() == 0);
+        REQUIRE(mat.epsp() == 0);
+        REQUIRE(mat.currentYieldLeft() == -0.01);
+        REQUIRE(mat.currentYieldRight() == +0.01);
+        REQUIRE(mat.currentYieldLeft() == mat.refQPotChunked().yleft());
+        REQUIRE(mat.currentYieldRight() == mat.refQPotChunked().yright());
+        REQUIRE(mat.checkYieldBoundRight());
+        REQUIRE(mat.checkYieldRedraw() == 0);
+
+        mat.reset_epsy(xt::xtensor<double, 1>{0.02, 0.03, 0.05, 0.10});
+
+        REQUIRE(xt::allclose(mat.Stress(), Sig));
+        REQUIRE(mat.currentIndex() == 0);
+        REQUIRE(mat.epsp() == 0);
+        REQUIRE(mat.currentYieldLeft() == -0.02);
+        REQUIRE(mat.currentYieldRight() == +0.02);
+    }
+
+    SECTION("Smooth - stress (2)")
     {
         double K = 12.3;
         double G = 45.6;

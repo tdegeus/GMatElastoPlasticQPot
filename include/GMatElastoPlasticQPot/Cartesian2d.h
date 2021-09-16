@@ -243,8 +243,17 @@ public:
         as follows: `[- epsy(0), epsy(0), epsy(1), epsy(2), ...].
         It is crucial to pay attention to this when using chunked storage.
     */
-    template <class Y>
-    Cusp(double K, double G, const Y&, bool init_elastic = true);
+    template <class T>
+    Cusp(double K, double G, const T& epsy, bool init_elastic = true);
+
+    /**
+    Reset yield strains (to avoid reconstructing).
+
+    \param epsy Sequence of yield strains.
+    \param init_elastic Initialise in minimum at zero strain (see Cusp()).
+    */
+    template <class T>
+    void reset_epsy(const T& epsy, bool init_elastic = true);
 
     /**
     \return Bulk modulus.
@@ -432,8 +441,17 @@ public:
         as follows: `[- epsy(0), epsy(0), epsy(1), epsy(2), ...].
         It is crucial to pay attention to this when using chunked storage.
     */
-    template <class Y>
-    Smooth(double K, double G, const Y& epsy, bool init_elastic = true);
+    template <class T>
+    Smooth(double K, double G, const T& epsy, bool init_elastic = true);
+
+    /**
+    Reset yield strains (to avoid reconstructing).
+
+    \param epsy Sequence of yield strains.
+    \param init_elastic Initialise in minimum at zero strain (see Smooth()).
+    */
+    template <class T>
+    void reset_epsy(const T& epsy, bool init_elastic = true);
 
     /**
     \return Bulk modulus.
@@ -724,6 +742,18 @@ public:
     void setSmooth(const L& I, double K, double G, const Y& epsy, bool init_elastic = true);
 
     /**
+    Reset yield strains for a batch of point.s
+
+    \tparam L e.g. `xt::xtensor<bool, N>`
+    \tparam Y e.g. `xt::xtensor<double, 1>`
+    \param I Per item, ``true`` to set Cusp, ``false`` to skip.
+    \param epsy Sequence of yield strains.
+    \param init_elastic Initialise in minimum at zero strain.
+    */
+    template <class L, class Y>
+    void reset_epsy(const L& I, const Y& epsy, bool init_elastic = true);
+
+    /**
     Set a batch of items Elastic, with the material parameters (possibly) different.
     To this end, and addition array ``idx`` is used that refers to a which entry to use:
     ``K(idx)``, ``G(idx)``, and ``epsy(idx, :)``.
@@ -788,6 +818,20 @@ public:
         const T& G,
         const Y& epsy,
         bool init_elastic = true);
+
+    /**
+    Reset yield strains for a batch of points.
+
+    \tparam L e.g. `xt::xtensor<bool, N>`
+    \tparam C e.g. `xt::xtensor<size_t, N>`
+    \tparam Y e.g. `xt::xtensor<double, 2>`
+    \param I Per item, ``true`` to set Smooth, ``false`` to skip.
+    \param idx Per item, index in supplied material parameters.
+    \param epsy Sequence of yield strains.
+    \param init_elastic Initialise in minimum at zero strain.
+    */
+    template <class L, class C, class Y>
+    void reset_epsy(const L& I, const C& idx, const Y& epsy, bool init_elastic = true);
 
     /**
     Set strain tensors.

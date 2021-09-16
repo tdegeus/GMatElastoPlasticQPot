@@ -14,8 +14,14 @@ Partial implementation of GMatElastoPlasticQPot/Cartesian2d.h
 namespace GMatElastoPlasticQPot {
 namespace Cartesian2d {
 
-template <class Y>
-inline Smooth::Smooth(double K, double G, const Y& epsy, bool init_elastic) : m_K(K), m_G(G)
+template <class T>
+inline Smooth::Smooth(double K, double G, const T& epsy, bool init_elastic) : m_K(K), m_G(G)
+{
+    this->reset_epsy(epsy, init_elastic);
+}
+
+template <class T>
+inline void Smooth::reset_epsy(const T& epsy, bool init_elastic)
 {
     GMATELASTOPLASTICQPOT_ASSERT(epsy.size() > 0);
     // assertion on epsy being sorted is done by QPot::Chunked

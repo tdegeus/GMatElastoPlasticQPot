@@ -427,6 +427,33 @@ inline void Array<N>::setSmooth(const L& I, double K, double G, const Y& epsy, b
 }
 
 template <size_t N>
+template <class L, class Y>
+inline void Array<N>::reset_epsy(const L& I, const Y& epsy, bool init_elastic)
+{
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
+    GMATELASTOPLASTICQPOT_ASSERT(epsy.dimension() == 1);
+#ifdef GMATELASTOPLASTICQPOT_ENABLE_ASSERT
+    for (size_t i = 0; i < m_size; ++i) {
+        if (I.flat(i)) {
+            GMATELASTOPLASTICQPOT_ASSERT(
+                m_type.flat(i) == Type::Cusp || m_type.flat(i) == Type::Smooth);
+        }
+    }
+#endif
+
+    for (size_t i = 0; i < m_size; ++i) {
+        if (I.flat(i)) {
+            if (m_type.flat(i) == Type::Cusp) {
+                m_Cusp[m_index.flat(i)].reset_epsy(epsy, init_elastic);
+            }
+            else {
+                m_Smooth[m_index.flat(i)].reset_epsy(epsy, init_elastic);
+            }
+        }
+    }
+}
+
+template <size_t N>
 template <class L, class C, class T>
 inline void Array<N>::setElastic(const L& I, const C& idx, const T& K, const T& G)
 {
@@ -504,6 +531,36 @@ inline void Array<N>::setSmooth(
             m_type.flat(i) = Type::Smooth;
             m_index.flat(i) = m_Smooth.size();
             m_Smooth.push_back(Smooth(K(j), G(j), xt::view(epsy, j, xt::all()), init_elastic));
+        }
+    }
+}
+
+template <size_t N>
+template <class L, class C, class Y>
+inline void Array<N>::reset_epsy(const L& I, const C& idx, const Y& epsy, bool init_elastic)
+{
+    GMATELASTOPLASTICQPOT_ASSERT(xt::amax(idx)() == epsy.shape(0) - 1);
+    GMATELASTOPLASTICQPOT_ASSERT(epsy.dimension() == 2);
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, idx.shape()));
+#ifdef GMATELASTOPLASTICQPOT_ENABLE_ASSERT
+    for (size_t i = 0; i < m_size; ++i) {
+        if (I.flat(i)) {
+            GMATELASTOPLASTICQPOT_ASSERT(
+                m_type.flat(i) == Type::Cusp || m_type.flat(i) == Type::Smooth);
+        }
+    }
+#endif
+
+    for (size_t i = 0; i < m_size; ++i) {
+        if (I.flat(i)) {
+            size_t j = idx.flat(i);
+            if (m_type.flat(i) == Type::Cusp) {
+                m_Cusp[m_index.flat(i)].reset_epsy(xt::view(epsy, j, xt::all()), init_elastic);
+            }
+            else {
+                m_Smooth[m_index.flat(i)].reset_epsy(xt::view(epsy, j, xt::all()), init_elastic);
+            }
         }
     }
 }
