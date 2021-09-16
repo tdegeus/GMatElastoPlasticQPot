@@ -1,9 +1,9 @@
 channels:
-  - conda-forge
+- conda-forge
 dependencies:
-  - cmake
-  - setuptools_scm
-  - xtensor
-  - doxygen
-  - qpot
-  - gmattensor
+- cmake
+- doxygen
+- gmattensor
+- qpot
+- setuptools_scm
+- xtensor

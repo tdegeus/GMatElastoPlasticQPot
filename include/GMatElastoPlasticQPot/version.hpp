@@ -15,14 +15,14 @@ namespace GMatElastoPlasticQPot {
 
 namespace detail {
 
-    inline std::string unquote(const std::string& arg)
-    {
-        std::string ret = arg;
-        ret.erase(std::remove(ret.begin(), ret.end(), '\"'), ret.end());
-        return ret;
-    }
-
+inline std::string unquote(const std::string& arg)
+{
+    std::string ret = arg;
+    ret.erase(std::remove(ret.begin(), ret.end(), '\"'), ret.end());
+    return ret;
 }
+
+} // namespace detail
 
 inline std::string version()
 {
@@ -34,11 +34,10 @@ inline std::vector<std::string> version_dependencies()
     std::vector<std::string> ret;
 
     ret.push_back("gmatelastoplasticqpot=" + version());
-
+    ret.push_back("gmattensor=" + GMatTensor::version());
     ret.push_back("qpot=" + QPot::version());
-
-    ret.push_back("xtensor=" +
-        detail::unquote(std::string(QUOTE(XTENSOR_VERSION_MAJOR))) + "." +
+    ret.push_back(
+        "xtensor=" + detail::unquote(std::string(QUOTE(XTENSOR_VERSION_MAJOR))) + "." +
         detail::unquote(std::string(QUOTE(XTENSOR_VERSION_MINOR))) + "." +
         detail::unquote(std::string(QUOTE(XTENSOR_VERSION_PATCH))));
 

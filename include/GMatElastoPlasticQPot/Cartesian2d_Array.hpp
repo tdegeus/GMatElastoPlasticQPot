@@ -27,7 +27,7 @@ inline xt::xtensor<double, N> Array<N>::K() const
 {
     xt::xtensor<double, N> ret = xt::empty<double>(m_shape);
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.flat(i)) {
         case Type::Unset:
@@ -53,7 +53,7 @@ inline xt::xtensor<double, N> Array<N>::G() const
 {
     xt::xtensor<double, N> ret = xt::empty<double>(m_shape);
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.flat(i)) {
         case Type::Unset:
@@ -80,7 +80,7 @@ inline void Array<N>::currentIndex(R& ret) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.flat(i)) {
         case Type::Unset:
@@ -103,7 +103,7 @@ template <size_t N>
 inline bool Array<N>::checkYieldBoundLeft(size_t n) const
 {
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.flat(i)) {
         case Type::Unset:
@@ -130,7 +130,7 @@ template <size_t N>
 inline bool Array<N>::checkYieldBoundRight(size_t n) const
 {
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.flat(i)) {
         case Type::Unset:
@@ -159,7 +159,7 @@ inline void Array<N>::currentYieldLeft(R& ret) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.flat(i)) {
         case Type::Unset:
@@ -184,7 +184,7 @@ inline void Array<N>::currentYieldRight(R& ret) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.flat(i)) {
         case Type::Unset:
@@ -209,7 +209,7 @@ inline void Array<N>::currentYieldLeft(R& ret, size_t offset) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.flat(i)) {
         case Type::Unset:
@@ -234,7 +234,7 @@ inline void Array<N>::currentYieldRight(R& ret, size_t offset) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.flat(i)) {
         case Type::Unset:
@@ -259,7 +259,7 @@ inline void Array<N>::checkYieldRedraw(R& ret) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.flat(i)) {
         case Type::Unset:
@@ -284,7 +284,7 @@ inline void Array<N>::epsp(R& ret) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.flat(i)) {
         case Type::Unset:
@@ -309,7 +309,7 @@ inline void Array<N>::energy(R& ret) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape));
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.flat(i)) {
         case Type::Unset:
@@ -378,7 +378,8 @@ template <class L>
 inline void Array<N>::setElastic(const L& I, double K, double G)
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
-    GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
+    GMATELASTOPLASTICQPOT_ASSERT(
+        xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
 
     for (size_t i = 0; i < m_size; ++i) {
         if (I.flat(i)) {
@@ -395,7 +396,8 @@ inline void Array<N>::setCusp(const L& I, double K, double G, const Y& epsy, boo
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
     GMATELASTOPLASTICQPOT_ASSERT(epsy.dimension() == 1);
-    GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
+    GMATELASTOPLASTICQPOT_ASSERT(
+        xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
 
     for (size_t i = 0; i < m_size; ++i) {
         if (I.flat(i)) {
@@ -412,7 +414,8 @@ inline void Array<N>::setSmooth(const L& I, double K, double G, const Y& epsy, b
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
     GMATELASTOPLASTICQPOT_ASSERT(epsy.dimension() == 1);
-    GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
+    GMATELASTOPLASTICQPOT_ASSERT(
+        xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
 
     for (size_t i = 0; i < m_size; ++i) {
         if (I.flat(i)) {
@@ -432,7 +435,8 @@ inline void Array<N>::setElastic(const L& I, const C& idx, const T& K, const T& 
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(K, G.shape()));
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, idx.shape()));
-    GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
+    GMATELASTOPLASTICQPOT_ASSERT(
+        xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
 
     for (size_t i = 0; i < m_size; ++i) {
         if (I.flat(i)) {
@@ -446,7 +450,13 @@ inline void Array<N>::setElastic(const L& I, const C& idx, const T& K, const T& 
 
 template <size_t N>
 template <class L, class C, class T, class Y>
-inline void Array<N>::setCusp(const L& I, const C& idx, const T& K, const T& G, const Y& epsy, bool init_elastic)
+inline void Array<N>::setCusp(
+    const L& I,
+    const C& idx,
+    const T& K,
+    const T& G,
+    const Y& epsy,
+    bool init_elastic)
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::amax(idx)() == K.size() - 1);
     GMATELASTOPLASTICQPOT_ASSERT(K.dimension() == 1);
@@ -455,7 +465,8 @@ inline void Array<N>::setCusp(const L& I, const C& idx, const T& K, const T& G, 
     GMATELASTOPLASTICQPOT_ASSERT(K.size() == epsy.shape(0));
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, idx.shape()));
-    GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
+    GMATELASTOPLASTICQPOT_ASSERT(
+        xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
 
     for (size_t i = 0; i < m_size; ++i) {
         if (I.flat(i)) {
@@ -469,7 +480,13 @@ inline void Array<N>::setCusp(const L& I, const C& idx, const T& K, const T& G, 
 
 template <size_t N>
 template <class L, class C, class T, class Y>
-inline void Array<N>::setSmooth(const L& I, const C& idx, const T& K, const T& G, const Y& epsy, bool init_elastic)
+inline void Array<N>::setSmooth(
+    const L& I,
+    const C& idx,
+    const T& K,
+    const T& G,
+    const Y& epsy,
+    bool init_elastic)
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::amax(idx)() == K.size() - 1);
     GMATELASTOPLASTICQPOT_ASSERT(K.dimension() == 1);
@@ -478,7 +495,8 @@ inline void Array<N>::setSmooth(const L& I, const C& idx, const T& K, const T& G
     GMATELASTOPLASTICQPOT_ASSERT(K.size() == epsy.shape(0));
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, idx.shape()));
-    GMATELASTOPLASTICQPOT_ASSERT(xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
+    GMATELASTOPLASTICQPOT_ASSERT(
+        xt::all(xt::equal(xt::where(I, m_type, Type::Unset), Type::Unset)));
 
     for (size_t i = 0; i < m_size; ++i) {
         if (I.flat(i)) {
@@ -496,7 +514,7 @@ inline void Array<N>::setStrain(const T& arg)
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(arg, m_shape_tensor2));
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.flat(i)) {
         case Type::Unset:
@@ -520,7 +538,7 @@ inline void Array<N>::strain(R& ret) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape_tensor2));
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.flat(i)) {
         case Type::Unset:
@@ -545,7 +563,7 @@ inline void Array<N>::stress(R& ret) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape_tensor2));
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.flat(i)) {
         case Type::Unset:
@@ -570,7 +588,7 @@ inline void Array<N>::tangent(R& ret) const
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(ret, m_shape_tensor4));
 
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < m_size; ++i) {
         switch (m_type.flat(i)) {
         case Type::Unset:

@@ -36,4 +36,3 @@ foreach(testsourcefile ${APP_SOURCES})
     endif()
 
 endforeach()
-

@@ -10,6 +10,8 @@ Version information.
 #define GMATELASTOPLASTICQPOT_VERSION_H
 
 #include "config.h"
+#include <GMatTensor/version.h>
+#include <QPot/version.hpp>
 
 /**
 Current version.
@@ -22,13 +24,14 @@ Either:
 
 -   Define externally using::
 
-        -DGMATELASTOPLASTICQPOT_VERSION="`python -c "from setuptools_scm import get_version; print(get_version())"`"
+        -DGMATELASTOPLASTICQPOT_VERSION="`python -c "from setuptools_scm import get_version;
+print(get_version())"`"
 
     From the root of this project. This is what ``setup.py`` does.
 
-Note that both ``CMakeLists.txt`` and ``setup.py`` will construct the version using ``setuptools_scm``.
-Tip: use the environment variable ``SETUPTOOLS_SCM_PRETEND_VERSION``
-to overwrite the automatic version.
+Note that both ``CMakeLists.txt`` and ``setup.py`` will construct the version using
+``setuptools_scm``. Tip: use the environment variable ``SETUPTOOLS_SCM_PRETEND_VERSION`` to
+overwrite the automatic version.
 */
 #ifndef GMATELASTOPLASTICQPOT_VERSION
 #define GMATELASTOPLASTICQPOT_VERSION "@PROJECT_VERSION@"
@@ -47,11 +50,12 @@ inline std::string version();
 
 /**
 Return versions of this library and of all of its dependencies.
-The output is a list of strings, e.g.
+The output is a list of strings:
 
     "gmatelastoplasticqpot=0.7.0",
+    "gmattensor=0.8.0",
+    "qpot=0.9.0",
     "xtensor=0.20.1"
-    ...
 
 \return List of strings.
 */

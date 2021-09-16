@@ -16,9 +16,7 @@ Macros used in the library.
 #define QUOTE(x) Q(x)
 
 #define GMATELASTOPLASTICQPOT_WARNING_IMPL(message, file, line) \
-    std::cout << \
-        std::string(file) + ':' + std::to_string(line) + \
-        ": " message ") \n\t"; \
+    std::cout << std::string(file) + ':' + std::to_string(line) + ": " message ") \n\t";
 
 #define GMATELASTOPLASTICQPOT_ASSERT_IMPL(expr, file, line) \
     if (!(expr)) { \
@@ -49,7 +47,8 @@ The advantage is that:
 \throw std::runtime_error
 */
 #ifdef GMATELASTOPLASTICQPOT_ENABLE_ASSERT
-#define GMATELASTOPLASTICQPOT_ASSERT(expr) GMATELASTOPLASTICQPOT_ASSERT_IMPL(expr, __FILE__, __LINE__)
+#define GMATELASTOPLASTICQPOT_ASSERT(expr) \
+    GMATELASTOPLASTICQPOT_ASSERT_IMPL(expr, __FILE__, __LINE__)
 #else
 #define GMATELASTOPLASTICQPOT_ASSERT(expr)
 #endif
@@ -66,7 +65,8 @@ They can be disabled by::
 #ifdef GMATELASTOPLASTICQPOT_DISABLE_WARNING
 #define GMATELASTOPLASTICQPOT_WARNING(message)
 #else
-#define GMATELASTOPLASTICQPOT_WARNING(message) GMATELASTOPLASTICQPOT_WARNING_IMPL(message, __FILE__, __LINE__)
+#define GMATELASTOPLASTICQPOT_WARNING(message) \
+    GMATELASTOPLASTICQPOT_WARNING_IMPL(message, __FILE__, __LINE__)
 #endif
 
 /**
@@ -79,7 +79,8 @@ They can be enabled by::
     #define GMATELASTOPLASTICQPOT_ENABLE_WARNING_PYTHON
 */
 #ifdef GMATELASTOPLASTICQPOT_ENABLE_WARNING_PYTHON
-#define GMATELASTOPLASTICQPOT_WARNING_PYTHON(message) GMATELASTOPLASTICQPOT_WARNING_IMPL(message, __FILE__, __LINE__)
+#define GMATELASTOPLASTICQPOT_WARNING_PYTHON(message) \
+    GMATELASTOPLASTICQPOT_WARNING_IMPL(message, __FILE__, __LINE__)
 #else
 #define GMATELASTOPLASTICQPOT_WARNING_PYTHON(message)
 #endif
@@ -87,6 +88,7 @@ They can be enabled by::
 /**
 Material model based on a sequence of parabolic potentials.
 */
-namespace GMatElastoPlasticQPot { }
+namespace GMatElastoPlasticQPot {
+}
 
 #endif

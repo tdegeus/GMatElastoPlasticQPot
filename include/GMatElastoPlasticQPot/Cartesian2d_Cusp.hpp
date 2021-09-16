@@ -27,7 +27,7 @@ inline Cusp::Cusp(double K, double G, const Y& epsy, bool init_elastic) : m_K(K)
 
     GMATELASTOPLASTICQPOT_ASSERT(epsy.front() > 0);
     std::vector<double> y(epsy.size() + 1);
-    y[0] = - epsy.front();
+    y[0] = -epsy.front();
     std::copy(epsy.cbegin(), epsy.cend(), y.begin() + 1);
     m_yield = QPot::Chunked(0.0, y, 0);
 }
