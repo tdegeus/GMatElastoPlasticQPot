@@ -435,7 +435,8 @@ inline void Array<N>::reset_epsy(const L& I, const Y& epsy, bool init_elastic)
 #ifdef GMATELASTOPLASTICQPOT_ENABLE_ASSERT
     for (size_t i = 0; i < m_size; ++i) {
         if (I.flat(i)) {
-            GMATELASTOPLASTICQPOT_ASSERT(m_type.flat(i) == Type::Cusp || m_type.flat(i) == Type::Smooth);
+            GMATELASTOPLASTICQPOT_ASSERT(
+                m_type.flat(i) == Type::Cusp || m_type.flat(i) == Type::Smooth);
         }
     }
 #endif
@@ -537,11 +538,7 @@ inline void Array<N>::setSmooth(
 
 template <size_t N>
 template <class L, class C, class Y>
-inline void Array<N>::reset_epsy(
-    const L& I,
-    const C& idx,
-    const Y& epsy,
-    bool init_elastic)
+inline void Array<N>::reset_epsy(const L& I, const C& idx, const Y& epsy, bool init_elastic)
 {
     GMATELASTOPLASTICQPOT_ASSERT(xt::amax(idx)() == K.size() - 1);
     GMATELASTOPLASTICQPOT_ASSERT(epsy.dimension() == 2);
@@ -550,7 +547,8 @@ inline void Array<N>::reset_epsy(
 #ifdef GMATELASTOPLASTICQPOT_ENABLE_ASSERT
     for (size_t i = 0; i < m_size; ++i) {
         if (I.flat(i)) {
-            GMATELASTOPLASTICQPOT_ASSERT(m_type.flat(i) == Type::Cusp || m_type.flat(i) == Type::Smooth);
+            GMATELASTOPLASTICQPOT_ASSERT(
+                m_type.flat(i) == Type::Cusp || m_type.flat(i) == Type::Smooth);
         }
     }
 #endif

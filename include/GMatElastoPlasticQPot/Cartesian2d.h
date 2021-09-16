@@ -831,11 +831,7 @@ public:
     \param init_elastic Initialise in minimum at zero strain.
     */
     template <class L, class C, class Y>
-    void reset_epsy(
-        const L& I,
-        const C& idx,
-        const Y& epsy,
-        bool init_elastic = true);
+    void reset_epsy(const L& I, const C& idx, const Y& epsy, bool init_elastic = true);
 
     /**
     Set strain tensors.
