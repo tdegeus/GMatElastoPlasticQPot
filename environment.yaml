@@ -5,13 +5,11 @@ dependencies:
   - cmake
   - doxygen
   - gmattensor
-  - goosefem
   - h5py
-  - mathjax
   - ninja
   - numpy
-  - pybind11
   - python
+  - pybind11
   - python-qpot
   - qpot
   - scikit-build

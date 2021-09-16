@@ -197,27 +197,27 @@ if(BUILD_DOCS OR BUILD_ALL)
     find_package(Doxygen REQUIRED)
 
     # build docs of dependencies as well (to get nice internal links)
-    get_target_property(QPot_INCLUDE QPot INTERFACE_INCLUDE_DIRECTORIES)
     get_target_property(GMatTensor_INCLUDE GMatTensor INTERFACE_INCLUDE_DIRECTORIES)
+    get_target_property(QPot_INCLUDE QPot INTERFACE_INCLUDE_DIRECTORIES)
 
     set(${PROJECT_NAME}_DOCS_INCL
         "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}"
-        "${QPot_INCLUDE}/QPot"
-        "${GMatTensor_INCLUDE}/GMatTensor")
+        "${GMatTensor_INCLUDE}/GMatTensor"
+        "${QPot_INCLUDE}/QPot")
 
     set(${PROJECT_NAME}_DOCS_STRIP
         "${CMAKE_CURRENT_SOURCE_DIR}/include"
-        "${QPot_INCLUDE}"
-        "${GMatTensor_INCLUDE}")
+        "${GMatTensor_INCLUDE}"
+        "${QPot_INCLUDE}")
 
     # deal with strange doxygen bug
-    string(REGEX REPLACE "(.*)(include)" "\\1" QPot_STRIP ${QPot_INCLUDE})
     string(REGEX REPLACE "(.*)(include)" "\\1" GMatTensor_STRIP ${GMatTensor_INCLUDE})
+    string(REGEX REPLACE "(.*)(include)" "\\1" QPot_STRIP ${QPot_INCLUDE})
 
     set(${PROJECT_NAME}_DOCS_STRIP_INC
         "${CMAKE_CURRENT_SOURCE_DIR}/include"
-        "${QPot_STRIP}"
-        "${GMatTensor_STRIP}")
+        "${GMatTensor_STRIP}"
+        "${QPot_STRIP}")
 
     list(REMOVE_DUPLICATES ${PROJECT_NAME}_DOCS_STRIP)
     list(REMOVE_DUPLICATES ${PROJECT_NAME}_DOCS_STRIP_INC)

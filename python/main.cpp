@@ -10,6 +10,7 @@
 #define FORCE_IMPORT_ARRAY
 #include <xtensor-python/pytensor.hpp>
 
+#include <GMatElastoPlasticQPot/version.h>
 #include <GMatElastoPlasticQPot/Cartesian2d.h>
 
 namespace py = pybind11;
@@ -340,6 +341,10 @@ PYBIND11_MODULE(_GMatElastoPlasticQPot, m)
     m.def("version",
           &GMatElastoPlasticQPot::version,
           "Return version string.");
+
+    m.def("version_dependencies",
+          &GMatElastoPlasticQPot::version_dependencies,
+          "Return list of strings.");
 
     // ---------------------------------
     // GMatElastoPlasticQPot.Cartesian2d
