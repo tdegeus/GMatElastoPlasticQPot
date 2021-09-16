@@ -2,6 +2,7 @@ import unittest
 
 import GMatElastoPlasticQPot.Cartesian2d as GMat
 import numpy as np
+import QPot  # noqa: F401
 
 
 class Test_main(unittest.TestCase):
