@@ -1,12 +1,12 @@
 
 #include <GMatElastoPlasticQPot/Cartesian2d.h>
 #include <GooseFEM/GooseFEM.h>
-#include <xtensor/xtensor.hpp>
-#include <xtensor/xrandom.hpp>
-#include <xtensor/xnorm.hpp>
-#include <xtensor/xio.hpp>
-#include <xtensor/xcsv.hpp>
 #include <fstream>
+#include <xtensor/xcsv.hpp>
+#include <xtensor/xio.hpp>
+#include <xtensor/xnorm.hpp>
+#include <xtensor/xrandom.hpp>
+#include <xtensor/xtensor.hpp>
 
 namespace GF = GooseFEM;
 namespace QD = GooseFEM::Element::Quad4;
@@ -15,7 +15,6 @@ namespace GM = GMatElastoPlasticQPot::Cartesian2d;
 class System {
 
 private:
-
     // mesh parameters
     xt::xtensor<size_t, 2> m_conn;
     xt::xtensor<double, 2> m_coor;
@@ -53,8 +52,8 @@ private:
     GF::Iterate::StopList m_stop = GF::Iterate::StopList(20);
 
     // time evolution
-    double m_t = 0.0;   // current time
-    double m_dt;        // time step
+    double m_t = 0.0; // current time
+    double m_dt; // time step
 
     // nodal displacements, velocities, and accelerations (current and last time-step)
     xt::xtensor<double, 2> m_u;
@@ -79,7 +78,6 @@ private:
     xt::xtensor<double, 4> m_Sig;
 
 public:
-
     System(size_t N) : m_N(N)
     {
 
@@ -168,14 +166,16 @@ public:
         // assign plastic material points
         {
             double k = 2.0;
-            xt::xtensor<double, 2> epsy = 1e-5 + 1e-3 * xt::random::weibull<double>(std::array<size_t, 2>{m_N, 1000}, k, 1.0);
+            std::array<size_t, 2> shape = {m_N, 1000};
+            xt::xtensor<double, 2> epsy = 1e-5 + 1e-3 * xt::random::weibull<double>(shape, k, 1.0);
             xt::view(epsy, xt::all(), 0) = 1e-5 + 1e-3 * xt::random::rand<double>({m_N});
             epsy = xt::cumsum(epsy, 1);
 
             xt::xtensor<size_t, 2> I = xt::zeros<size_t>({m_nelem, m_nip});
             xt::xtensor<size_t, 2> idx = xt::zeros<size_t>({m_nelem, m_nip});
             xt::view(I, xt::keep(m_plastic), xt::all()) = 1ul;
-            xt::view(idx, xt::keep(m_plastic), xt::all()) = xt::arange<size_t>(m_N).reshape({-1, 1});
+            xt::view(idx, xt::keep(m_plastic), xt::all()) =
+                xt::arange<size_t>(m_N).reshape({-1, 1});
             xt::xtensor<double, 1> unit = xt::ones<double>({m_N});
             m_material.setCusp(I, idx, K * unit, G * unit, epsy);
         }
@@ -208,7 +208,6 @@ public:
     }
 
 public:
-
     void computeStrainStress()
     {
         m_vector.asElement(m_u, m_ue);
@@ -218,7 +217,6 @@ public:
     }
 
 public:
-
     void timeStep()
     {
         // history
@@ -288,7 +286,6 @@ public:
     }
 
 public:
-
     xt::xtensor<double, 2> run()
     {
         xt::xtensor<double, 3> dF = xt::zeros<double>({1001, 2, 2});
@@ -297,7 +294,7 @@ public:
         xt::xtensor<double, 2> ret = xt::zeros<double>(std::array<size_t, 2>{dF.shape(0), 2});
         auto dV = m_quad.AsTensor<2>(m_quad.dV());
 
-        for (size_t inc = 0 ; inc < dF.shape(0); ++inc) {
+        for (size_t inc = 0; inc < dF.shape(0); ++inc) {
 
             for (size_t i = 0; i < m_nnode; ++i) {
                 for (size_t j = 0; j < m_ndim; ++j) {
@@ -309,7 +306,7 @@ public:
 
             computeStrainStress();
 
-            for (size_t iiter = 0; iiter < 99999 ; ++iiter) {
+            for (size_t iiter = 0; iiter < 99999; ++iiter) {
 
                 timeStep();
 
@@ -319,7 +316,6 @@ public:
                     std::cout << inc << ", " << iiter << std::endl;
                     break;
                 }
-
             }
 
             m_v.fill(0.0);
@@ -335,7 +331,6 @@ public:
 
         return ret;
     }
-
 };
 
 int main(void)

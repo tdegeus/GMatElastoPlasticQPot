@@ -701,4 +701,3 @@ This requires the following changes:
 ## v0.2.1
 
 *   Added minimal documentation.
-

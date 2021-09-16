@@ -1,8 +1,8 @@
+import GMatElastoPlasticQPot.Cartesian2d as GMat
 import h5py
 import numpy as np
-import GMatElastoPlasticQPot.Cartesian2d as GMat
 
-with h5py.File('Cartesian2d_random.hdf5', 'w') as data:
+with h5py.File("Cartesian2d_random.hdf5", "w") as data:
 
     nelem = 1000
     nip = 4
@@ -14,7 +14,7 @@ with h5py.File('Cartesian2d_random.hdf5', 'w') as data:
 
     shape = np.array([nelem, nip], np.int)
 
-    data['/shape'] = shape
+    data["/shape"] = shape
 
     mat = GMat.Array2d(shape)
 
@@ -27,11 +27,11 @@ with h5py.File('Cartesian2d_random.hdf5', 'w') as data:
     K = np.ones(n)
     G = np.ones(n)
 
-    data['/cusp/I'] = I
-    data['/cusp/idx'] = idx
-    data['/cusp/K'] = K
-    data['/cusp/G'] = G
-    data['/cusp/epsy'] = epsy
+    data["/cusp/I"] = I
+    data["/cusp/idx"] = idx
+    data["/cusp/K"] = K
+    data["/cusp/G"] = G
+    data["/cusp/epsy"] = epsy
 
     mat.setCusp(I, idx, K, G, epsy)
 
@@ -44,11 +44,11 @@ with h5py.File('Cartesian2d_random.hdf5', 'w') as data:
     K = np.ones(n)
     G = np.ones(n)
 
-    data['/smooth/I'] = I
-    data['/smooth/idx'] = idx
-    data['/smooth/K'] = K
-    data['/smooth/G'] = G
-    data['/smooth/epsy'] = epsy
+    data["/smooth/I"] = I
+    data["/smooth/idx"] = idx
+    data["/smooth/K"] = K
+    data["/smooth/G"] = G
+    data["/smooth/epsy"] = epsy
 
     mat.setSmooth(I, idx, K, G, epsy)
 
@@ -60,10 +60,10 @@ with h5py.File('Cartesian2d_random.hdf5', 'w') as data:
     K = np.ones(n)
     G = np.ones(n)
 
-    data['/elastic/I'] = I
-    data['/elastic/idx'] = idx
-    data['/elastic/K'] = K
-    data['/elastic/G'] = G
+    data["/elastic/I"] = I
+    data["/elastic/idx"] = idx
+    data["/elastic/K"] = K
+    data["/elastic/G"] = G
 
     mat.setElastic(I, idx, K, G)
 
@@ -71,14 +71,13 @@ with h5py.File('Cartesian2d_random.hdf5', 'w') as data:
 
         GradU = 200 * np.random.random([nelem, nip, 2, 2])
 
-        data['/random/{0:d}/GradU'.format(i)] = GradU
+        data[f"/random/{i:d}/GradU"] = GradU
 
-        Eps = np.einsum('...ijkl,...lk->...ij', mat.I4s(), GradU)
+        Eps = np.einsum("...ijkl,...lk->...ij", mat.I4s(), GradU)
         mat.setStrain(Eps)
 
-        data['/random/{0:d}/Stress'.format(i)] = mat.Stress()
-        data['/random/{0:d}/Tangent'.format(i)] = mat.Tangent()
-        data['/random/{0:d}/CurrentIndex'.format(i)] = mat.CurrentIndex()
-        data['/random/{0:d}/CurrentYieldLeft'.format(i)] = mat.CurrentYieldLeft()
-        data['/random/{0:d}/CurrentYieldRight'.format(i)] = mat.CurrentYieldRight()
-
+        data[f"/random/{i:d}/Stress"] = mat.Stress()
+        data[f"/random/{i:d}/Tangent"] = mat.Tangent()
+        data[f"/random/{i:d}/CurrentIndex"] = mat.CurrentIndex()
+        data[f"/random/{i:d}/CurrentYieldLeft"] = mat.CurrentYieldLeft()
+        data[f"/random/{i:d}/CurrentYieldRight"] = mat.CurrentYieldRight()

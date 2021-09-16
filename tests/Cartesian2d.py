@@ -1,10 +1,10 @@
 import unittest
-import numpy as np
+
 import GMatElastoPlasticQPot.Cartesian2d as GMat
-import QPot
+import numpy as np
+
 
 class Test_main(unittest.TestCase):
-
     def test_Elastic(self):
 
         K = 12.3
@@ -13,13 +13,9 @@ class Test_main(unittest.TestCase):
         gamma = 0.02
         epsm = 0.12
 
-        Eps = np.array(
-            [[epsm, gamma],
-             [gamma, epsm]])
+        Eps = np.array([[epsm, gamma], [gamma, epsm]])
 
-        Sig = np.array(
-            [[K * epsm, G * gamma],
-             [G * gamma, K * epsm]])
+        Sig = np.array([[K * epsm, G * gamma], [G * gamma, K * epsm]])
 
         self.assertTrue(np.isclose(float(GMat.Epsd(Eps)), gamma))
 
@@ -36,13 +32,9 @@ class Test_main(unittest.TestCase):
         gamma = 0.02
         epsm = 0.12
 
-        Eps = np.array(
-            [[epsm, gamma],
-             [gamma, epsm]])
+        Eps = np.array([[epsm, gamma], [gamma, epsm]])
 
-        Sig = np.array(
-            [[K * epsm, 0.0],
-             [0.0, K * epsm]])
+        Sig = np.array([[K * epsm, 0.0], [0.0, K * epsm]])
 
         self.assertTrue(np.isclose(float(GMat.Epsd(Eps)), gamma))
 
@@ -54,8 +46,12 @@ class Test_main(unittest.TestCase):
         self.assertTrue(np.isclose(mat.epsp(), 0.02))
         self.assertTrue(np.isclose(mat.currentYieldLeft(), 0.01))
         self.assertTrue(np.isclose(mat.currentYieldRight(), 0.03))
-        self.assertTrue(np.isclose(mat.currentYieldLeft(), mat.refQPotChunked().yleft()))
-        self.assertTrue(np.isclose(mat.currentYieldRight(), mat.refQPotChunked().yright()))
+        self.assertTrue(
+            np.isclose(mat.currentYieldLeft(), mat.refQPotChunked().yleft())
+        )
+        self.assertTrue(
+            np.isclose(mat.currentYieldRight(), mat.refQPotChunked().yright())
+        )
 
     def test_Smooth(self):
 
@@ -65,13 +61,9 @@ class Test_main(unittest.TestCase):
         gamma = 0.02
         epsm = 0.12
 
-        Eps = np.array(
-            [[epsm, gamma],
-             [gamma, epsm]])
+        Eps = np.array([[epsm, gamma], [gamma, epsm]])
 
-        Sig = np.array(
-            [[K * epsm, 0.0],
-             [0.0, K * epsm]])
+        Sig = np.array([[K * epsm, 0.0], [0.0, K * epsm]])
 
         self.assertTrue(np.isclose(float(GMat.Epsd(Eps)), gamma))
 
@@ -83,8 +75,12 @@ class Test_main(unittest.TestCase):
         self.assertTrue(np.isclose(mat.epsp(), 0.02))
         self.assertTrue(np.isclose(mat.currentYieldLeft(), 0.01))
         self.assertTrue(np.isclose(mat.currentYieldRight(), 0.03))
-        self.assertTrue(np.isclose(mat.currentYieldLeft(), mat.refQPotChunked().yleft()))
-        self.assertTrue(np.isclose(mat.currentYieldRight(), mat.refQPotChunked().yright()))
+        self.assertTrue(
+            np.isclose(mat.currentYieldLeft(), mat.refQPotChunked().yleft())
+        )
+        self.assertTrue(
+            np.isclose(mat.currentYieldRight(), mat.refQPotChunked().yright())
+        )
 
     def test_Array2d(self):
 
@@ -94,32 +90,26 @@ class Test_main(unittest.TestCase):
         gamma = 0.02
         epsm = 0.12
 
-        Eps = np.array(
-            [[epsm, gamma],
-             [gamma, epsm]])
+        Eps = np.array([[epsm, gamma], [gamma, epsm]])
 
-        Sig_elas = np.array(
-            [[K * epsm, G * gamma],
-             [G * gamma, K * epsm]])
+        Sig_elas = np.array([[K * epsm, G * gamma], [G * gamma, K * epsm]])
 
-        Sig_plas = np.array(
-            [[K * epsm, 0.0],
-             [0.0, K * epsm]])
+        Sig_plas = np.array([[K * epsm, 0.0], [0.0, K * epsm]])
 
         nelem = 3
         nip = 2
         mat = GMat.Array2d([nelem, nip])
         ndim = 2
 
-        I = np.zeros([nelem, nip], dtype='int')
+        I = np.zeros([nelem, nip], dtype="int")
         I[0, :] = 1
         mat.setElastic(I, K, G)
 
-        I = np.zeros([nelem, nip], dtype='int')
+        I = np.zeros([nelem, nip], dtype="int")
         I[1, :] = 1
         mat.setCusp(I, K, G, 0.01 + 0.02 * np.arange(100))
 
-        I = np.zeros([nelem, nip], dtype='int')
+        I = np.zeros([nelem, nip], dtype="int")
         I[2, :] = 1
         mat.setSmooth(I, K, G, 0.01 + 0.02 * np.arange(100))
 
@@ -151,32 +141,25 @@ class Test_main(unittest.TestCase):
         gamma = 0.02
         epsm = 0.12
 
-        Eps = np.array(
-            [[epsm, gamma],
-             [gamma, epsm]])
+        Eps = np.array([[epsm, gamma], [gamma, epsm]])
 
-        Sig_elas = np.array(
-            [[K * epsm, G * gamma],
-             [G * gamma, K * epsm]])
+        Sig_elas = np.array([[K * epsm, G * gamma], [G * gamma, K * epsm]])
 
-        Sig_plas = np.array(
-            [[K * epsm, 0.0],
-             [0.0, K * epsm]])
+        Sig_plas = np.array([[K * epsm, 0.0], [0.0, K * epsm]])
 
         nelem = 3
         nip = 2
         mat = GMat.Array2d([nelem, nip])
-        ndim = 2
 
-        I = np.zeros([nelem, nip], dtype='int')
+        I = np.zeros([nelem, nip], dtype="int")
         I[0, :] = 1
         mat.setElastic(I, K, G)
 
-        I = np.zeros([nelem, nip], dtype='int')
+        I = np.zeros([nelem, nip], dtype="int")
         I[1, :] = 1
         mat.setCusp(I, K, G, 0.01 + 0.02 * np.arange(100))
 
-        I = np.zeros([nelem, nip], dtype='int')
+        I = np.zeros([nelem, nip], dtype="int")
         I[2, :] = 1
         mat.setSmooth(I, K, G, 0.01 + 0.02 * np.arange(100))
 
@@ -198,6 +181,7 @@ class Test_main(unittest.TestCase):
                     self.assertTrue(np.allclose(model.Stress(), fac * Sig_plas))
                     self.assertTrue(np.allclose(model.epsp(), fac * gamma))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
 
     unittest.main()

@@ -12,8 +12,8 @@ Implementation in a 2-d Cartesian coordinate frame.
 // use "M_PI" from "math.h"
 #define _USE_MATH_DEFINES
 
-#include <QPot/Chunked.hpp>
 #include <GMatTensor/Cartesian2d.h>
+#include <QPot/Chunked.hpp>
 #include <math.h>
 #include <xtensor/xsort.hpp>
 
@@ -41,18 +41,18 @@ Note that for convenience this namespace include aliases to:
 */
 namespace Cartesian2d {
 
-using GMatTensor::Cartesian2d::O2;
-using GMatTensor::Cartesian2d::O4;
-using GMatTensor::Cartesian2d::I2;
-using GMatTensor::Cartesian2d::II;
-using GMatTensor::Cartesian2d::I4;
-using GMatTensor::Cartesian2d::I4rt;
-using GMatTensor::Cartesian2d::I4s;
-using GMatTensor::Cartesian2d::I4d;
-using GMatTensor::Cartesian2d::Hydrostatic;
-using GMatTensor::Cartesian2d::hydrostatic;
 using GMatTensor::Cartesian2d::Deviatoric;
 using GMatTensor::Cartesian2d::deviatoric;
+using GMatTensor::Cartesian2d::Hydrostatic;
+using GMatTensor::Cartesian2d::hydrostatic;
+using GMatTensor::Cartesian2d::I2;
+using GMatTensor::Cartesian2d::I4;
+using GMatTensor::Cartesian2d::I4d;
+using GMatTensor::Cartesian2d::I4rt;
+using GMatTensor::Cartesian2d::I4s;
+using GMatTensor::Cartesian2d::II;
+using GMatTensor::Cartesian2d::O2;
+using GMatTensor::Cartesian2d::O4;
 
 /**
 Equivalent strain: norm of strain deviator
@@ -65,7 +65,8 @@ To write to allocated data use epsd().
 \return [...] array.
 */
 template <class T>
-inline auto Epsd(const T& A) -> typename GMatTensor::detail::allocate<xt::get_rank<T>::value - 2, T>::type;
+inline auto Epsd(const T& A) ->
+    typename GMatTensor::detail::allocate<xt::get_rank<T>::value - 2, T>::type;
 
 /**
 Same as Epsd(), but writes to externally allocated output.
@@ -87,7 +88,8 @@ To write to allocated data use sigd().
 \return [...] array.
 */
 template <class T>
-inline auto Sigd(const T& A) -> typename GMatTensor::detail::allocate<xt::get_rank<T>::value - 2, T>::type;
+inline auto Sigd(const T& A) ->
+    typename GMatTensor::detail::allocate<xt::get_rank<T>::value - 2, T>::type;
 
 /**
 Same as Sigd(), but writes to externally allocated output.
@@ -101,10 +103,8 @@ inline void sigd(const T& A, U& ret);
 /**
 Elastic material point.
 */
-class Elastic
-{
+class Elastic {
 public:
-
     Elastic() = default;
 
     /**
@@ -226,10 +226,8 @@ private:
 Elasto-plastic material point.
 Defined by a potential energy landscape consisting of a sequence of parabolic potentials.
 */
-class Cusp
-{
+class Cusp {
 public:
-
     Cusp() = default;
 
     /**
@@ -417,10 +415,8 @@ private:
 Elasto-plastic material point.
 Defined by a potential energy landscape consisting of a sequence of smoothed parabolic potentials.
 */
-class Smooth
-{
+class Smooth {
 public:
-
     Smooth() = default;
 
     /**
@@ -612,10 +608,10 @@ struct Type {
     Type value.
     */
     enum Value {
-        Unset,   ///< Unset
+        Unset, ///< Unset
         Elastic, ///< See Elastic
-        Cusp,    ///< See Cusp
-        Smooth,  ///< See Smooth
+        Cusp, ///< See Cusp
+        Smooth, ///< See Smooth
     };
 };
 
@@ -625,10 +621,8 @@ Array of material points.
 \tparam N Rank of the array.
 */
 template <size_t N>
-class Array : public GMatTensor::Cartesian2d::Array<N>
-{
+class Array : public GMatTensor::Cartesian2d::Array<N> {
 public:
-
     using GMatTensor::Cartesian2d::Array<N>::rank;
 
     Array() = default;
@@ -762,7 +756,13 @@ public:
     \param init_elastic Initialise in minimum at zero strain.
     */
     template <class L, class C, class T, class Y>
-    void setCusp(const L& I, const C& idx, const T& K, const T& G, const Y& epsy, bool init_elastic = true);
+    void setCusp(
+        const L& I,
+        const C& idx,
+        const T& K,
+        const T& G,
+        const Y& epsy,
+        bool init_elastic = true);
 
     /**
     Set a batch of items Smooth, with the material parameters (possibly) different.
@@ -781,7 +781,13 @@ public:
     \param init_elastic Initialise in minimum at zero strain.
     */
     template <class L, class C, class T, class Y>
-    void setSmooth(const L& I, const C& idx, const T& K, const T& G, const Y& epsy, bool init_elastic = true);
+    void setSmooth(
+        const L& I,
+        const C& idx,
+        const T& K,
+        const T& G,
+        const Y& epsy,
+        bool init_elastic = true);
 
     /**
     Set strain tensors.
@@ -988,7 +994,6 @@ public:
     Smooth& refSmooth(const std::array<size_t, N>& index);
 
 private:
-
     /**
     Elastic material vectors: each item has one entry in one of the material vectors.
     */

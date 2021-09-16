@@ -27,7 +27,7 @@ inline Smooth::Smooth(double K, double G, const Y& epsy, bool init_elastic) : m_
 
     GMATELASTOPLASTICQPOT_ASSERT(epsy.front() > 0);
     std::vector<double> y(epsy.size() + 1);
-    y[0] = - epsy.front();
+    y[0] = -epsy.front();
     std::copy(epsy.cbegin(), epsy.cend(), y.begin() + 1);
     m_yield = QPot::Chunked(0.0, y, 0);
 }
@@ -93,9 +93,8 @@ inline double Smooth::energy() const
     double eps_min = 0.5 * (m_yield.yright() + m_yield.yleft());
     double deps_y = 0.5 * (m_yield.yright() - m_yield.yleft());
 
-    double V
-        = -2.0 * m_G * std::pow(deps_y / M_PI, 2.0)
-        * (1.0 + cos(M_PI / deps_y * (epsd - eps_min)));
+    double V =
+        -2.0 * m_G * std::pow(deps_y / M_PI, 2.0) * (1.0 + cos(M_PI / deps_y * (epsd - eps_min)));
 
     return U + V;
 }
