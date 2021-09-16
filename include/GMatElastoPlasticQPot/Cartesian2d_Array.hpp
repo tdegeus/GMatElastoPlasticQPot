@@ -443,7 +443,6 @@ inline void Array<N>::reset_epsy(const L& I, const Y& epsy, bool init_elastic)
 
     for (size_t i = 0; i < m_size; ++i) {
         if (I.flat(i)) {
-            size_t j = idx.flat(i);
             if (m_type.flat(i) == Type::Cusp) {
                 m_Cusp[m_index.flat(i)].reset_epsy(epsy, init_elastic);
             }
@@ -540,7 +539,7 @@ template <size_t N>
 template <class L, class C, class Y>
 inline void Array<N>::reset_epsy(const L& I, const C& idx, const Y& epsy, bool init_elastic)
 {
-    GMATELASTOPLASTICQPOT_ASSERT(xt::amax(idx)() == K.size() - 1);
+    GMATELASTOPLASTICQPOT_ASSERT(xt::amax(idx)() == epsy.shape(0) - 1);
     GMATELASTOPLASTICQPOT_ASSERT(epsy.dimension() == 2);
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, I.shape()));
     GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(m_type, idx.shape()));
