@@ -773,6 +773,27 @@ inline Smooth& Array<N>::refSmooth(const std::array<size_t, N>& index)
     return m_Smooth[m_index[index]];
 }
 
+template <size_t N>
+inline const Elastic& Array<N>::crefElastic(const std::array<size_t, N>& index) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(m_type[index] == Type::Elastic);
+    return m_Elastic[m_index[index]];
+}
+
+template <size_t N>
+inline const Cusp& Array<N>::crefCusp(const std::array<size_t, N>& index) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(m_type[index] == Type::Cusp);
+    return m_Cusp[m_index[index]];
+}
+
+template <size_t N>
+inline const Smooth& Array<N>::crefSmooth(const std::array<size_t, N>& index) const
+{
+    GMATELASTOPLASTICQPOT_ASSERT(m_type[index] == Type::Smooth);
+    return m_Smooth[m_index[index]];
+}
+
 } // namespace Cartesian2d
 } // namespace GMatElastoPlasticQPot
 

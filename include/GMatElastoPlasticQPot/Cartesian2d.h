@@ -1037,6 +1037,30 @@ public:
     */
     Smooth& refSmooth(const std::array<size_t, N>& index);
 
+    /**
+    Constant reference to the underlying Elastic model of an item.
+
+    \param index The index of the item.
+    \return Reference to the model.
+    */
+    const Elastic& crefElastic(const std::array<size_t, N>& index) const;
+
+    /**
+    Constant reference to the underlying Cusp model of an item.
+
+    \param index The index of the item.
+    \return Reference to the model.
+    */
+    const Cusp& crefCusp(const std::array<size_t, N>& index) const;
+
+    /**
+    Constant reference to the underlying Smooth model of an item.
+
+    \param index The index of the item.
+    \return Reference to the model.
+    */
+    const Smooth& crefSmooth(const std::array<size_t, N>& index) const;
+
 private:
     /**
     Elastic material vectors: each item has one entry in one of the material vectors.
