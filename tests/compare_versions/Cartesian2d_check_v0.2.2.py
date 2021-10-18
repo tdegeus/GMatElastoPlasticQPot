@@ -15,9 +15,7 @@ class Test(unittest.TestCase):
             i = np.eye(2)
             I = np.einsum("xy,ij", np.ones(shape), i)
             I4 = np.einsum("xy,ijkl->xyijkl", np.ones(shape), np.einsum("il,jk", i, i))
-            I4rt = np.einsum(
-                "xy,ijkl->xyijkl", np.ones(shape), np.einsum("ik,jl", i, i)
-            )
+            I4rt = np.einsum("xy,ijkl->xyijkl", np.ones(shape), np.einsum("ik,jl", i, i))
             I4s = (I4 + I4rt) / 2.0
 
             mat = GMat.Matrix(shape[0], shape[1])
@@ -52,9 +50,7 @@ class Test(unittest.TestCase):
                 Eps = np.einsum("...ijkl,...lk->...ij", I4s, GradU)
                 idx = mat.Find(Eps)
 
-                self.assertTrue(
-                    np.allclose(mat.Stress(Eps), data[f"/random/{i:d}/Stress"][...])
-                )
+                self.assertTrue(np.allclose(mat.Stress(Eps), data[f"/random/{i:d}/Stress"][...]))
                 self.assertTrue(
                     np.allclose(
                         mat.Epsy(idx),
@@ -67,9 +63,7 @@ class Test(unittest.TestCase):
                         data[f"/random/{i:d}/CurrentYieldRight"][...],
                     )
                 )
-                self.assertTrue(
-                    np.all(mat.Find(Eps) == data[f"/random/{i:d}/CurrentIndex"][...])
-                )
+                self.assertTrue(np.all(mat.Find(Eps) == data[f"/random/{i:d}/CurrentIndex"][...]))
 
 
 if __name__ == "__main__":
