@@ -44,9 +44,7 @@ class Test(unittest.TestCase):
                 Eps = np.einsum("...ijkl,...lk->...ij", mat.I4s(), GradU)
                 idx = mat.Find(Eps)
 
-                self.assertTrue(
-                    np.allclose(mat.Stress(Eps), data[f"/random/{i:d}/Stress"][...])
-                )
+                self.assertTrue(np.allclose(mat.Stress(Eps), data[f"/random/{i:d}/Stress"][...]))
                 self.assertTrue(
                     np.allclose(
                         mat.Tangent(Eps)[1],
@@ -65,9 +63,7 @@ class Test(unittest.TestCase):
                         data[f"/random/{i:d}/CurrentYieldRight"][...],
                     )
                 )
-                self.assertTrue(
-                    np.all(mat.Find(Eps) == data[f"/random/{i:d}/CurrentIndex"][...])
-                )
+                self.assertTrue(np.all(mat.Find(Eps) == data[f"/random/{i:d}/CurrentIndex"][...]))
 
 
 if __name__ == "__main__":

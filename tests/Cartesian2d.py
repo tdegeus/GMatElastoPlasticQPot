@@ -47,12 +47,8 @@ class Test_main(unittest.TestCase):
         self.assertTrue(np.isclose(mat.epsp(), 0.02))
         self.assertTrue(np.isclose(mat.currentYieldLeft(), 0.01))
         self.assertTrue(np.isclose(mat.currentYieldRight(), 0.03))
-        self.assertTrue(
-            np.isclose(mat.currentYieldLeft(), mat.refQPotChunked().yleft())
-        )
-        self.assertTrue(
-            np.isclose(mat.currentYieldRight(), mat.refQPotChunked().yright())
-        )
+        self.assertTrue(np.isclose(mat.currentYieldLeft(), mat.refQPotChunked().yleft()))
+        self.assertTrue(np.isclose(mat.currentYieldRight(), mat.refQPotChunked().yright()))
 
     def test_Smooth(self):
 
@@ -76,12 +72,8 @@ class Test_main(unittest.TestCase):
         self.assertTrue(np.isclose(mat.epsp(), 0.02))
         self.assertTrue(np.isclose(mat.currentYieldLeft(), 0.01))
         self.assertTrue(np.isclose(mat.currentYieldRight(), 0.03))
-        self.assertTrue(
-            np.isclose(mat.currentYieldLeft(), mat.refQPotChunked().yleft())
-        )
-        self.assertTrue(
-            np.isclose(mat.currentYieldRight(), mat.refQPotChunked().yright())
-        )
+        self.assertTrue(np.isclose(mat.currentYieldLeft(), mat.refQPotChunked().yleft()))
+        self.assertTrue(np.isclose(mat.currentYieldRight(), mat.refQPotChunked().yright()))
 
     def test_Array2d(self):
 
