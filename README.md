@@ -46,6 +46,7 @@ conveniently compiled to this [PDF](docs/notes/readme.pdf).
     - [Upgrading to >v0.8.*](#upgrading-to-v08)
     - [Upgrading to >v0.6.*](#upgrading-to-v06)
 - [Change-log](#change-log)
+    - [v0.16.1](#v0161)
     - [v0.16.0](#v0160)
     - [v0.15.6](#v0156)
     - [v0.15.5](#v0155)
@@ -514,6 +515,10 @@ This requires the following changes:
     The library therefore now depends on [QPot](https://www.github.com/tdegeus/QPot).
 
 # Change-log
+
+## v0.16.1
+
+*   Adding constant reference functions to array (#95).
 
 ## v0.16.0
 
