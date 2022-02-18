@@ -135,4 +135,4 @@ jobs:
     - name: Build doxygen-docs
       if: runner.os == 'Linux'
       working-directory: build
-      run: make docs
+      run: make html
