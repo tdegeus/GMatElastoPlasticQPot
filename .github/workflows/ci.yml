@@ -5,7 +5,7 @@ on:
   pull_request:
   push:
     branches:
-    - master
+    - main
 
 jobs:
 
@@ -44,14 +44,14 @@ jobs:
         environment-file: environment.yaml
         environment-name: myenv
 
-    - name: Set dummy version
-      run: echo "SETUPTOOLS_SCM_PRETEND_VERSION=0.0" >> $GITHUB_ENV
-
     - name: Install clang
       if: runner.os == 'Windows'
       run: micromamba install -c conda-forge clang_win-64 ninja
 
-    - name: Configure using CMake (!Windows)
+    - name: Set dummy version
+      run: echo "SETUPTOOLS_SCM_PRETEND_VERSION=0.0" >> $GITHUB_ENV
+
+    - name: Configure using CMake
       run: cmake -Bbuild ${{ matrix.config }}
 
     - name: Build C++ ${{ matrix.prop }}
