@@ -6,7 +6,7 @@ plt.style.use(["goose", "goose-latex", "goose-tick-lower"])
 # --------------------------------------------------------------------------------------------------
 
 eps_m = np.linspace(-1.1, +1.1, 1000)
-U = 9.0 / 2.0 * eps_m ** 2.0
+U = 9.0 / 2.0 * eps_m**2.0
 
 fig, ax = plt.subplots()
 
@@ -24,7 +24,7 @@ plt.savefig("potential_U_raw.svg")
 # --------------------------------------------------------------------------------------------------
 
 eps_eq = np.linspace(0, 10, 1000)
-V = 3.0 / 2.0 * eps_eq ** 2.0
+V = 3.0 / 2.0 * eps_eq**2.0
 
 fig, ax = plt.subplots()
 
@@ -53,7 +53,7 @@ for a0, a1 in zip(a[:-1], a[1:]):
     delta = (a1 - a0) / 2.0
 
     idx = np.where((eps_eq >= a0) * (eps_eq < a1))[0]
-    Vi = 0.5 * ((eps_eq - abar) ** 2.0 - delta ** 2.0)
+    Vi = 0.5 * ((eps_eq - abar) ** 2.0 - delta**2.0)
 
     V[idx] = Vi[idx]
 
