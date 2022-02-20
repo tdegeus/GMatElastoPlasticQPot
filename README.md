@@ -100,14 +100,8 @@ T.W.J. de Geus (Tom) | tom@geus.me | www.geus.me |
 ## C++ and Python
 
 The code is a C++ header-only library (see [installation notes](#c-headers)),
-but a Python module is also provided (see [installation notes](#python-module)).
-The interfaces are identical except:
-
-+   All *xtensor* objects (`xt::xtensor<...>`) are *NumPy* arrays in Python.
-    Overloading based on rank is also available in Python.
-+   The Python module cannot change output objects in-place:
-    only functions whose name starts with a capital letter are included, see below.
-+   All `::` in C++ are `.` in Python.
+but a Python module is also provided (see [installation notes](#python-module))
+with an identical API (note that all `::` in C++ are `.` in Python).
 
 ## Cartesian2d
 
@@ -274,9 +268,9 @@ git checkout https://github.com/tdegeus/GMatElastoPlasticQPot.git
 cd GMatElastoPlasticQPot
 
 # Install headers, CMake and pkg-config support
-cmake -Bbuild .
+cmake -Bbuild
 cd build
-make install
+cmake --install .
 ```
 
 ## Python module
@@ -300,10 +294,8 @@ To enable them you have to compile on your system, as is discussed next.
 >   conda install -c conda-forge xsimd
 >   ```
 >
->   If you then compile and install with the same environment
->   you should be good to go.
->   Otherwise, a bit of manual labour might be needed to
->   treat the dependencies.
+>   If you then compile and install with the same environment you should be good to go.
+>   Otherwise, a bit of manual labour might be needed to treat the dependencies.
 
 ```bash
 # Download GMatElastoPlasticQPot
@@ -311,11 +303,9 @@ git checkout https://github.com/tdegeus/GMatElastoPlasticQPot.git
 cd GMatElastoPlasticQPot
 
 # Only if you want to use hardware optimisation:
-export CMAKE_ARGS="-DUSE_SIMD=1"
+export SKBUILD_CONFIGURE_OPTIONS="-DUSE_SIMD=1"
 
-# Compile and install the Python module
-# (-vv can be omitted as is controls just the verbosity)
-python -m pip install . -vv
+python -m pip install . -v
 ```
 
 # Compiling user-code
@@ -401,10 +391,9 @@ enabling *xsimd*, ...
 >   Run by the continuous integration
 
 ```
-cd build
-cmake .. -DBUILD_TESTS=1
-make
-./test/main
+cmake -Bbuild -DBUILD_TESTS=1
+cmake --build .
+ctest --output-on-failure
 ```
 
 ## Basic benchmarking
@@ -438,8 +427,7 @@ versions:
 
 ```
 git checkout tags/v0.6.3
-python setup.py build
-python setup.py install
+python -m pip install . -v
 python Cartesian2d_check_v0.6.3.py
 ```
 

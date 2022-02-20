@@ -1,7 +1,7 @@
-/*
-
-(c - MIT) T.W.J. de Geus (Tom) | www.geus.me | github.com/tdegeus/GMatElastoPlasticQPot
-
+/**
+\file
+\copyright Copyright. Tom de Geus. All rights reserved.
+\license This project is released under the MIT License.
 */
 
 #include <pybind11/pybind11.h>

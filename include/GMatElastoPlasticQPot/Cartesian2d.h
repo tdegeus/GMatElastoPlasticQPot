@@ -1,6 +1,4 @@
 /**
-Implementation in a 2-d Cartesian coordinate frame.
-
 \file
 \copyright Copyright 2018. Tom de Geus. All rights reserved.
 \license This project is released under the MIT License.
@@ -26,18 +24,18 @@ namespace GMatElastoPlasticQPot {
 Implementation in a 2-d Cartesian coordinate frame.
 
 Note that for convenience this namespace include aliases to:
--   GMatTensor::Cartesian2d::O2()
--   GMatTensor::Cartesian2d::O4()
--   GMatTensor::Cartesian2d::I2()
--   GMatTensor::Cartesian2d::II()
--   GMatTensor::Cartesian2d::I4()
--   GMatTensor::Cartesian2d::I4rt()
--   GMatTensor::Cartesian2d::I4s()
--   GMatTensor::Cartesian2d::I4d()
--   GMatTensor::Cartesian2d::Hydrostatic()
--   GMatTensor::Cartesian2d::hydrostatic()
 -   GMatTensor::Cartesian2d::Deviatoric()
 -   GMatTensor::Cartesian2d::deviatoric()
+-   GMatTensor::Cartesian2d::Hydrostatic()
+-   GMatTensor::Cartesian2d::hydrostatic()
+-   GMatTensor::Cartesian2d::I2()
+-   GMatTensor::Cartesian2d::I4()
+-   GMatTensor::Cartesian2d::I4d()
+-   GMatTensor::Cartesian2d::I4rt()
+-   GMatTensor::Cartesian2d::I4s()
+-   GMatTensor::Cartesian2d::II()
+-   GMatTensor::Cartesian2d::O2()
+-   GMatTensor::Cartesian2d::O4()
 */
 namespace Cartesian2d {
 
@@ -78,7 +76,7 @@ template <class T, class U>
 inline void epsd(const T& A, U& ret);
 
 /**
-Equivalent strain: norm of strain deviator
+Equivalent stress: norm of strain deviator
 
 \f$ \sqrt{2 (dev(A))_{ij} (dev(A))_{ji}} \f$
 
@@ -871,7 +869,7 @@ public:
     void stress(R& ret) const;
 
     /**
-    \return Tangent tensor per item [shape(), 2, 2].
+    \return Tangent tensor per item [shape(), 2, 2, 2, 2].
     */
     xt::xtensor<double, N + 4> Tangent() const;
 

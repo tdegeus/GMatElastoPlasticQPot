@@ -1,4 +1,5 @@
 _skbuild
+_cmake_test_compile
 
 # Mac crap
 .DS_Store

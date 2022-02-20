@@ -1,6 +1,4 @@
 /**
-Implementation of version.h
-
 \file
 \copyright Copyright 2018. Tom de Geus. All rights reserved.
 \license This project is released under the MIT License.
