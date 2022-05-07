@@ -4,7 +4,7 @@ dependencies:
 - catch2
 - cmake
 - doxygen
-- gmattensor
+- gmattensor >=0.8.0
 - goosefem
 - h5py
 - ninja
