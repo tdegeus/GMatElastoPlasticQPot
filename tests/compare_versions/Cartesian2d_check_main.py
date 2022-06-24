@@ -1,6 +1,7 @@
 import unittest
 
 import GMatElastoPlasticQPot.Cartesian2d as GMat
+import GMatTensor.Cartesian2d as tensor
 import h5py
 import numpy as np
 
@@ -10,55 +11,70 @@ class Test(unittest.TestCase):
 
         with h5py.File("Cartesian2d_random.hdf5", "r") as data:
 
-            mat = GMat.Array2d(data["/shape"][...])
+            shape = list(data["/shape"][...])
+            I4s = tensor.Array2d(shape).I4s
+            mat = {
+                "Cusp1d": {
+                    "mat": GMat.Cusp1d(
+                        data["/cusp/K"][...], data["/cusp/G"][...], data["/cusp/epsy"][...]
+                    ),
+                    "is": data["/iden"][...] == 0,
+                },
+                "Smooth1d": {
+                    "mat": GMat.Smooth1d(
+                        data["/smooth/K"][...], data["/smooth/G"][...], data["/smooth/epsy"][...]
+                    ),
+                    "is": data["/iden"][...] == 1,
+                },
+                "Elastic1d": {
+                    "mat": GMat.Elastic1d(data["/elastic/K"][...], data["/elastic/G"][...]),
+                    "is": data["/iden"][...] == 2,
+                },
+            }
 
-            I = data["/cusp/I"][...]
-            idx = data["/cusp/idx"][...]
-            K = data["/cusp/K"][...]
-            G = data["/cusp/G"][...]
-            epsy = data["/cusp/epsy"][...]
+            for m in mat:
+                mat[m]["is_tensor2"] = np.zeros(shape + [2, 2], bool)
+                mat[m]["is_tensor4"] = np.zeros(shape + [2, 2, 2, 2], bool)
+                mat[m]["is_tensor2"] += (mat[m]["is"]).reshape(shape + [1, 1])
+                mat[m]["is_tensor4"] += (mat[m]["is"]).reshape(shape + [1, 1, 1, 1])
 
-            mat.setCusp(I, idx, K, G, epsy)
-
-            I = data["/smooth/I"][...]
-            idx = data["/smooth/idx"][...]
-            K = data["/smooth/K"][...]
-            G = data["/smooth/G"][...]
-            epsy = data["/smooth/epsy"][...]
-
-            mat.setSmooth(I, idx, K, G, epsy)
-
-            I = data["/elastic/I"][...]
-            idx = data["/elastic/idx"][...]
-            K = data["/elastic/K"][...]
-            G = data["/elastic/G"][...]
-
-            mat.setElastic(I, idx, K, G)
+            Sig = np.empty(shape + [2, 2])
+            C = np.empty(shape + [2, 2, 2, 2])
+            index = np.zeros(shape, dtype=np.uint64)
+            epsy_left = -np.inf * np.ones(shape)
+            epsy_right = np.inf * np.ones(shape)
 
             for i in range(20):
 
                 GradU = data[f"/random/{i:d}/GradU"][...]
 
-                Eps = np.einsum("...ijkl,...lk->...ij", mat.I4s(), GradU)
-                mat.setStrain(Eps)
+                Eps = tensor.A4_ddot_B2(I4s, GradU)
 
-                self.assertTrue(np.allclose(mat.Stress(), data[f"/random/{i:d}/Stress"][...]))
-                self.assertTrue(np.allclose(mat.Tangent(), data[f"/random/{i:d}/Tangent"][...]))
+                for m in mat:
+                    mat[m]["mat"].Eps = Eps[mat[m]["is_tensor2"]].reshape(-1, 2, 2)
+                    Sig[mat[m]["is_tensor2"]] = mat[m]["mat"].Sig.reshape(-1)
+                    C[mat[m]["is_tensor4"]] = mat[m]["mat"].C.reshape(-1)
+                    if m == "Elastic1d":
+                        continue
+                    index[mat[m]["is"]] = mat[m]["mat"].i
+                    epsy_left[mat[m]["is"]] = mat[m]["mat"].epsy_left
+                    epsy_right[mat[m]["is"]] = mat[m]["mat"].epsy_right
+
+                self.assertTrue(np.allclose(Sig, data[f"/random/{i:d}/Stress"][...]))
+                self.assertTrue(np.allclose(C, data[f"/random/{i:d}/Tangent"][...]))
                 self.assertTrue(
                     np.allclose(
-                        mat.CurrentYieldLeft(),
+                        epsy_left,
                         data[f"/random/{i:d}/CurrentYieldLeft"][...],
                     )
                 )
                 self.assertTrue(
                     np.allclose(
-                        mat.CurrentYieldRight(),
+                        epsy_right,
                         data[f"/random/{i:d}/CurrentYieldRight"][...],
                     )
                 )
-                self.assertTrue(
-                    np.all(mat.CurrentIndex() == data[f"/random/{i:d}/CurrentIndex"][...])
-                )
+                self.assertTrue(np.all(index == data[f"/random/{i:d}/CurrentIndex"][...]))
 
 
 if __name__ == "__main__":

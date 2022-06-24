@@ -7,9 +7,7 @@ string(TOUPPER "${PROJECT_NAME}" PROJECT_NAME_UPPER)
 # Command-line options
 # ====================
 
-option(BUILD_ALL "${PROJECT_NAME}: Build tests, Python API & docs" OFF)
-option(BUILD_TESTS "${PROJECT_NAME}: Build tests" OFF)
-option(BUILD_EXAMPLES "${PROJECT_NAME}: Build examples" OFF)
+option(BUILD_ALL "${PROJECT_NAME}: Build Python API & docs" OFF)
 option(BUILD_PYTHON "${PROJECT_NAME}: Build Python API" OFF)
 option(BUILD_DOCS "${PROJECT_NAME}: Build docs" OFF)
 option(USE_ASSERT "${PROJECT_NAME}: Build with assertions" ON)
@@ -18,8 +16,6 @@ option(USE_SIMD "${PROJECT_NAME}: Build with hardware optimization" OFF)
 
 if(SKBUILD)
     set(BUILD_ALL 0)
-    set(BUILD_TESTS 0)
-    set(BUILD_EXAMPLES 0)
     set(BUILD_PYTHON 1)
     set(BUILD_DOCS 0)
 endif()
@@ -63,7 +59,6 @@ target_compile_definitions(${PROJECT_NAME} INTERFACE
 
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
-include(CTest)
 include("${PROJECT_NAME}Config.cmake")
 
 # Installation headers / CMake / pkg-config
@@ -106,25 +101,6 @@ if(NOT SKBUILD)
 
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
             DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig/")
-
-endif()
-
-# Build tests
-# ===========
-
-if(BUILD_TESTS OR BUILD_ALL)
-
-    enable_testing()
-    add_subdirectory(tests)
-
-endif()
-
-# Build examples
-# ==============
-
-if(BUILD_EXAMPLES OR BUILD_ALL)
-
-    add_subdirectory(examples)
 
 endif()
 
@@ -198,26 +174,21 @@ if(BUILD_DOCS OR BUILD_ALL)
 
     # build docs of dependencies as well (to get nice internal links)
     get_target_property(GMatTensor_INCLUDE GMatTensor INTERFACE_INCLUDE_DIRECTORIES)
-    get_target_property(QPot_INCLUDE QPot INTERFACE_INCLUDE_DIRECTORIES)
 
     set(${PROJECT_NAME}_DOCS_INCL
         "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}"
-        "${GMatTensor_INCLUDE}/GMatTensor"
-        "${QPot_INCLUDE}/QPot")
+        "${GMatTensor_INCLUDE}/GMatTensor")
 
     set(${PROJECT_NAME}_DOCS_STRIP
         "${CMAKE_CURRENT_SOURCE_DIR}/include"
-        "${GMatTensor_INCLUDE}"
-        "${QPot_INCLUDE}")
+        "${GMatTensor_INCLUDE}")
 
     # deal with strange doxygen bug
     string(REGEX REPLACE "(.*)(include)" "\\1" GMatTensor_STRIP ${GMatTensor_INCLUDE})
-    string(REGEX REPLACE "(.*)(include)" "\\1" QPot_STRIP ${QPot_INCLUDE})
 
     set(${PROJECT_NAME}_DOCS_STRIP_INC
         "${CMAKE_CURRENT_SOURCE_DIR}/include"
-        "${GMatTensor_STRIP}"
-        "${QPot_STRIP}")
+        "${GMatTensor_STRIP}")
 
     list(REMOVE_DUPLICATES ${PROJECT_NAME}_DOCS_STRIP)
     list(REMOVE_DUPLICATES ${PROJECT_NAME}_DOCS_STRIP_INC)
@@ -229,6 +200,7 @@ if(BUILD_DOCS OR BUILD_ALL)
     set(DOXYGEN_JAVADOC_AUTOBRIEF YES)
     set(DOXYGEN_MACRO_EXPANSION YES)
     set(DOXYGEN_SOURCE_BROWSER YES)
+    set(DOXYGEN_GENERATE_XML YES)
     set(DOXYGEN_QUIET YES)
     set(DOXYGEN_WARN_IF_UNDOCUMENTED YES)
     set(DOXYGEN_WARN_AS_ERROR YES)
@@ -241,6 +213,6 @@ if(BUILD_DOCS OR BUILD_ALL)
 
     set(DOXYGEN_STRIP_FROM_INC_PATH ${${PROJECT_NAME}_DOCS_STRIP_INC})
     set(DOXYGEN_STRIP_FROM_PATH ${${PROJECT_NAME}_DOCS_STRIP})
-    doxygen_add_docs(html ${${PROJECT_NAME}_DOCS_INCL})
+    doxygen_add_docs(html ${${PROJECT_NAME}_DOCS_INCL} "README.md")
 
 endif()

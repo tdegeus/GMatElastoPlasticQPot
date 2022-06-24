@@ -12,11 +12,13 @@ class Test(unittest.TestCase):
 
             mat = GMat.Array2d(data["/shape"][...])
 
+            isplastic = (data["/cusp/I"][...] + data["/smooth/I"][...]) > 0
+
             I = data["/cusp/I"][...]
             idx = data["/cusp/idx"][...]
             K = data["/cusp/K"][...]
             G = data["/cusp/G"][...]
-            epsy = data["/cusp/epsy"][...]
+            epsy = data["/cusp/epsy"][...][:, 1:]
 
             mat.setCusp(I, idx, K, G, epsy)
 
@@ -24,7 +26,7 @@ class Test(unittest.TestCase):
             idx = data["/smooth/idx"][...]
             K = data["/smooth/K"][...]
             G = data["/smooth/G"][...]
-            epsy = data["/smooth/epsy"][...]
+            epsy = data["/smooth/epsy"][...][:, 1:]
 
             mat.setSmooth(I, idx, K, G, epsy)
 
@@ -46,18 +48,21 @@ class Test(unittest.TestCase):
                 self.assertTrue(np.allclose(mat.Tangent(), data[f"/random/{i:d}/Tangent"][...]))
                 self.assertTrue(
                     np.allclose(
-                        mat.CurrentYieldLeft(),
-                        data[f"/random/{i:d}/CurrentYieldLeft"][...],
+                        mat.CurrentYieldLeft()[isplastic],
+                        data[f"/random/{i:d}/CurrentYieldLeft"][...][isplastic],
                     )
                 )
                 self.assertTrue(
                     np.allclose(
-                        mat.CurrentYieldRight(),
-                        data[f"/random/{i:d}/CurrentYieldRight"][...],
+                        mat.CurrentYieldRight()[isplastic],
+                        data[f"/random/{i:d}/CurrentYieldRight"][...][isplastic],
                     )
                 )
                 self.assertTrue(
-                    np.all(mat.CurrentIndex() == data[f"/random/{i:d}/CurrentIndex"][...])
+                    np.all(
+                        mat.CurrentIndex()[isplastic]
+                        == data[f"/random/{i:d}/CurrentIndex"][...][isplastic]
+                    )
                 )
 
 

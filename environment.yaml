@@ -1,19 +1,21 @@
 channels:
 - conda-forge
 dependencies:
-- catch2
+- breathe
 - cmake
 - doxygen
-- gmattensor >=0.8.0
-- goosefem
+- gmattensor >=0.10.2
 - h5py
 - ninja
 - numpy
 - pybind11
 - python
-- python-qpot
-- qpot
+- python-gmattensor >0.9.0
+- qpot >=0.12.1
 - scikit-build
 - setuptools_scm
-- xtensor
+- sphinx
+- sphinx-tabs
+- sphinx_rtd_theme
+- xtensor >=0.24.2
 - xtensor-python

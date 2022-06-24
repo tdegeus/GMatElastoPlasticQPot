@@ -20,11 +20,13 @@ class Test(unittest.TestCase):
 
             mat = GMat.Matrix(shape[0], shape[1])
 
+            isplastic = (data["/cusp/I"][...] + data["/smooth/I"][...]) > 0
+
             I = data["/cusp/I"][...]
             idx = data["/cusp/idx"][...]
             K = data["/cusp/K"][...]
             G = data["/cusp/G"][...]
-            epsy = data["/cusp/epsy"][...]
+            epsy = data["/cusp/epsy"][...][:, 1:]
 
             mat.setCusp(I, idx, K, G, epsy)
 
@@ -32,7 +34,7 @@ class Test(unittest.TestCase):
             idx = data["/smooth/idx"][...]
             K = data["/smooth/K"][...]
             G = data["/smooth/G"][...]
-            epsy = data["/smooth/epsy"][...]
+            epsy = data["/smooth/epsy"][...][:, 1:]
 
             mat.setSmooth(I, idx, K, G, epsy)
 
@@ -53,17 +55,22 @@ class Test(unittest.TestCase):
                 self.assertTrue(np.allclose(mat.Stress(Eps), data[f"/random/{i:d}/Stress"][...]))
                 self.assertTrue(
                     np.allclose(
-                        mat.Epsy(idx),
-                        data[f"/random/{i:d}/CurrentYieldLeft"][...],
+                        mat.Epsy(idx)[isplastic],
+                        data[f"/random/{i:d}/CurrentYieldLeft"][...][isplastic],
                     )
                 )
                 self.assertTrue(
                     np.allclose(
-                        mat.Epsy(idx + 1),
-                        data[f"/random/{i:d}/CurrentYieldRight"][...],
+                        mat.Epsy(idx + 1)[isplastic],
+                        data[f"/random/{i:d}/CurrentYieldRight"][...][isplastic],
                     )
                 )
-                self.assertTrue(np.all(mat.Find(Eps) == data[f"/random/{i:d}/CurrentIndex"][...]))
+                self.assertTrue(
+                    np.all(
+                        mat.Find(Eps)[isplastic]
+                        == data[f"/random/{i:d}/CurrentIndex"][...][isplastic]
+                    )
+                )
 
 
 if __name__ == "__main__":

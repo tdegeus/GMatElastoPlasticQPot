@@ -18,13 +18,10 @@ jobs:
         include:
         - runs-on: ubuntu-latest
           config: -DCMAKE_BUILD_TYPE=Release -DBUILD_ALL=1
-          prop: tests, examples & docs
         - runs-on: macos-latest
-          config: -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=1
-          prop: tests
+          config: -DCMAKE_BUILD_TYPE=Release -DBUILD_ALL=1
         - runs-on: windows-latest
-          config: -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=1 -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
-          prop: tests
+          config: -DCMAKE_BUILD_TYPE=Release -DBUILD_ALL=1 -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
 
     defaults:
       run:
@@ -43,7 +40,6 @@ jobs:
       with:
         environment-file: environment.yaml
         environment-name: myenv
-        cache-env: true
         extra-specs: |
           sel(linux): cxx-compiler
           sel(win): clang_win-64
@@ -54,20 +50,16 @@ jobs:
     - name: Configure using CMake
       run: cmake -Bbuild ${{ matrix.config }}
 
-    - name: Build C++ ${{ matrix.prop }}
+    - name: Build doxygen-docs (error on warning)
+      if: runner.os == 'Linux'
       working-directory: build
-      run: cmake --build .
-
-    - name: Run C++ ${{ matrix.prop }}
-      working-directory: build
-      run: ctest --output-on-failure
+      run: make html
 
     - name: Build and install Python module
       run: python -m pip install . -v
 
     - name: Run Python tests
-      working-directory: tests
-      run: python Cartesian2d.py
+      run: python -m unittest discover tests
 
     - name: Generate consistency data based on current commit
       if: runner.os == 'Linux'
@@ -75,6 +67,13 @@ jobs:
       run: |
         python Cartesian2d_generate.py
         python Cartesian2d_check_main.py
+
+    - name: Check consistency with v0.16.3
+      if: runner.os == 'Linux'
+      working-directory: tests/compare_versions
+      run: |
+        micromamba install -c conda-forge python=3.8.5 python-gmatelastoplasticqpot=0.16.3
+        python Cartesian2d_check_v0.6.3.py
 
     - name: Check consistency with v0.9.0
       if: runner.os == 'Linux'
@@ -131,8 +130,3 @@ jobs:
       run: |
         micromamba install -c conda-forge python=3.8.5 python-gmatelastoplasticqpot=0.2.2
         python Cartesian2d_check_v0.2.2.py
-
-    - name: Build doxygen-docs
-      if: runner.os == 'Linux'
-      working-directory: build
-      run: make html

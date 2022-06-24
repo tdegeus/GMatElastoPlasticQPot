@@ -1,6 +1,6 @@
 /**
 \file
-\copyright Copyright 2018. Tom de Geus. All rights reserved.
+\copyright Copyright. Tom de Geus. All rights reserved.
 \license This project is released under the MIT License.
 */
 
@@ -8,30 +8,11 @@
 #define GMATELASTOPLASTICQPOT_CONFIG_H
 
 /**
-\cond
-*/
-#define Q(x) #x
-#define QUOTE(x) Q(x)
-
-#define GMATELASTOPLASTICQPOT_WARNING_IMPL(message, file, line) \
-    std::cout << std::string(file) + ':' + std::to_string(line) + ": " message ") \n\t";
-
-#define GMATELASTOPLASTICQPOT_ASSERT_IMPL(expr, file, line) \
-    if (!(expr)) { \
-        throw std::runtime_error( \
-            std::string(file) + ':' + std::to_string(line) + \
-            ": assertion failed (" #expr ") \n\t"); \
-    }
-/**
-\endcond
-*/
-
-/**
-All assertions are implementation as::
+All assertions are implementation as:
 
     GMATELASTOPLASTICQPOT_ASSERT(...)
 
-They can be enabled by::
+They can be enabled by:
 
     #define GMATELASTOPLASTICQPOT_ENABLE_ASSERT
 
@@ -39,54 +20,49 @@ They can be enabled by::
 The advantage is that:
 
 -   File and line-number are displayed if the assertion fails.
--   GMatElastoPlasticQPot's assertions can be enabled/disabled
-    independently from those of other libraries.
+-   Assertions can be enabled/disabled independently from those of other libraries.
 
 \throw std::runtime_error
 */
 #ifdef GMATELASTOPLASTICQPOT_ENABLE_ASSERT
-#define GMATELASTOPLASTICQPOT_ASSERT(expr) \
-    GMATELASTOPLASTICQPOT_ASSERT_IMPL(expr, __FILE__, __LINE__)
+#define GMATELASTOPLASTICQPOT_ASSERT(expr) GMATTENSOR_ASSERT_IMPL(expr, __FILE__, __LINE__)
 #else
 #define GMATELASTOPLASTICQPOT_ASSERT(expr)
-#endif
-
-/**
-All warnings are implemented as::
-
-    GMATELASTOPLASTICQPOT_WARNING(...)
-
-They can be disabled by::
-
-    #define GMATELASTOPLASTICQPOT_DISABLE_WARNING
-*/
-#ifdef GMATELASTOPLASTICQPOT_DISABLE_WARNING
-#define GMATELASTOPLASTICQPOT_WARNING(message)
-#else
-#define GMATELASTOPLASTICQPOT_WARNING(message) \
-    GMATELASTOPLASTICQPOT_WARNING_IMPL(message, __FILE__, __LINE__)
-#endif
-
-/**
-All warnings specific to the Python API are implemented as::
-
-    GMATELASTOPLASTICQPOT_WARNING_PYTHON(...)
-
-They can be enabled by::
-
-    #define GMATELASTOPLASTICQPOT_ENABLE_WARNING_PYTHON
-*/
-#ifdef GMATELASTOPLASTICQPOT_ENABLE_WARNING_PYTHON
-#define GMATELASTOPLASTICQPOT_WARNING_PYTHON(message) \
-    GMATELASTOPLASTICQPOT_WARNING_IMPL(message, __FILE__, __LINE__)
-#else
-#define GMATELASTOPLASTICQPOT_WARNING_PYTHON(message)
 #endif
 
 /**
 Material model based on a sequence of parabolic potentials.
 */
 namespace GMatElastoPlasticQPot {
-}
+
+/**
+Define container type.
+The default `xt::xtensor` can be changed using:
+
+-   `#define GMATELASTOPLASTICQPOT_USE_XTENSOR_PYTHON` -> `xt::pytensor`
+*/
+namespace array_type {
+
+#ifdef GMATELASTOPLASTICQPOT_USE_XTENSOR_PYTHON
+
+/**
+Fixed (static) rank array.
+*/
+template <typename T, size_t N>
+using tensor = xt::pytensor<T, N>;
+
+#else
+
+/**
+Fixed (static) rank array.
+*/
+template <typename T, size_t N>
+using tensor = xt::xtensor<T, N>;
+
+#endif
+
+} // namespace array_type
+
+} // namespace GMatElastoPlasticQPot
 
 #endif
