@@ -1,7 +1,0 @@
-channels:
-- conda-forge
-dependencies:
-- cmake
-- gmatelastoplasticqpot=0.5.0
-- goosefem
-- xsimd
