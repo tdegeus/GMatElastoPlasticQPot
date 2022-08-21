@@ -62,15 +62,6 @@ inline std::vector<std::string> version_dependencies()
     return GMatTensor::version_dependencies();
 }
 
-/**
-Return information on the compiler, the platform, the C++ standard, and the compilation data.
-\return List of strings.
-*/
-inline std::vector<std::string> version_compiler()
-{
-    return GMatTensor::version_compiler();
-}
-
 } // namespace GMatElastoPlasticQPot
 
 #endif

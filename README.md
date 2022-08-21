@@ -41,7 +41,7 @@ G = np.empty(shape)
 epsy = np.empty(shape + [1])
 ...
 
-GMat.Cusp model(K, G, epsy);
+GMat.CuspXd model(K, G, epsy);
 ...
 
 Eps = np.empty(shape + [3, 3])
@@ -101,7 +101,7 @@ int main()
     xt::xtensor<double, rank> G = ...;
     xt::xtensor<double, rank + 1> epsy = ...;
 
-    GMat::Cusp model(K, G, epsy);
+    GMat::CuspXd model(K, G, epsy);
     ...
 
     xt::xtensor<double, rank + 2> Eps;
@@ -256,7 +256,7 @@ There is only a single class `Elastic`. It's functions where renamed:
 *   `.Tangent()` -> `.C()` (now returns a reference).
 *   `.tangent(...)`: deprecated.
 
-### C++
+### Python
 
 There is only a single class `Elastic`. It's functions are converted to properties:
 
