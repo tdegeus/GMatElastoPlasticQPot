@@ -4,6 +4,7 @@ dependencies:
 - breathe
 - cmake
 - doxygen
+- furo
 - gmattensor >=0.10.2
 - h5py
 - ninja

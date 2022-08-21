@@ -3,5 +3,5 @@ includedir=${prefix}/include
 
 Name: @PROJECT_NAME@
 Description: Elasto-plastic material model based on a manifold of quadratic potentials.
-Version: @GMATELASTOPLASTICQPOT_VERSION@
+Version: @PROJECT_VERSION@
 Cflags: -I${includedir}
