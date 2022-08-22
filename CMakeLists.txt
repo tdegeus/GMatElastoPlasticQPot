@@ -40,6 +40,7 @@ endif()
 # ==========
 
 find_package(xtensor REQUIRED)
+find_package(GMatElastic REQUIRED)
 find_package(GMatTensor REQUIRED)
 find_package(QPot REQUIRED)
 
@@ -49,7 +50,7 @@ target_include_directories(${PROJECT_NAME} INTERFACE
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 
-target_link_libraries(${PROJECT_NAME} INTERFACE xtensor QPot GMatTensor)
+target_link_libraries(${PROJECT_NAME} INTERFACE xtensor GMatElastic GMatTensor QPot)
 
 target_compile_definitions(${PROJECT_NAME} INTERFACE
     ${PROJECT_NAME_UPPER}_VERSION="${PROJECT_VERSION}")
@@ -173,21 +174,26 @@ if(BUILD_DOCS OR BUILD_ALL)
     find_package(Doxygen REQUIRED)
 
     # build docs of dependencies as well (to get nice internal links)
+    get_target_property(GMatElastic_INCLUDE GMatElastic INTERFACE_INCLUDE_DIRECTORIES)
     get_target_property(GMatTensor_INCLUDE GMatTensor INTERFACE_INCLUDE_DIRECTORIES)
 
     set(${PROJECT_NAME}_DOCS_INCL
         "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}"
+        "${GMatElastic_INCLUDE}/GMatElastic"
         "${GMatTensor_INCLUDE}/GMatTensor")
 
     set(${PROJECT_NAME}_DOCS_STRIP
         "${CMAKE_CURRENT_SOURCE_DIR}/include"
+        "${GMatElastic_INCLUDE}"
         "${GMatTensor_INCLUDE}")
 
     # deal with strange doxygen bug
+    string(REGEX REPLACE "(.*)(include)" "\\1" GMatElastic_STRIP ${GMatElastic_INCLUDE})
     string(REGEX REPLACE "(.*)(include)" "\\1" GMatTensor_STRIP ${GMatTensor_INCLUDE})
 
     set(${PROJECT_NAME}_DOCS_STRIP_INC
         "${CMAKE_CURRENT_SOURCE_DIR}/include"
+        "${GMatElastic_STRIP}"
         "${GMatTensor_STRIP}")
 
     list(REMOVE_DUPLICATES ${PROJECT_NAME}_DOCS_STRIP)
