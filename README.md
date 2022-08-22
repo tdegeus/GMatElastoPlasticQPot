@@ -6,8 +6,8 @@
 [![Conda Version](https://img.shields.io/conda/vn/conda-forge/python-gmatelastoplasticqpot.svg)](https://anaconda.org/conda-forge/python-gmatelastoplasticqpot)
 
 Elasto-plastic material model based on a manifold of quadratic potentials.
-An overview of the theory can be found in `docs/readme.tex`
-conveniently compiled to this [PDF](docs/notes/readme.pdf).
+An overview of the theory can be found in `docs/theory/readme.tex`
+conveniently compiled to this [PDF](docs/theory/readme.pdf).
 
 # Disclaimer
 
@@ -112,23 +112,11 @@ int main()
     ...
 
     // get reference to stress
-    auto Sig = elastic.Sig();
+    auto Sig = model.Sig();
 
     return 0;
 }
 ```
-
-## Debugging
-
-To enable assertions define `GMATELASTOPLASTICQPOT_ENABLE_ASSERT`
-**before** including *GMatElastoPlasticQPot* for the first time.
-
-Using *CMake* this can be done using the `GMatElastoPlasticQPot::assert` target.
-
->   To also enable assertions of *xtensor* also define `XTENSOR_ENABLE_ASSERT`
->   **before** including *xtensor* (and *GMatElastoPlasticQPot*) for the first time.
->
->   Using *CMake* all assertions are enabled using the `GMatElastoPlasticQPot::debug` target.
 
 ## Installation
 
@@ -170,16 +158,15 @@ target_link_libraries(example PRIVATE GMatElastoPlasticQPot)
 The following targets are available:
 
 *   `GMatElastoPlasticQPot`
-    Includes *GMatElastoPlasticQPot* and the *xtensor* dependency.
+    Includes the library and its dependencies.
 
 *   `GMatElastoPlasticQPot::assert`
-    Enables assertions by defining `GMATELASTOPLASTICQPOT_ENABLE_ASSERT`.
+    Enables IO-assertions by defining `GMATELASTOPLASTICQPOT_ENABLE_ASSERT`.
 
 *   `GMatElastoPlasticQPot::debug`
-    Enables all assertions by defining
-    `GMATELASTOPLASTICQPOT_ENABLE_ASSERT` and `XTENSOR_ENABLE_ASSERT`.
+    Enables assertions of all dependencies.
 
-*   `GMatElastoPlasticQPot::compiler_warings`
+*   `GMatElastoPlasticQPot::compiler_warnings`
     Enables compiler warnings (generic).
 
 ### Optimisation
@@ -201,7 +188,7 @@ target_link_libraries(example PRIVATE
     xtensor::use_xsimd)
 ```
 
-See the [documentation of xtensor](https://xtensor.readthedocs.io/en/latest/) concerning optimisation.
+See the [documentation of xtensor](https://xtensor.readthedocs.io/en/latest/).
 
 ## By hand
 
