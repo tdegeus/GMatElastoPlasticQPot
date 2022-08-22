@@ -33,9 +33,10 @@ get_target_property(
 
 # Find dependencies
 
-find_dependency(xtensor)
-find_dependency(QPot)
+find_dependency(GMatElastic)
 find_dependency(GMatTensor)
+find_dependency(QPot)
+find_dependency(xtensor)
 
 # Define support target "GMatElastoPlasticQPot::compiler_warnings"
 
@@ -53,8 +54,7 @@ if(NOT TARGET GMatElastoPlasticQPot::assert)
         TARGET GMatElastoPlasticQPot::assert
         PROPERTY INTERFACE_COMPILE_DEFINITIONS
         GMATELASTOPLASTICQPOT_ENABLE_ASSERT
-        GMATTENSOR_ENABLE_ASSERT
-        QPOT_ENABLE_ASSERT)
+        GMATELASTIC_ENABLE_ASSERT)
 endif()
 
 # Define support target "GMatElastoPlasticQPot::debug"
@@ -64,8 +64,9 @@ if(NOT TARGET GMatElastoPlasticQPot::debug)
     set_property(
         TARGET GMatElastoPlasticQPot::debug
         PROPERTY INTERFACE_COMPILE_DEFINITIONS
-        XTENSOR_ENABLE_ASSERT
+        GMATELASTIC_ENABLE_ASSERT
         GMATELASTOPLASTICQPOT_ENABLE_ASSERT
         GMATTENSOR_ENABLE_ASSERT
-        QPOT_ENABLE_ASSERT)
+        QPOT_ENABLE_ASSERT
+        XTENSOR_ENABLE_ASSERT)
 endif()
