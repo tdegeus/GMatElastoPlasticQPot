@@ -259,6 +259,9 @@ public:
         return ret;
     }
 
+    /**
+    \copydoc GMatElastic::Cartesian3d::Elastic::refresh()
+    */
     void refresh() override
     {
         namespace GT = GMatTensor::Cartesian3d::pointer;
@@ -383,6 +386,9 @@ public:
         this->init_Cusp(K, G, epsy);
     }
 
+    /**
+    \copydoc GMatElastic::Cartesian3d::Elastic::refresh()
+    */
     void refresh() override
     {
         namespace GT = GMatTensor::Cartesian3d::pointer;
