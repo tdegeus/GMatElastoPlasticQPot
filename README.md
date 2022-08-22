@@ -301,6 +301,12 @@ This requires the following changes:
 
 # Change-log
 
+## v0.18.0
+
+*   Reducing default assertions
+*   Adding autodoc
+*   Integrating GMatElastoPlasticQPot3d
+
 ## v0.17.0
 
 Complete API overhaul.
