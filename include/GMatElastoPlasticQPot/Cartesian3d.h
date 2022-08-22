@@ -259,11 +259,10 @@ public:
         return ret;
     }
 
-    /**
-    \copydoc GMatElastic::Cartesian3d::Elastic::refresh()
-    */
-    void refresh() override
+    void refresh(bool compute_tangent = true) override
     {
+        (void)(compute_tangent);
+
         namespace GT = GMatTensor::Cartesian3d::pointer;
 
 #pragma omp parallel for
@@ -386,11 +385,10 @@ public:
         this->init_Cusp(K, G, epsy);
     }
 
-    /**
-    \copydoc GMatElastic::Cartesian3d::Elastic::refresh()
-    */
-    void refresh() override
+    void refresh(bool compute_tangent = true) override
     {
+        (void)(compute_tangent);
+
         namespace GT = GMatTensor::Cartesian3d::pointer;
 
 #pragma omp parallel for

@@ -69,7 +69,8 @@ auto add_Elastic(T& cls)
         static_cast<void (S::*)(const xt::pytensor<double, S::rank + 2>&)>(&S::set_Eps),
         "Strain tensor");
 
-    cls.def("refresh", &S::refresh, "Recompute stress from strain.");
+    cls.def(
+        "refresh", &S::refresh, "Recompute stress from strain.", py::arg("compute_tangent") = true);
 }
 
 template <class S, class T>
