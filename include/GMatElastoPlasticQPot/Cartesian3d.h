@@ -7,8 +7,14 @@
 #ifndef GMATELASTOPLASTICQPOT_CARTESIAN3D_H
 #define GMATELASTOPLASTICQPOT_CARTESIAN3D_H
 
+/**
+\cond
+*/
 // use "M_PI" from "math.h"
 #define _USE_MATH_DEFINES
+/**
+\endcond
+*/
 
 #include <algorithm>
 #include <math.h>
