@@ -216,9 +216,13 @@ public:
         # no further action needed, "mat" was refreshed
 
     Note though that you can call this function as often as you like, you will only loose time.
+
+    \param compute_tangent Irrelevant, ignored.
     */
-    virtual void refresh()
+    virtual void refresh(bool compute_tangent = true)
     {
+        (void)(compute_tangent);
+
 #pragma omp parallel for
         for (size_t i = 0; i < m_size; ++i) {
 
@@ -468,8 +472,10 @@ public:
         return ret;
     }
 
-    void refresh() override
+    void refresh(bool compute_tangent = true) override
     {
+        (void)(compute_tangent);
+
         namespace GT = GMatTensor::Cartesian2d::pointer;
 
 #pragma omp parallel for
@@ -584,8 +590,10 @@ public:
         this->init_Cusp(K, G, epsy);
     }
 
-    void refresh() override
+    void refresh(bool compute_tangent = true) override
     {
+        (void)(compute_tangent);
+
         namespace GT = GMatTensor::Cartesian2d::pointer;
 
 #pragma omp parallel for
