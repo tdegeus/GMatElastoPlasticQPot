@@ -48,6 +48,10 @@ To write to allocated data use epsd().
 template <class T>
 inline auto Epsd(const T& A) -> typename GMatTensor::allocate<xt::get_rank<T>::value - 2, T>::type
 {
+    GMATELASTOPLASTICQPOT_ASSERT(A.dimension() >= 2);
+    GMATELASTOPLASTICQPOT_ASSERT(A.shape(A.dimension() - 1) == 3);
+    GMATELASTOPLASTICQPOT_ASSERT(A.shape(A.dimension() - 2) == 3);
+
     return xt::eval(std::sqrt(0.5) * GMatTensor::Cartesian3d::Norm_deviatoric(A));
 }
 
@@ -60,6 +64,11 @@ Same as Epsd(), but writes to externally allocated output.
 template <class T, class U>
 inline void epsd(const T& A, U& ret)
 {
+    GMATELASTOPLASTICQPOT_ASSERT(A.dimension() >= 2);
+    GMATELASTOPLASTICQPOT_ASSERT(A.shape(A.dimension() - 1) == 3);
+    GMATELASTOPLASTICQPOT_ASSERT(A.shape(A.dimension() - 2) == 3);
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(A, ret.shape()));
+
     GMatTensor::Cartesian3d::norm_deviatoric(A, ret);
     ret *= std::sqrt(0.5);
 }
@@ -77,6 +86,10 @@ To write to allocated data use sigd().
 template <class T>
 inline auto Sigd(const T& A) -> typename GMatTensor::allocate<xt::get_rank<T>::value - 2, T>::type
 {
+    GMATELASTOPLASTICQPOT_ASSERT(A.dimension() >= 2);
+    GMATELASTOPLASTICQPOT_ASSERT(A.shape(A.dimension() - 1) == 3);
+    GMATELASTOPLASTICQPOT_ASSERT(A.shape(A.dimension() - 2) == 3);
+
     return xt::eval(std::sqrt(2.0) * GMatTensor::Cartesian3d::Norm_deviatoric(A));
 }
 
@@ -89,6 +102,11 @@ Same as Sigd(), but writes to externally allocated output.
 template <class T, class U>
 inline void sigd(const T& A, U& ret)
 {
+    GMATELASTOPLASTICQPOT_ASSERT(A.dimension() >= 2);
+    GMATELASTOPLASTICQPOT_ASSERT(A.shape(A.dimension() - 1) == 3);
+    GMATELASTOPLASTICQPOT_ASSERT(A.shape(A.dimension() - 2) == 3);
+    GMATELASTOPLASTICQPOT_ASSERT(xt::has_shape(A, ret.shape()));
+
     GMatTensor::Cartesian3d::norm_deviatoric(A, ret);
     ret *= std::sqrt(2.0);
 }
