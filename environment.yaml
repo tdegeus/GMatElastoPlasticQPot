@@ -3,7 +3,7 @@ channels:
 dependencies:
 - breathe
 - cmake
-- doxygen
+- doxygen >=1.9.5
 - furo
 - gmatelastic >=0.5.0
 - gmattensor >=0.10.2
@@ -19,6 +19,5 @@ dependencies:
 - setuptools_scm
 - sphinx
 - sphinx-tabs
-- sphinx_rtd_theme
 - xtensor >=0.24.2
 - xtensor-python
