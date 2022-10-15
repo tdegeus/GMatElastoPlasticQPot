@@ -52,7 +52,10 @@ inline auto Epsd(const T& A) -> typename GMatTensor::allocate<xt::get_rank<T>::v
     GMATELASTOPLASTICQPOT_ASSERT(A.shape(A.dimension() - 1) == 3);
     GMATELASTOPLASTICQPOT_ASSERT(A.shape(A.dimension() - 2) == 3);
 
-    return xt::eval(std::sqrt(0.5) * GMatTensor::Cartesian3d::Norm_deviatoric(A));
+    using return_type = typename GMatTensor::allocate<xt::get_rank<T>::value - 2, T>::type;
+    return_type ret = GMatTensor::Cartesian3d::Norm_deviatoric(A);
+    ret *= std::sqrt(0.5);
+    return ret;
 }
 
 /**
@@ -90,7 +93,10 @@ inline auto Sigd(const T& A) -> typename GMatTensor::allocate<xt::get_rank<T>::v
     GMATELASTOPLASTICQPOT_ASSERT(A.shape(A.dimension() - 1) == 3);
     GMATELASTOPLASTICQPOT_ASSERT(A.shape(A.dimension() - 2) == 3);
 
-    return xt::eval(std::sqrt(2.0) * GMatTensor::Cartesian3d::Norm_deviatoric(A));
+    using return_type = typename GMatTensor::allocate<xt::get_rank<T>::value - 2, T>::type;
+    return_type ret = GMatTensor::Cartesian3d::Norm_deviatoric(A);
+    ret *= std::sqrt(2.0);
+    return ret;
 }
 
 /**
